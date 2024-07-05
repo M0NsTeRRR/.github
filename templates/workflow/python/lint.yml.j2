@@ -1,0 +1,33 @@
+{%- raw %}
+test:
+  runs-on: ubuntu-latest
+  strategy:
+    matrix:
+      python-version:
+        - "3.9"
+        - "3.10"
+        - "3.11"
+        - "3.12"
+  steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install poetry
+      run: pipx install poetry
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'poetry'
+    - name: Install poetry dependencies
+      run: |
+        export PATH="$PATH:$HOME/.local/bin"
+        poetry install --with=dev
+    - name: Run ruff
+      run: |
+        export PATH="$PATH:$HOME/.local/bin"
+        source `poetry env info --path`/bin/activate
+        poetry run ruff format --check . 
+        poetry run ruff check .
+{%- endraw %}

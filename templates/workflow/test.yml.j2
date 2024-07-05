@@ -1,0 +1,9 @@
+{%- set included_content %}
+{%- if type == "python" %}
+{%- include "workflow/python/test.yml.j2" %}
+{%- endif %}
+{%- endset %}
+name: {{ type }} test
+on:
+  - pull_request
+jobs: {{ included_content | indent(2) }}

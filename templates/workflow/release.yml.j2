@@ -1,0 +1,15 @@
+{%- set included_content %}
+{%- if changelog %}
+{%- include "workflow/changelog/release.yml.j2" %}
+{%- endif %}
+{%- include "workflow/{}/release.yml.j2".format(type) %}
+{%- if changelog %}
+{%- include "workflow/changelog/upload_step.yml.j2" %}
+{%- endif %}
+{%- endset %}
+name: {{ type }} release
+on:
+  push:
+    tags:
+      - '*'
+jobs: {{ included_content | indent(2) }}

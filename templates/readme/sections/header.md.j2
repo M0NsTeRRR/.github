@@ -1,0 +1,22 @@
+<div align="center">
+
+{% if logo %}
+<img src="https://raw.githubusercontent.com/{{ repository_full_name }}/main/docs/assets/logo.svg" align="center" width="144px" height="144px"/>
+{% endif %}
+
+### {{ repository_title }}
+
+_{{ repository_description }}_
+
+{% if "python" == workflow_type %}
+[![Lint](https://img.shields.io/github/actions/workflow/status/{{ repository_full_name }}/lint.yml?branch=main&label=&logo=ruff&style=for-the-badge&logoColor=D7FF64&color=black)](https://github.com/{{ repository_full_name }}/tree/main/.github/workflows/lint.yml)
+[![Test](https://img.shields.io/github/actions/workflow/status/{{ repository_full_name }}/test.yml?branch=main&label=&logo=pytest&style=for-the-badge&logoColor=white&color=0A9EDC)](https://github.com/{{ repository_full_name }}/tree/main/.github/workflows/test.yml)
+{% endif %}
+[![Release](https://img.shields.io/github/actions/workflow/status/{{ repository_full_name }}/release.yml?branch=main&label=&logo=github&style=for-the-badge&logoColor=black&color=white)](https://github.com/{{ repository_full_name }}/tree/main/.github/workflows/release.yml)
+</div>
+<div align="center">
+{% if "python" == workflow_type and package_name is defined %}
+[![Pypi](https://img.shields.io/pypi/v/{{ package_name }}?label=&logo=pypi&style=for-the-badge&logoColor=yellow&color=D7FF64)](https://pypi.python.org/pypi/{{ package_name }})
+[![Python](https://img.shields.io/pypi/pyversions/{{ package_name }}?label=&logo=python&style=for-the-badge&logoColor=yellow&color=D7FF64)](https://pypi.python.org/pypi/{{ package_name }})
+{% endif %}
+</div>

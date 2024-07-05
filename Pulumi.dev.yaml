@@ -1,0 +1,27 @@
+encryptionsalt: v1:wEJeaZwbT+s=:v1:MIlmKqkNbFWJKwoe:X60jhNocrvHntLh/BwZ7sVt6q6TgPg==
+config:
+  github:owner: m0nsterrr
+  author:
+    email: ludovic.ortega@adminafk.fr
+    fullname: Ludovic Ortega
+  security_email: security@adminafk.fr
+  contact_email: contact@adminafk.fr
+  # https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/displaying-a-sponsor-button-in-your-repository
+  funding:
+    github: m0nsterrr
+    ko_fi: ludovicortega
+  repositories:
+    - name: m0nsterrr/test-pulumi
+      title: "Pulumi test repository"
+      description: "pulumi testing repository for https://github.com/M0NsTeRRR/.github"
+      license: CECILL-2.1
+      label:
+        - default
+      logo: unicornafk.svg
+      readme: true
+      changelog: true
+      dependabot:
+        - github-actions
+        - python
+      workflow:
+        type: python

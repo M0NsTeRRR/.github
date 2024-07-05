@@ -1,0 +1,9 @@
+{%- raw %}
+upload_changelog:
+  name: Edit the release to add the changelog
+  needs: [changelog, release]
+  runs-on: ubuntu-latest
+  steps:
+    - name: Edit the changelog
+      run: gh release edit ${{ github.ref_name }} -F ${{ steps.git-cliff.outputs.content }}
+{%- endraw %}
