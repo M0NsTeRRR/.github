@@ -24,7 +24,7 @@ for repository_config in config.get_object("repositories"):
 
     repository.sync_issue_template()
 
-    repository.sync_codeowner(config.get("github:owner"))
+    repository.sync_codeowner(author["username"])
 
     if config.get("contact_email"):
         repository.sync_code_of_conduct(config.get("contact_email"))
@@ -37,7 +37,7 @@ for repository_config in config.get_object("repositories"):
 
     if "dependabot" in repository_config and repository_config["dependabot"]:
         repository.sync_dependabot(
-            config.get("github:owner"), repository_config["dependabot"]
+            author["username"], repository_config["dependabot"]
         )
 
     if "logo" in repository_config and bool(repository_config["logo"]):

@@ -1,7 +1,7 @@
 encryptionsalt: v1:wEJeaZwbT+s=:v1:MIlmKqkNbFWJKwoe:X60jhNocrvHntLh/BwZ7sVt6q6TgPg==
 config:
-  github:owner: m0nsterrr
   author:
+    username: m0nsterrr
     email: ludovic.ortega@adminafk.fr
     fullname: Ludovic Ortega
   security_email: security@adminafk.fr
