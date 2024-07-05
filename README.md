@@ -2,6 +2,8 @@
 
 - Python
 - Poetry
+Or
+- Devcontainer
 
 ```sh
 poetry install

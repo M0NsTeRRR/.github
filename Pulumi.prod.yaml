@@ -1,0 +1,26 @@
+encryptionsalt: v1:VQNwfBaxUMU=:v1:lrGEnMjjyHxzDTHK:N0BybejVYASPBcWj0QzMHlDHv5kP+w==
+config:
+  author:
+    email: ludovic.ortega@adminafk.fr
+    fullname: Ludovic Ortega
+    username: m0nsterrr
+  contact_email: contact@adminafk.fr
+  funding:
+    github: m0nsterrr
+    ko_fi: ludovicortega
+  security_email: security@adminafk.fr
+  repositories:
+    - changelog: true
+      dependabot:
+        - github-actions
+        - python
+      description: pulumi testing repository for https://github.com/M0NsTeRRR/.github
+      label:
+        - default
+      license: CECILL-2.1
+      logo: unicornafk.svg
+      name: m0nsterrr/test-pulumi
+      readme: true
+      title: Pulumi test repository
+      workflow:
+        type: python
