@@ -104,7 +104,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
     def sync_codeowner(self, owner: str):
         template = env.get_template(os.path.join("misc", "CODEOWNERS.j2"))
 
-        self._repository_file("codeowners", "CODEOWNERS", template.render(owner=owner))
+        self._repository_file("codeowners", ".github/CODEOWNERS", template.render(owner=owner))
 
     def sync_security(self, security_email: str):
         template = env.get_template(os.path.join("misc", "SECURITY.md.j2"))
