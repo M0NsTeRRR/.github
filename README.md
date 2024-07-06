@@ -12,15 +12,29 @@ poetry shell
 
 Create a fine-grained GitHub token with permissions for all repositories or some specific repositories with the following permissions:
 
+- Administration (Read/Write)
 - Contents (Read/Write)
 - Issues (Read/Write) for labels
 - Workflows (Read/Write) for GitHub actions
 
+To prevents accidental deletion of Github repository, this ressource is marked as protected and require a manual deletion.
+
 ## Run
 
 ```sh
+export GITHUB_TOKEN=YYYYYYYYYYYYYY
+export PULUMI_CONFIG_PASSPHRASE=XXXXXXXXXXX
 pulumi login --local
 pulumi stack select <dev|prod>
-export GITHUB_TOKEN=YYYYYYYYYYYYYY
 pulumi up
+```
+
+### Refresh state
+```sh
+pulumi refresh
+```
+
+### Delete a ressource
+```sh
+pulumi state delete urn:XXXXXXXX
 ```

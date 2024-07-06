@@ -12,35 +12,91 @@ env = Environment(loader=FileSystemLoader("templates"))
 
 
 class GitRepositoryComponent(pulumi.ComponentResource):
+    DEFAULT_BRANCH_NAME = "main"
+
     def __init__(
         self,
+        owner: str,
         name: str,
+        description: str,
         author_fullname: str,
         author_email: str,
+        homepage_url: str = None,
+        topics: List[str] = None,
+        pages: Dict[str, str] = None,
         props: Mapping[str, Any | Awaitable[Any] | Output[Any]] | None = None,
         opts: pulumi.ResourceOptions | None = None,
         dependency: bool = False,
     ) -> None:
+        self.owner = owner
+        self.name = name
         self.author_fullname = author_fullname
         self.author_email = author_email
 
-        # By calling super(), we ensure any instantiation of this class inherits from the ComponentResource class so we don't have to declare all the same things all over again.
         super().__init__(
-            "my:modules:GitRepositoryComponent", name, props, opts, dependency
+            "pkg:index:GitRepositoryComponent", name, props, opts, dependency
         )
-        # This definition ensures the new component resource acts like anything else in the Pulumi ecosystem when being called in code.
-        child_opts = pulumi.ResourceOptions(parent=self)  # noqa #F841
 
-        self.repository = github.get_repository(full_name=name)
+        if pages:
+            gh_pages = pages = github.RepositoryPagesArgs(
+                source=github.RepositoryPagesSourceArgs(
+                    branch=pages["branch"],
+                    path=pages["path"],
+                ),
+                cname=pages["cname"],
+            )
+        else:
+            gh_pages = None
 
-        self.register_outputs({})
+        self.repository = github.Repository(
+            f"{self.name}",
+            auto_init=True,
+            allow_auto_merge=True,
+            allow_merge_commit=False,
+            allow_rebase_merge=True,
+            allow_squash_merge=True,
+            allow_update_branch=True,
+            delete_branch_on_merge=True,
+            description=description,
+            has_discussions=False,
+            has_issues=True,
+            has_projects=False,
+            has_wiki=False,
+            homepage_url=homepage_url,
+            is_template=False,
+            name=name,
+            pages=gh_pages,
+            squash_merge_commit_message="PR_BODY",
+            squash_merge_commit_title="PR_TITLE",
+            topics=topics,
+            visibility="public",
+            vulnerability_alerts=True,
+            web_commit_signoff_required=True,
+            opts=pulumi.ResourceOptions(protect=True, parent=self),
+        )
+
+        default_branch = github.Branch(
+            f"{self.name}-branch-{self.DEFAULT_BRANCH_NAME}",
+            repository=self.name,
+            branch=self.DEFAULT_BRANCH_NAME,
+            opts=pulumi.ResourceOptions(depends_on=[self.repository], parent=self),
+        )
+
+        github.BranchDefault(
+            f"{self.name}-default_branch",
+            repository=self.name,
+            branch=default_branch.branch,
+            opts=pulumi.ResourceOptions(depends_on=[default_branch], parent=self),
+        )
+
+        self.register_outputs({"repository": self.repository.full_name})
 
     def _repository_file(
         self, ressource_name_type: str, file: str, content: str
     ) -> github.RepositoryFile:
         return github.RepositoryFile(
-            f"{self.repository.full_name}_{file}",
-            repository=self.repository.name,
+            f"{self.name}-{file}",
+            repository=self.name,
             branch="main",
             file=file,
             content=content,
@@ -49,12 +105,13 @@ chore(pulumi): auto-applied {ressource_name_type}
 
 this file was auto-applied from pulumi
 located here:
-    - https://github.com/{self.repository.full_name}/.github
+    - https://github.com/{self.name}/.github
 
 Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             commit_author=self.author_fullname,
             commit_email=self.author_email,
             overwrite_on_create=True,
+            opts=pulumi.ResourceOptions(depends_on=[self.repository], parent=self),
         )
 
     def sync_licence(self, licence_name: str):
@@ -70,6 +127,16 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
 
         self._repository_file(
             "funding", ".github/FUNDING.yml", template.render(fundings=fundings)
+        )
+
+    def sync_contributing(self):
+        with open(os.path.join("misc", "CONTRIBUTING.md")) as file:
+            file_content = file.read()
+
+        self._repository_file(
+            "contributing",
+            ".github/CONTRIBUTING.md",
+            file_content,
         )
 
     def sync_pull_request_template(self):
@@ -104,7 +171,9 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
     def sync_codeowner(self, owner: str):
         template = env.get_template(os.path.join("misc", "CODEOWNERS.j2"))
 
-        self._repository_file("codeowners", ".github/CODEOWNERS", template.render(owner=owner))
+        self._repository_file(
+            "codeowners", ".github/CODEOWNERS", template.render(owner=owner)
+        )
 
     def sync_security(self, security_email: str):
         template = env.get_template(os.path.join("misc", "SECURITY.md.j2"))
@@ -123,8 +192,8 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 labels += yaml.safe_load(file.read())
 
         github.IssueLabels(
-            f"{self.repository.full_name}_label",
-            repository=self.repository.name,
+            f"{self.name}-labels",
+            repository=self.name,
             labels=[
                 github.IssueLabelsLabelArgs(
                     name=label["name"],
@@ -133,6 +202,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 )
                 for label in labels
             ],
+            opts=pulumi.ResourceOptions(depends_on=[self.repository], parent=self),
         )
 
     def sync_dependabot(self, owner: str, configs: List[str]):
@@ -154,8 +224,9 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         self,
         repository_title: str,
         repository_description: str,
+        documentation_url: str,
         logo: bool,
-        workflow_type: str,
+        workflow: Dict[str, Any],
         package_name: str = None,
     ):
         template = env.get_template(os.path.join("readme", "readme.md.j2"))
@@ -164,17 +235,23 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             "readme",
             "README.md",
             template.render(
-                documentation_url=self.repository.homepage_url,
-                repository_full_name=self.repository.full_name,
+                documentation_url=documentation_url,
+                repository_name=f"{self.owner}/{self.name}",
                 repository_title=repository_title,
                 repository_description=repository_description,
                 logo=logo,
-                workflow_type=workflow_type,
+                workflow=workflow,
                 package_name=package_name,
             ),
         )
 
     def sync_workflow(self, workflow: Dict[str, str], changelog: bool):
+        template = env.get_template(os.path.join("workflow", "lint_pr.yml.j2"))
+
+        self._repository_file(
+            "workflow", ".github/workflows/lint_pr.yml", template.render()
+        )
+
         if changelog:
             with open(os.path.join("git-cliff", "cliff.toml")) as file:
                 cliff_config = file.read()
@@ -207,3 +284,56 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 ".github/workflows/release.yml",
                 template.render(type=workflow["type"], changelog=changelog),
             )
+
+    def sync_repository_ruleset(self):
+        github.RepositoryRuleset(
+            f"{self.name}-ruleset",
+            name="main",
+            repository=self.name,
+            target="branch",
+            enforcement="active",
+            conditions=github.RepositoryRulesetConditionsArgs(
+                ref_name=github.RepositoryRulesetConditionsRefNameArgs(
+                    includes=["~DEFAULT_BRANCH"], excludes=[]
+                ),
+            ),
+            bypass_actors=[
+                github.RepositoryRulesetBypassActorArgs(
+                    actor_id=1,
+                    actor_type="OrganizationAdmin",
+                    bypass_mode="always",
+                )
+            ],
+            rules=github.RepositoryRulesetRulesArgs(
+                creation=False,
+                update=False,
+                deletion=True,
+                required_linear_history=True,
+                required_signatures=True,
+                pull_request=github.RepositoryRulesetRulesPullRequestArgs(
+                    required_approving_review_count=1,
+                    dismiss_stale_reviews_on_push=False,
+                    require_code_owner_review=True,
+                    require_last_push_approval=False,
+                    required_review_thread_resolution=True,
+                ),
+                required_status_checks=github.RepositoryRulesetRulesRequiredStatusChecksArgs(
+                    required_checks=[
+                        github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
+                            context="DCO"
+                        ),
+                        github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
+                            context="lint_pr"
+                        ),
+                        github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
+                            context="lint"
+                        ),
+                        github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
+                            context="test"
+                        ),
+                    ],
+                    strict_required_status_checks_policy=False,
+                ),
+            ),
+            opts=pulumi.ResourceOptions(depends_on=[self.repository], parent=self),
+        )

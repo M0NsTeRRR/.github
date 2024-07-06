@@ -1,16 +1,27 @@
 # THIS FILE IS GENERATED! DO NOT EDIT! Maintained by Pulumi
 {%- set included_content %}
 {%- if changelog %}
-{%- include "workflow/changelog/release.yml.j2" %}
+{%- include "workflow/changelog/main.yml.j2" %}
 {%- endif %}
-{%- include "workflow/{}/release.yml.j2".format(type) %}
-{%- if changelog %}
-{%- include "workflow/changelog/upload_step.yml.j2" %}
-{%- endif %}
+{% include "workflow/{}/package.yml.j2".format(type) %}
 {%- endset %}
 name: {{ type }} release
 on:
   push:
     tags:
       - '*'
+permissions:
+  contents: write
 jobs: {{ included_content | indent(2) }}
+{% raw %}
+  publish:
+    name: Publish release
+    runs-on: ubuntu-latest
+    needs: [changelog, package]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create release
+        run: gh release edit ${{ github.ref_name }} --draft=false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+{% endraw %}

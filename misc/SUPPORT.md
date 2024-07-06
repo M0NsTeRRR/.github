@@ -10,8 +10,6 @@ Please ensure you read through it thoroughly.
 
 ## ❔ Asking quality questions
 
-Questions can go to [Github Discussions](/../../discussions/new/choose).
-
 Help me help you! Spend time framing questions and add links and resources.
 Spending the extra time up front can help save everyone time in the long run.
 Here are some tips:
