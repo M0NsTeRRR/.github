@@ -1,10 +1,10 @@
 # THIS FILE IS GENERATED! DO NOT EDIT! Maintained by Pulumi
 {%- set included_content %}
-{%- if type == "python" %}
+{%- if workflow["type"] == "python" %}
 {%- include "workflow/python/test.yml.j2" %}
 {%- endif %}
 {%- endset %}
-name: {{ type }} test
+name: {{ workflow["type"] }} test
 on:
   - pull_request
 jobs: {{ included_content | indent(2) }}

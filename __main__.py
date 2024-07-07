@@ -8,6 +8,16 @@ config = pulumi.Config()
 author = config.get_object("author")
 
 for repository_config in config.get_object("repositories"):
+    if "workflow" in repository_config:
+        workflow = {
+            "type": repository_config["workflow"]["type"],
+            "lint": "lint" not in repository_config["workflow"] or repository_config["workflow"]["lint"],
+            "test": "test" not in repository_config["workflow"] or repository_config["workflow"]["test"],
+            "package": "package" not in repository_config["workflow"] or repository_config["workflow"]["package"]
+        }
+    else:
+        workflow = None
+    
     repository = GitRepositoryComponent(
         owner=pulumi.Config("github").require("owner"),
         name=repository_config["name"],
@@ -60,11 +70,12 @@ for repository_config in config.get_object("repositories"):
             if "homepage_url" in repository_config
             else None,
             "logo" in repository_config and repository_config["logo"],
-            repository_config["workflow"] if "workflow" in repository_config else None,
+            "changelog" in repository_config and repository_config["changelog"],
+            workflow,
         )
 
-    if "workflow" in repository_config and repository_config["workflow"]:
+    if workflow:
         repository.sync_workflow(
-            repository_config["workflow"],
+            workflow,
             "changelog" in repository_config and repository_config["changelog"],
         )

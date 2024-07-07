@@ -227,6 +227,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         documentation_url: str,
         logo: bool,
         workflow: Dict[str, Any],
+        changelog: bool,
         package_name: str = None,
     ):
         template = env.get_template(os.path.join("readme", "readme.md.j2"))
@@ -241,6 +242,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 repository_description=repository_description,
                 logo=logo,
                 workflow=workflow,
+                changelog=changelog,
                 package_name=package_name,
             ),
         )
@@ -252,37 +254,37 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             "workflow", ".github/workflows/lint_pr.yml", template.render()
         )
 
+        if workflow["lint"] and workflow["type"] in ["python"]:
+            template = env.get_template(os.path.join("workflow", "lint.yml.j2"))
+
+            self._repository_file(
+                "workflow",
+                ".github/workflows/lint.yml",
+                template.render(workflow=workflow),
+            )
+
+        if workflow["test"] and workflow["type"] in ["python"]:
+            template = env.get_template(os.path.join("workflow", "test.yml.j2"))
+
+            self._repository_file(
+                "workflow",
+                ".github/workflows/test.yml",
+                template.render(workflow=workflow),
+            )
+
         if changelog:
             with open(os.path.join("git-cliff", "cliff.toml")) as file:
                 cliff_config = file.read()
 
             self._repository_file("changelog", ".github/cliff.toml", cliff_config)
 
-        if workflow["type"] in ["python"]:
-            template = env.get_template(os.path.join("workflow", "lint.yml.j2"))
-
-            self._repository_file(
-                "workflow",
-                ".github/workflows/lint.yml",
-                template.render(type=workflow["type"]),
-            )
-
-        if workflow["type"] in ["python"]:
-            template = env.get_template(os.path.join("workflow", "test.yml.j2"))
-
-            self._repository_file(
-                "workflow",
-                ".github/workflows/test.yml",
-                template.render(type=workflow["type"]),
-            )
-
-        if workflow["type"] in ["python", "go"]:
+        if workflow["package"] or changelog:
             template = env.get_template(os.path.join("workflow", "release.yml.j2"))
 
             self._repository_file(
                 "workflow",
                 ".github/workflows/release.yml",
-                template.render(type=workflow["type"], changelog=changelog),
+                template.render(workflow=workflow, changelog=changelog),
             )
 
     def sync_repository_ruleset(self):

@@ -29,9 +29,9 @@ config:
       changelog: true
       workflow:
         type: python
-        # lint: false
-        # test: false
-        # release: false
+        lint: false
+        test: false
+        package: false
       # pages:
       #   branch: "gh-pages"
       #   path: "/docs"
