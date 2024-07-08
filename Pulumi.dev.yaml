@@ -4,7 +4,6 @@ config:
   author:
     email: ludovic.ortega@adminafk.fr
     fullname: Ludovic Ortega
-    username: m0nsterrr
   contact_email: contact@adminafk.fr
   funding:
     github: m0nsterrr

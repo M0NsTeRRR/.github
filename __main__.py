@@ -6,6 +6,7 @@ from GitRepositoryComponent import GitRepositoryComponent
 config = pulumi.Config()
 
 author = config.get_object("author")
+owner = pulumi.Config("github").require("owner")
 
 for repository_config in config.get_object("repositories"):
     if "workflow" in repository_config:
@@ -19,7 +20,7 @@ for repository_config in config.get_object("repositories"):
         workflow = None
     
     repository = GitRepositoryComponent(
-        owner=pulumi.Config("github").require("owner"),
+        owner=owner,
         name=repository_config["name"],
         description=repository_config["description"],
         author_fullname=author["fullname"],
@@ -45,7 +46,7 @@ for repository_config in config.get_object("repositories"):
 
     repository.sync_issue_template()
 
-    repository.sync_codeowner(author["username"])
+    repository.sync_codeowner(owner)
 
     if config.get("contact_email"):
         repository.sync_code_of_conduct(config.get("contact_email"))
