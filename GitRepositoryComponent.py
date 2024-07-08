@@ -188,7 +188,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         labels = []
 
         for label_file in label_files:
-            with open(os.path.join("label", f"{label_file}.yaml")) as file:
+            with open(os.path.join("label", f"{label_file}.yml")) as file:
                 labels += yaml.safe_load(file.read())
 
         github.IssueLabels(

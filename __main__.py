@@ -12,13 +12,16 @@ for repository_config in config.get_object("repositories"):
     if "workflow" in repository_config:
         workflow = {
             "type": repository_config["workflow"]["type"],
-            "lint": "lint" not in repository_config["workflow"] or repository_config["workflow"]["lint"],
-            "test": "test" not in repository_config["workflow"] or repository_config["workflow"]["test"],
-            "package": "package" not in repository_config["workflow"] or repository_config["workflow"]["package"]
+            "lint": "lint" not in repository_config["workflow"]
+            or repository_config["workflow"]["lint"],
+            "test": "test" not in repository_config["workflow"]
+            or repository_config["workflow"]["test"],
+            "package": "package" not in repository_config["workflow"]
+            or repository_config["workflow"]["package"],
         }
     else:
         workflow = None
-    
+
     repository = GitRepositoryComponent(
         owner=owner,
         name=repository_config["name"],
