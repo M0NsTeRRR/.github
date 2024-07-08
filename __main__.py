@@ -21,6 +21,8 @@ for repository_config in config.get_object("repositories"):
         }
     else:
         workflow = None
+    
+    changelog = "changelog" in repository_config and repository_config["changelog"]
 
     repository = GitRepositoryComponent(
         owner=owner,
@@ -74,12 +76,12 @@ for repository_config in config.get_object("repositories"):
             if "homepage_url" in repository_config
             else None,
             "logo" in repository_config and repository_config["logo"],
-            "changelog" in repository_config and repository_config["changelog"],
+            changelog,
             workflow,
         )
 
-    if workflow:
+    if workflow or changelog:
         repository.sync_workflow(
             workflow,
-            "changelog" in repository_config and repository_config["changelog"],
+            changelog,
         )

@@ -1,13 +1,17 @@
 encryptionsalt: v1:VQNwfBaxUMU=:v1:lrGEnMjjyHxzDTHK:N0BybejVYASPBcWj0QzMHlDHv5kP+w==
 config:
   github:owner: m0nsterrr
+  # used when pulumi commit
   author:
     email: ludovic.ortega@adminafk.fr
     fullname: Ludovic Ortega
+  # used by code of conduct
   contact_email: contact@adminafk.fr
+  # used by funding
   funding:
     github: m0nsterrr
     ko_fi: ludovicortega
+  # used by security
   security_email: security@adminafk.fr
   repositories:
     - name: test-pulumi
@@ -15,22 +19,29 @@ config:
       description: pulumi testing repository for https://github.com/M0NsTeRRR/.github
       # homepage_url: "https://test.fr"
       license: CECILL-2.1
+      # display logo in readme and upload it to /docs/assets
       logo: unicornafk.svg
       topics:
         - pulumi
         - pulumi-github
+      # generate readme
       readme: true
+      # generate issue/pr labels
       label:
         - default
+      # enable dependabot
       dependabot:
         - github-actions
         - python
+      # enable changelog workflow
       changelog: true
+      # set workflow
       workflow:
         type: python
         lint: false
         test: false
         package: false
+      # enable pages
       # pages:
       #   branch: "gh-pages"
       #   path: "/docs"
