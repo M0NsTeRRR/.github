@@ -22,7 +22,8 @@ jobs: {{ included_content | indent(2) }}
     needs: [changelog{% if workflow["package"] %}, package{% endif %}]
 {%- raw %}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Create release
         run: gh release edit ${{ github.ref_name }} --draft=false
         env:

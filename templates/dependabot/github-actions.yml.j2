@@ -5,3 +5,10 @@
     time: "04:00"
   assignees:
   - {{ owner }}
+  ignore:
+    - dependency-name: actions/checkout
+    - actions/setup-go
+    - actions/setup-python
+    - docker/login-action
+    - goreleaser/goreleaser-action
+    - amannn/action-semantic-pull-request
