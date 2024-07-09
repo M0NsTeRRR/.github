@@ -21,12 +21,14 @@ for repository_config in config.get_object("repositories"):
         }
     else:
         workflow = None
-    
+
     changelog = "changelog" in repository_config and repository_config["changelog"]
 
     repository = GitRepositoryComponent(
         owner=owner,
         name=repository_config["name"],
+        default_branch_name=config.get("default_branch_name", "main"),
+        branch_name=config.get("branch_name"),
         description=repository_config["description"],
         author_fullname=author["fullname"],
         author_email=author["email"],
@@ -37,7 +39,7 @@ for repository_config in config.get_object("repositories"):
         pages=repository_config["pages"] if "pages" in repository_config else None,
     )
 
-    # repository.sync_repository_ruleset()
+    repository.sync_repository_ruleset()
 
     if "license" in repository_config and repository_config["license"]:
         repository.sync_licence(repository_config["license"])
@@ -63,7 +65,7 @@ for repository_config in config.get_object("repositories"):
         repository.sync_label(repository_config["label"])
 
     if "dependabot" in repository_config and repository_config["dependabot"]:
-        repository.sync_dependabot(author["username"], repository_config["dependabot"])
+        repository.sync_dependabot(owner, repository_config["dependabot"])
 
     if "logo" in repository_config and bool(repository_config["logo"]):
         repository.sync_logo(repository_config["logo"])

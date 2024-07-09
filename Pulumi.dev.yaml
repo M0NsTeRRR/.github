@@ -1,6 +1,9 @@
 encryptionsalt: v1:VQNwfBaxUMU=:v1:lrGEnMjjyHxzDTHK:N0BybejVYASPBcWj0QzMHlDHv5kP+w==
 config:
   github:owner: m0nsterrr
+  # default_branch_name: main
+  # used to push commit to a working branch instead of main
+  branch_name: automation-sync
   # used when pulumi commit
   author:
     email: ludovic.ortega@adminafk.fr

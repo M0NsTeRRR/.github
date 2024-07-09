@@ -12,12 +12,12 @@ env = Environment(loader=FileSystemLoader("templates"))
 
 
 class GitRepositoryComponent(pulumi.ComponentResource):
-    DEFAULT_BRANCH_NAME = "main"
-
     def __init__(
         self,
         owner: str,
         name: str,
+        default_branch_name: str,
+        branch_name: str,
         description: str,
         author_fullname: str,
         author_email: str,
@@ -28,8 +28,24 @@ class GitRepositoryComponent(pulumi.ComponentResource):
         opts: pulumi.ResourceOptions | None = None,
         dependency: bool = False,
     ) -> None:
+        """Repository component used to managed github repository
+
+        :param owner: Git owner
+        :param name: Repository name
+        :param default_branch_name: Repository default branch
+        :param branch_name: Repository branch used by pulumi
+        :param description: Repository description
+        :param author_fullname: Fullname used by pulumi to commit
+        :param author_email: Email used by pulumi to commit
+        :param homepage_url: Repository homepage
+        :param topics: Repository topics
+        :param pages: Repository pages
+        """
+
         self.owner = owner
         self.name = name
+        self.branch_name = branch_name
+        self.default_branch_name = default_branch_name
         self.author_fullname = author_fullname
         self.author_email = author_email
 
@@ -75,21 +91,42 @@ class GitRepositoryComponent(pulumi.ComponentResource):
             opts=pulumi.ResourceOptions(protect=True, parent=self),
         )
 
-        default_branch = github.Branch(
-            f"{self.name}-branch-{self.DEFAULT_BRANCH_NAME}",
+        # configure default branch
+        self.default_branch = github.Branch(
+            f"{self.name}-branch-{self.default_branch_name}",
             repository=self.name,
-            branch=self.DEFAULT_BRANCH_NAME,
-            opts=pulumi.ResourceOptions(depends_on=[self.repository], parent=self),
+            branch=self.default_branch_name,
+            opts=pulumi.ResourceOptions(
+                protect=True, depends_on=[self.repository], parent=self
+            ),
         )
 
         github.BranchDefault(
             f"{self.name}-default_branch",
             repository=self.name,
-            branch=default_branch.branch,
-            opts=pulumi.ResourceOptions(depends_on=[default_branch], parent=self),
+            branch=self.default_branch.branch,
+            opts=pulumi.ResourceOptions(depends_on=[self.default_branch], parent=self),
         )
 
+        # create sync branch if not on DEFAULT_BRANCH_NAME
+        if branch_name and branch_name != default_branch_name:
+            self.branch = github.Branch(
+                f"{self.name}-branch-{self.branch_name}",
+                repository=self.name,
+                branch=self.branch_name,
+                opts=pulumi.ResourceOptions(depends_on=[self.repository], parent=self),
+            )
+
         self.register_outputs({"repository": self.repository.full_name})
+
+    def is_pr_mode(self) -> bool:
+        return self.branch_name and self.branch_name != self.default_branch_name
+
+    def get_working_branch(self) -> github.Branch:
+        if self.is_pr_mode():
+            return self.branch
+        else:
+            return self.default_branch
 
     def _repository_file(
         self, ressource_name_type: str, file: str, content: str
@@ -97,7 +134,7 @@ class GitRepositoryComponent(pulumi.ComponentResource):
         return github.RepositoryFile(
             f"{self.name}-{file}",
             repository=self.name,
-            branch="main",
+            branch=self.get_working_branch().branch,
             file=file,
             content=content,
             commit_message=f"""\
@@ -111,7 +148,9 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             commit_author=self.author_fullname,
             commit_email=self.author_email,
             overwrite_on_create=True,
-            opts=pulumi.ResourceOptions(depends_on=[self.repository], parent=self),
+            opts=pulumi.ResourceOptions(
+                depends_on=[self.repository, self.branch], parent=self
+            ),
         )
 
     def sync_licence(self, licence_name: str):
@@ -254,6 +293,15 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             "workflow", ".github/workflows/lint_pr.yml", template.render()
         )
 
+        if self.is_pr_mode():
+            template = env.get_template(os.path.join("workflow", "automation-sync-pr.j2"))
+
+            self._repository_file(
+                "workflow",
+                ".github/workflows/automation-sync-pr.yml",
+                template.render(default_branch_name=self.default_branch_name, branch_name=self.branch_name),
+            )
+
         if workflow["lint"] and workflow["type"] in ["python"]:
             template = env.get_template(os.path.join("workflow", "lint.yml.j2"))
 
@@ -290,7 +338,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
     def sync_repository_ruleset(self):
         github.RepositoryRuleset(
             f"{self.name}-ruleset",
-            name="main",
+            name="automation-sync",
             repository=self.name,
             target="branch",
             enforcement="active",
@@ -301,8 +349,8 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             ),
             bypass_actors=[
                 github.RepositoryRulesetBypassActorArgs(
-                    actor_id=1,
-                    actor_type="OrganizationAdmin",
+                    actor_id=5,
+                    actor_type="RepositoryRole",
                     bypass_mode="always",
                 )
             ],
@@ -325,13 +373,16 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                             context="DCO"
                         ),
                         github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
-                            context="lint_pr"
+                            context="GitGuardian"
                         ),
                         github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
-                            context="lint"
+                            context="Validate PR title", integration_id=15368
                         ),
                         github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
-                            context="test"
+                            context="Lint", integration_id=15368
+                        ),
+                        github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
+                            context="Test", integration_id=15368
                         ),
                     ],
                     strict_required_status_checks_policy=False,
