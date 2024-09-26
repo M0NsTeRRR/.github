@@ -1,0 +1,31 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "docker:enableMajor",
+    "replacements:k8s-registry-move",
+    ":automergePr",
+    ":automergePatch",
+    ":disableRateLimiting",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    ":timezone(Europe/Paris)",
+    "github>{{ repository_name }}//.github/renovate/labels.json5",
+    "github>{{ repository_name }}//.github/renovate/semanticCommits.json5",
+    {%- if "devcontainers" in configs %}
+    "github>{{ repository_name }}//.github/renovate/devContainers.json5",
+    {%- endif %}
+    {%- for additionnal_config in additionnal_configs %}
+    "github>{{ repository_name }}//.github/renovate/{{ additionnal_config }}",
+    {%- endfor %}
+  ],
+  "dependencyDashboardTitle": "Renovate Dashboard 🤖",
+  "suppressNotifications": ["prEditedNotification", "prIgnoreNotification"],
+  "rebaseWhen": "conflicted",
+  "schedule": [
+    "before 9pm on friday"
+  ],
+  "labels": [
+    "dependencies",
+  ]
+}

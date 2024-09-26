@@ -1,9 +1,7 @@
 ## Requirements
 
 - Python
-- Poetry
-Or
-- Devcontainer
+- Poetry or Devcontainer
 
 ```sh
 poetry install

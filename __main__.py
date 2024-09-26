@@ -64,8 +64,16 @@ for repository_config in config.get_object("repositories"):
     if "label" in repository_config and repository_config["label"]:
         repository.sync_label(repository_config["label"])
 
-    if "dependabot" in repository_config and repository_config["dependabot"]:
-        repository.sync_dependabot(owner, repository_config["dependabot"])
+    if "renovatebot" in repository_config and repository_config["renovatebot"]:
+        repository.sync_renovatebot(
+            owner,
+            repository_config["renovatebot"]["configs"]
+            if "configs" in repository_config["renovatebot"]
+            else [],
+            repository_config["renovatebot"]["additionnal_configs"]
+            if "additionnal_configs" in repository_config["renovatebot"]
+            else [],
+        )
 
     if "logo" in repository_config and bool(repository_config["logo"]):
         repository.sync_logo(repository_config["logo"])
