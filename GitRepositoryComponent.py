@@ -244,14 +244,36 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             opts=pulumi.ResourceOptions(depends_on=[self.repository], parent=self),
         )
 
-    def sync_dependabot(self, owner: str, configs: List[str]):
-        template = env.get_template(os.path.join("dependabot", "dependabot.yml.j2"))
+    def sync_renovatebot(
+        self,
+        owner: str,
+        schedule: str,
+        configs: List[str],
+        additionnal_configs: List[str],
+    ):
+        template = env.get_template(os.path.join("renovatebot", "renovatebot.json5.j2"))
 
         self._repository_file(
-            "dependabot",
-            ".github/dependabot.yml",
-            template.render(owner=owner, configs=configs),
+            "renovatebot",
+            ".github/renovatebot.json5",
+            template.render(
+                owner=owner,
+                schedule=schedule,
+                configs=configs,
+                additionnal_configs=additionnal_configs,
+            ),
         )
+
+        renovatebot_dir = os.path.join("renovatebot", "config")
+        renovatebot_files = os.listdir(renovatebot_dir)
+        for renovatebot_file in renovatebot_files:
+            with open(os.path.join(renovatebot_dir, renovatebot_file)) as file:
+                renovatebot_content = file.read()
+            self._repository_file(
+                os.path.splitext(renovatebot_file)[0],
+                renovatebot_file,
+                renovatebot_content,
+            )
 
     def sync_logo(self, logo: str):
         with open(os.path.join("logo", logo)) as file:
@@ -290,16 +312,23 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         template = env.get_template(os.path.join("workflow", "lint_pr.yml.j2"))
 
         self._repository_file(
-            "workflow", ".github/workflows/lint_pr.yml", template.render()
+            "workflow",
+            ".github/workflows/lint_pr.yml",
+            template.render(repository_name=f"{self.owner}/{self.name}"),
         )
 
         if self.is_pr_mode():
-            template = env.get_template(os.path.join("workflow", "automation-sync-pr.j2"))
+            template = env.get_template(
+                os.path.join("workflow", "automation-sync-pr.j2")
+            )
 
             self._repository_file(
                 "workflow",
                 ".github/workflows/automation-sync-pr.yml",
-                template.render(default_branch_name=self.default_branch_name, branch_name=self.branch_name),
+                template.render(
+                    default_branch_name=self.default_branch_name,
+                    branch_name=self.branch_name,
+                ),
             )
 
         if workflow["lint"] and workflow["type"] in ["python"]:

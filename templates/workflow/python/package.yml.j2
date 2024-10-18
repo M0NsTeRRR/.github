@@ -3,21 +3,19 @@ package:
   name: Package
   runs-on: ubuntu-latest
   steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.x"
-    - name: Install poetry & dependencies
-      run: |
-        curl -sSL https://install.python-poetry.org | python3 -
-        export PATH="$PATH:$HOME/.local/bin"
-        poetry install
-    - name: Publish package
-      run: |
-        export PATH="$PATH:$HOME/.local/bin"
-        source `poetry env info --path`/bin/activate
-        poetry version ${{ github.ref_name }}
-        poetry publish --build -u __token__ -p ${{ secrets.PYPI_API_TOKEN }}
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: ".python-version"
+      - name: Install the project
+        run: uv sync --all-extras
+      - name: Publish package
+        run: |
+          sed -i -e "s/0.0.0/${GITHUB_REF#refs/*/}/" pyproject.toml
+          uv build
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
 {%- endraw %}

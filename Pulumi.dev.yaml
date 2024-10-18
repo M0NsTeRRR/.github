@@ -32,10 +32,13 @@ config:
       # generate issue/pr labels
       label:
         - default
-      # enable dependabot
-      dependabot:
-        - github-actions
-        - python
+      # enable renovatebot
+      renovatebot:
+        # schedule: "before 9pm on friday"
+        configs:
+          - devcontainers
+        # custom file available in the repository to add to renovatebot config
+        additionnal_configs: []
       # enable changelog workflow
       changelog: true
       # set workflow

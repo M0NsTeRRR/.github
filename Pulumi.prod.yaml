@@ -11,9 +11,9 @@ config:
   security_email: security@adminafk.fr
   repositories:
     - changelog: true
-      dependabot:
-        - github-actions
-        - python
+      renovatebot:
+        configs:
+          - devcontainers
       description: pulumi testing repository for https://github.com/M0NsTeRRR/.github
       label:
         - default

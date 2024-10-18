@@ -1,16 +1,41 @@
+[project]
+name = "github_automation"
+version = "0.0.0"
+description = "LouisDeLaTech is a discord bot manager for Lyon e-Sport"
+readme = "README.md"
+authors = [
+    {name = "Ludovic Ortega", email = "ludovic.ortega@adminafk.fr"}
+]
+requires-python = ">=3.9,<4.0.0"
+dependencies = [
+  "pulumi~=3.137.0",
+  "pulumi-github~=6.3.2",
+  "Jinja2~=3.1.4",
+  "PyYAML~=6.0.2"
+]
+keywords = ["pulumi", "github"]
+classifiers = [
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+    "License :: OSI Approved :: CEA CNRS Inria Logiciel Libre License, version 2.1 (CeCILL-2.1)",
+    "Topic :: Utilities",
+]
+
+[project.optional-dependencies]
+dev = [
+  "ruff~=0.7.0"
+]
+
 [build-system]
-  requires = ["poetry-core"]
-  build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool]
-  [tool.poetry]
-    package-mode = false
-    [tool.poetry.dependencies]
-      python = ">=3.9,<4.0.0"
-      pulumi = "~3.122.0"
-      pulumi-github = "~6.2.2"
-      Jinja2 = "~3.1.4"
-      PyYAML = "~6.0.1"
+[tool.hatch.metadata]
+allow-direct-references = true
 
-    [tool.poetry.group.dev.dependencies]
-      ruff = "~0.5.1"
+[tool.hatch.build.targets.wheel]
+packages = ["src/les_louisdelatech"]

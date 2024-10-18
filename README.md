@@ -1,13 +1,9 @@
 ## Requirements
 
-- Python
-- Poetry
-Or
-- Devcontainer
+- uv or devcontainer
 
 ```sh
-poetry install
-poetry shell
+uv sync
 ```
 
 Create a fine-grained GitHub token with permissions for all repositories or some specific repositories with the following permissions:
