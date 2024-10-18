@@ -245,7 +245,11 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         )
 
     def sync_renovatebot(
-        self, owner: str, configs: List[str], additionnal_configs: List[str]
+        self,
+        owner: str,
+        schedule: str,
+        configs: List[str],
+        additionnal_configs: List[str],
     ):
         template = env.get_template(os.path.join("renovatebot", "renovatebot.json5.j2"))
 
@@ -253,7 +257,10 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             "renovatebot",
             ".github/renovatebot.json5",
             template.render(
-                owner=owner, configs=configs, additionnal_configs=additionnal_configs
+                owner=owner,
+                schedule=schedule,
+                configs=configs,
+                additionnal_configs=additionnal_configs,
             ),
         )
 

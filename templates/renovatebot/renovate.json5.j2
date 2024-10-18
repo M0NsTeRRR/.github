@@ -22,9 +22,11 @@
   "dependencyDashboardTitle": "Renovate Dashboard 🤖",
   "suppressNotifications": ["prEditedNotification", "prIgnoreNotification"],
   "rebaseWhen": "conflicted",
+  {%- if schedule %}
   "schedule": [
-    "before 9pm on friday"
+    "{{ schedule }}"
   ],
+  {%- endif %}
   "labels": [
     "dependencies",
   ]

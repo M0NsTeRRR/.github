@@ -67,6 +67,9 @@ for repository_config in config.get_object("repositories"):
     if "renovatebot" in repository_config and repository_config["renovatebot"]:
         repository.sync_renovatebot(
             owner,
+            repository_config["renovatebot"]["schedule"]
+            if "schedule" in repository_config["renovatebot"]["schedule"]
+            else None,
             repository_config["renovatebot"]["configs"]
             if "configs" in repository_config["renovatebot"]
             else [],

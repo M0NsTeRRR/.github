@@ -2,7 +2,7 @@ name: .github
 runtime:
   name: python
   options:
-    toolchain: poetry
+    toolchain: uv
 description: Github meta repository, contains automation/workflows/standard configs used across my repositories.
 config:
   pulumi:tags:

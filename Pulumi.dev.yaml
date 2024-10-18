@@ -34,6 +34,7 @@ config:
         - default
       # enable renovatebot
       renovatebot:
+        # schedule: "before 9pm on friday"
         configs:
           - devcontainers
         # custom file available in the repository to add to renovatebot config
