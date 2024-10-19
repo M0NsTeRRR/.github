@@ -1,14 +1,18 @@
 import os
+from importlib import resources
 from typing import Mapping, Awaitable, Any, Dict, List
-from jinja2 import Environment, FileSystemLoader
 
+from jinja2 import Environment, PackageLoader
 import yaml
 import pulumi
 from pulumi.output import Output
 import pulumi_github as github
 
 
-env = Environment(loader=FileSystemLoader("templates"))
+PACKAGE_NAME = __name__.split(".")[0]
+
+env = Environment(loader=PackageLoader(PACKAGE_NAME, "templates"))
+
 
 
 class GitRepositoryComponent(pulumi.ComponentResource):
@@ -154,10 +158,10 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         )
 
     def sync_licence(self, licence_name: str):
-        license_dir = os.path.join("license", licence_name)
+        license_dir = resources.files(PACKAGE_NAME) / "license" / licence_name
         license_files = os.listdir(license_dir)
         for license_file in license_files:
-            with open(os.path.join(license_dir, license_file)) as file:
+            with open(license_dir / license_file) as file:
                 license_content = file.read()
             self._repository_file("license", license_file, license_content)
 
@@ -169,7 +173,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         )
 
     def sync_contributing(self):
-        with open(os.path.join("misc", "CONTRIBUTING.md")) as file:
+        with open(resources.files(PACKAGE_NAME) / "misc" / "CONTRIBUTING.md") as file:
             file_content = file.read()
 
         self._repository_file(
@@ -179,7 +183,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         )
 
     def sync_pull_request_template(self):
-        with open(os.path.join("misc", "pull_request_template.md")) as file:
+        with open(resources.files(PACKAGE_NAME) / "misc" / "pull_request_template.md") as file:
             file_content = file.read()
 
         self._repository_file(
@@ -189,10 +193,10 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         )
 
     def sync_issue_template(self):
-        issue_dir = os.path.join("issue")
+        issue_dir = resources.files(PACKAGE_NAME) / "issue"
         issue_files = os.listdir(issue_dir)
         for issue_file in issue_files:
-            with open(os.path.join(issue_dir, issue_file)) as file:
+            with open(issue_dir / issue_file) as file:
                 file_content = file.read()
             self._repository_file(
                 "issue_template", f".github/ISSUE_TEMPLATE/{issue_file}", file_content
@@ -227,7 +231,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         labels = []
 
         for label_file in label_files:
-            with open(os.path.join("label", f"{label_file}.yml")) as file:
+            with open(resources.files(PACKAGE_NAME) / "label" / f"{label_file}.yml") as file:
                 labels += yaml.safe_load(file.read())
 
         github.IssueLabels(
@@ -264,10 +268,10 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             ),
         )
 
-        renovatebot_dir = os.path.join("renovatebot", "config")
+        renovatebot_dir = resources.files(PACKAGE_NAME) / "templates" / "renovatebot" / "config"
         renovatebot_files = os.listdir(renovatebot_dir)
         for renovatebot_file in renovatebot_files:
-            with open(os.path.join(renovatebot_dir, renovatebot_file)) as file:
+            with open(renovatebot_dir / renovatebot_file) as file:
                 renovatebot_content = file.read()
             self._repository_file(
                 os.path.splitext(renovatebot_file)[0],
@@ -276,7 +280,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             )
 
     def sync_logo(self, logo: str):
-        with open(os.path.join("logo", logo)) as file:
+        with open(resources.files(PACKAGE_NAME) / "logo" / logo) as file:
             file_content = file.read()
 
         self._repository_file("logo", "docs/assets/logo.svg", file_content)
@@ -319,8 +323,8 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
 
         if self.is_pr_mode():
             template = env.get_template(
-                os.path.join("workflow", "automation-sync-pr.j2")
-            )
+                os.path.join("workflow", "automation-sync-pr.j2"
+            ))
 
             self._repository_file(
                 "workflow",
@@ -350,7 +354,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             )
 
         if changelog:
-            with open(os.path.join("git-cliff", "cliff.toml")) as file:
+            with open(resources.files(PACKAGE_NAME) / "git-cliff" / "cliff.toml") as file:
                 cliff_config = file.read()
 
             self._repository_file("changelog", ".github/cliff.toml", cliff_config)

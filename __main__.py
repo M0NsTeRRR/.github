@@ -1,6 +1,6 @@
 import pulumi
 
-from GitRepositoryComponent import GitRepositoryComponent
+from git_automation.GitRepositoryComponent import GitRepositoryComponent
 
 
 config = pulumi.Config()
@@ -68,7 +68,7 @@ for repository_config in config.get_object("repositories"):
         repository.sync_renovatebot(
             owner,
             repository_config["renovatebot"]["schedule"]
-            if "schedule" in repository_config["renovatebot"]["schedule"]
+            if "schedule" in repository_config["renovatebot"]
             else None,
             repository_config["renovatebot"]["configs"]
             if "configs" in repository_config["renovatebot"]
