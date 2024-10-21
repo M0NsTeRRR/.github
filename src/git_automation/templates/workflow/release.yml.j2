@@ -4,17 +4,17 @@
 {%- include "workflow/changelog/main.yml.j2" +%}
 {%- endif %}
 {%- if workflow["package"] %}
-{% include "workflow/{}/package.yml.j2".format(workflow["type"]) +%}
+{% include "workflow/{}/package.yml.j2".format(language) +%}
 {%- endif %}
 {%- endset %}
-name: {{ workflow["type"] }} release
+name: {{ language }} release
 on:
   push:
     tags:
       - '*'
 permissions:
   contents: write
-{% if workflow["package"] and workflow["type"] == "python" %}
+{% if workflow["package"] and language == "python" %}
   id-token: write
 {% endif %}
 jobs: {{ included_content | indent(2) }}

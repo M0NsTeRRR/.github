@@ -1,10 +1,16 @@
 # THIS FILE IS GENERATED! DO NOT EDIT! Maintained by Pulumi
 {%- set included_content %}
-{%- if workflow["type"] == "python" %}
+{%- if language == "python" %}
 {%- include "workflow/python/test.yml.j2" %}
+{%- elif language == "go" %}
+{%- include "workflow/go/test.yml.j2" %}
 {%- endif %}
 {%- endset %}
-name: {{ workflow["type"] }} test
+name: {{ language }} test
 on:
   - pull_request
+permissions:
+  contents: read
+  pull-requests: read
+  checks: write
 jobs: {{ included_content | indent(2) }}

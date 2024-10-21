@@ -11,7 +11,6 @@ owner = pulumi.Config("github").require("owner")
 for repository_config in config.get_object("repositories"):
     if "workflow" in repository_config:
         workflow = {
-            "type": repository_config["workflow"]["type"],
             "lint": "lint" not in repository_config["workflow"]
             or repository_config["workflow"]["lint"],
             "test": "test" not in repository_config["workflow"]
@@ -22,7 +21,12 @@ for repository_config in config.get_object("repositories"):
     else:
         workflow = None
 
-    changelog = "changelog" in repository_config and repository_config["changelog"]
+    changelog = repository_config.get("changelog", None)
+
+    devcontainer = repository_config.get("devcontainer", False)
+    helm = repository_config.get("helm", False)
+    docker = repository_config.get("docker", False)
+    language = repository_config.get("language", None)
 
     repository = GitRepositoryComponent(
         owner=owner,
@@ -32,11 +36,9 @@ for repository_config in config.get_object("repositories"):
         description=repository_config["description"],
         author_fullname=author["fullname"],
         author_email=author["email"],
-        homepage_url=repository_config["homepage_url"]
-        if "homepage_url" in repository_config
-        else None,
-        topics=repository_config["topics"] if "topics" in repository_config else None,
-        pages=repository_config["pages"] if "pages" in repository_config else None,
+        homepage_url=repository_config.get("homepage_url", None),
+        topics=repository_config.get("topics", None),
+        pages=repository_config.get("pages", None),
     )
 
     repository.sync_repository_ruleset()
@@ -65,36 +67,54 @@ for repository_config in config.get_object("repositories"):
         repository.sync_label(repository_config["label"])
 
     if "renovatebot" in repository_config and repository_config["renovatebot"]:
+        renovatebot_configs = repository_config["renovatebot"].get("configs", [])
+
+        if devcontainer and "devcontainer" not in renovatebot_configs:
+            renovatebot_configs.append("devcontainer")
+        if helm and "helm" not in renovatebot_configs:
+            renovatebot_configs.append("helm")
+        if docker and "docker" not in renovatebot_configs:
+            renovatebot_configs.append("docker")
+
         repository.sync_renovatebot(
             owner,
-            repository_config["renovatebot"]["schedule"]
-            if "schedule" in repository_config["renovatebot"]
-            else None,
-            repository_config["renovatebot"]["configs"]
-            if "configs" in repository_config["renovatebot"]
-            else [],
-            repository_config["renovatebot"]["additionnal_configs"]
-            if "additionnal_configs" in repository_config["renovatebot"]
-            else [],
+            repository_config["renovatebot"].get("schedule", None),
+            renovatebot_configs,
+            repository_config["renovatebot"].get("additionnal_configs", []),
         )
 
     if "logo" in repository_config and bool(repository_config["logo"]):
         repository.sync_logo(repository_config["logo"])
 
     if "readme" in repository_config and repository_config["readme"]:
+        dev = []
+
+        if devcontainer and "devcontainer":
+            dev.append("devcontainer")
+
+        usage = []
+
+        if helm and "helm":
+            usage.append("helm")
+        if docker and "docker":
+            usage.append("docker")
+
         repository.sync_readme(
             repository_config["title"],
             repository_config["description"],
-            repository_config["homepage_url"]
-            if "homepage_url" in repository_config
-            else None,
+            repository_config.get("documentation_url", None),
             "logo" in repository_config and repository_config["logo"],
             changelog,
+            language,
             workflow,
+            repository_config.get("package_name", None),
+            dev,
+            usage,
         )
 
     if workflow or changelog:
         repository.sync_workflow(
+            language,
             workflow,
             changelog,
         )

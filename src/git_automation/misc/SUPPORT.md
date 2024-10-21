@@ -1,3 +1,4 @@
+<!--- THIS FILE IS GENERATED! DO NOT EDIT! Maintained by Pulumi -->
 # 🙋‍♂️ Support
 
 This document explains where and how to get help with most of my projects.

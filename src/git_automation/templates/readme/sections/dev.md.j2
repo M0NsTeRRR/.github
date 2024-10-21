@@ -1,0 +1,9 @@
+## 🛠️ Dev
+{% if "devcontainer" in dev %}
+{% include "readme/sections/dev/devcontainer.md.j2" %}
+{% endif %}
+{% if language == "python" %}
+{% include "readme/sections/dev/python.md.j2" %}
+{% elif language == "go" %}
+{% include "readme/sections/dev/go.md.j2" %}
+{% endif %}

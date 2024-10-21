@@ -1,7 +1,15 @@
 <!--- THIS FILE IS GENERATED! DO NOT EDIT! Maintained by Pulumi -->
 {% include "readme/sections/header.md.j2" %}
 
+{% include "readme/sections/table_of_content.md.j2" %}
+
+{% if documentation_url %}
 {% include "readme/sections/documentation.md.j2" %}
+{% else %}
+{% include "readme/sections/usage.md.j2" %}
+
+{% include "readme/sections/dev.md.j2" %}
+{% endif %}
 
 {% include "readme/sections/support.md.j2" %}
 

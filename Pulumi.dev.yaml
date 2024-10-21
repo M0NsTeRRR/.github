@@ -20,6 +20,7 @@ config:
     - name: test-pulumi
       title: Pulumi test repository
       description: pulumi testing repository for https://github.com/M0NsTeRRR/.github
+      # documentation_url: "https://test.fr"
       # homepage_url: "https://test.fr"
       license: CECILL-2.1
       # display logo in readme and upload it to /docs/assets
@@ -29,6 +30,8 @@ config:
         - pulumi-github
       # generate readme
       readme: true
+      # if it's a published package put the name here
+      package_name: "test-pulumi"
       # generate issue/pr labels
       label:
         - default
@@ -41,9 +44,16 @@ config:
         additionnal_configs: []
       # enable changelog workflow
       changelog: true
+      # set repository language if there is one
+      language: python
+      # enable devcontainer (documentation, renovatebot)
+      # devcontainer: true
+      # enable helm (documentation, renovatebot)
+      # helm: true
+      # enable docker (documentation, renovatebot)
+      # docker: true
       # set workflow
       workflow:
-        type: python
         lint: false
         test: false
         package: false

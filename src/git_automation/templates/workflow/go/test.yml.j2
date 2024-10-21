@@ -1,0 +1,16 @@
+{%- raw %}
+test:
+  name: Test
+  runs-on: ubuntu-latest
+  strategy:
+    matrix:
+      go: [oldstable, stable]
+  steps:
+    - uses: actions/checkout@v4
+    - name: Install go
+      uses: actions/setup-go@v5
+      with:
+        go-version: ${{ matrix.go }}
+    - name: Run tests
+      run: go test -v
+{%- endraw %}

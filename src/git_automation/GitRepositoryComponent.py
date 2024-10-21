@@ -14,7 +14,6 @@ PACKAGE_NAME = __name__.split(".")[0]
 env = Environment(loader=PackageLoader(PACKAGE_NAME, "templates"))
 
 
-
 class GitRepositoryComponent(pulumi.ComponentResource):
     def __init__(
         self,
@@ -183,7 +182,9 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         )
 
     def sync_pull_request_template(self):
-        with open(resources.files(PACKAGE_NAME) / "misc" / "pull_request_template.md") as file:
+        with open(
+            resources.files(PACKAGE_NAME) / "misc" / "pull_request_template.md"
+        ) as file:
             file_content = file.read()
 
         self._repository_file(
@@ -231,7 +232,9 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         labels = []
 
         for label_file in label_files:
-            with open(resources.files(PACKAGE_NAME) / "label" / f"{label_file}.yml") as file:
+            with open(
+                resources.files(PACKAGE_NAME) / "label" / f"{label_file}.yml"
+            ) as file:
                 labels += yaml.safe_load(file.read())
 
         github.IssueLabels(
@@ -268,14 +271,16 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             ),
         )
 
-        renovatebot_dir = resources.files(PACKAGE_NAME) / "templates" / "renovatebot" / "config"
+        renovatebot_dir = (
+            resources.files(PACKAGE_NAME) / "templates" / "renovatebot" / "config"
+        )
         renovatebot_files = os.listdir(renovatebot_dir)
         for renovatebot_file in renovatebot_files:
             with open(renovatebot_dir / renovatebot_file) as file:
                 renovatebot_content = file.read()
             self._repository_file(
                 os.path.splitext(renovatebot_file)[0],
-                renovatebot_file,
+                f".github/renovatebot/{renovatebot_file}",
                 renovatebot_content,
             )
 
@@ -291,9 +296,12 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         repository_description: str,
         documentation_url: str,
         logo: bool,
+        language: str,
         workflow: Dict[str, Any],
         changelog: bool,
-        package_name: str = None,
+        package_name: str,
+        dev: List[str],
+        usage: List[str],
     ):
         template = env.get_template(os.path.join("readme", "readme.md.j2"))
 
@@ -306,13 +314,16 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 repository_title=repository_title,
                 repository_description=repository_description,
                 logo=logo,
+                language=language,
                 workflow=workflow,
                 changelog=changelog,
                 package_name=package_name,
+                dev=dev,
+                usage=usage,
             ),
         )
 
-    def sync_workflow(self, workflow: Dict[str, str], changelog: bool):
+    def sync_workflow(self, language: str, workflow: Dict[str, str], changelog: bool):
         template = env.get_template(os.path.join("workflow", "lint_pr.yml.j2"))
 
         self._repository_file(
@@ -323,8 +334,8 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
 
         if self.is_pr_mode():
             template = env.get_template(
-                os.path.join("workflow", "automation-sync-pr.j2"
-            ))
+                os.path.join("workflow", "automation-sync-pr.j2")
+            )
 
             self._repository_file(
                 "workflow",
@@ -335,26 +346,28 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 ),
             )
 
-        if workflow["lint"] and workflow["type"] in ["python"]:
+        if workflow["lint"]:
             template = env.get_template(os.path.join("workflow", "lint.yml.j2"))
 
             self._repository_file(
                 "workflow",
                 ".github/workflows/lint.yml",
-                template.render(workflow=workflow),
+                template.render(language=language, workflow=workflow),
             )
 
-        if workflow["test"] and workflow["type"] in ["python"]:
+        if workflow["test"]:
             template = env.get_template(os.path.join("workflow", "test.yml.j2"))
 
             self._repository_file(
                 "workflow",
                 ".github/workflows/test.yml",
-                template.render(workflow=workflow),
+                template.render(language=language, workflow=workflow),
             )
 
         if changelog:
-            with open(resources.files(PACKAGE_NAME) / "git-cliff" / "cliff.toml") as file:
+            with open(
+                resources.files(PACKAGE_NAME) / "git-cliff" / "cliff.toml"
+            ) as file:
                 cliff_config = file.read()
 
             self._repository_file("changelog", ".github/cliff.toml", cliff_config)
@@ -365,7 +378,9 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             self._repository_file(
                 "workflow",
                 ".github/workflows/release.yml",
-                template.render(workflow=workflow, changelog=changelog),
+                template.render(
+                    language=language, workflow=workflow, changelog=changelog
+                ),
             )
 
     def sync_repository_ruleset(self):
