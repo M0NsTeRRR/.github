@@ -299,6 +299,8 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         language: str,
         workflow: Dict[str, Any],
         changelog: bool,
+        package: bool,
+        docker: bool,
         package_name: str,
         dev: List[str],
         usage: List[str],
@@ -317,13 +319,15 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 language=language,
                 workflow=workflow,
                 changelog=changelog,
+                package=package,
+                docker=docker,
                 package_name=package_name,
                 dev=dev,
                 usage=usage,
             ),
         )
 
-    def sync_workflow(self, language: str, workflow: Dict[str, str], changelog: bool):
+    def sync_workflow(self, language: str, workflow: Dict[str, str], changelog: bool, package: bool, docker: bool):
         template = env.get_template(os.path.join("workflow", "lint_pr.yml.j2"))
 
         self._repository_file(
@@ -372,14 +376,14 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
 
             self._repository_file("changelog", ".github/cliff.toml", cliff_config)
 
-        if workflow["package"] or changelog:
+        if package or changelog:
             template = env.get_template(os.path.join("workflow", "release.yml.j2"))
 
             self._repository_file(
                 "workflow",
                 ".github/workflows/release.yml",
                 template.render(
-                    language=language, workflow=workflow, changelog=changelog
+                    language=language, workflow=workflow, changelog=changelog, package=package, docker=docker
                 ),
             )
 

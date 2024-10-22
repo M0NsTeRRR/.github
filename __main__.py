@@ -21,10 +21,11 @@ for repository_config in config.get_object("repositories"):
     else:
         workflow = None
 
-    changelog = repository_config.get("changelog", None)
+    changelog = repository_config.get("changelog", False)
 
     devcontainer = repository_config.get("devcontainer", False)
     helm = repository_config.get("helm", False)
+    package = "package_name" in repository_config and repository_config["package_name"]
     docker = repository_config.get("docker", False)
     language = repository_config.get("language", None)
 
@@ -105,6 +106,8 @@ for repository_config in config.get_object("repositories"):
             repository_config.get("documentation_url", None),
             "logo" in repository_config and repository_config["logo"],
             changelog,
+            package,
+            docker,
             language,
             workflow,
             repository_config.get("package_name", None),
@@ -117,4 +120,6 @@ for repository_config in config.get_object("repositories"):
             language,
             workflow,
             changelog,
+            package,
+            docker,
         )

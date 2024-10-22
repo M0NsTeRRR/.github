@@ -37,9 +37,10 @@ config:
         - default
       # enable renovatebot
       renovatebot:
+        # if you want to run renovatebot on certain schedule
         # schedule: "before 9pm on friday"
-        configs:
-          - devcontainers
+        # if you want to add template configs
+        configs: []
         # custom file available in the repository to add to renovatebot config
         additionnal_configs: []
       # enable changelog workflow
@@ -56,7 +57,6 @@ config:
       workflow:
         lint: false
         test: false
-        package: false
       # enable pages
       # pages:
       #   branch: "gh-pages"

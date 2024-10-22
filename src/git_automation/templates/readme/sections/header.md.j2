@@ -16,7 +16,7 @@ _{{ repository_description }}_
 {%- if workflow["test"] and language in ["python"] %}
 [![Test](https://img.shields.io/github/actions/workflow/status/{{ repository_name }}/test.yml?branch=main&label=&logo=pytest&style=for-the-badge&logoColor=white&color=0A9EDC)](https://github.com/{{ repository_name }}/tree/main/.github/workflows/test.yml)
 {%- endif %}
-{%- if workflow["package"] or changelog %}
+{%- if changelog or package or docker %}
 [![Release](https://img.shields.io/github/actions/workflow/status/{{ repository_name }}/release.yml?branch=main&label=&logo=github&style=for-the-badge&logoColor=black&color=white)](https://github.com/{{ repository_name }}/tree/main/.github/workflows/release.yml)
 {%- endif %}
 </div>

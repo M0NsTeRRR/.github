@@ -3,9 +3,17 @@
 {%- if changelog %}
 {%- include "workflow/changelog/main.yml.j2" +%}
 {%- endif %}
-{%- if workflow["package"] %}
+{%- if package %}
 {% include "workflow/{}/package.yml.j2".format(language) +%}
 {%- endif %}
+{%- if docker %}
+{% include "workflow/docker.yml.j2" +%}
+{%- endif %}
+{%- endset %}
+{%- set needs %}
+{%- if package %}, package{% endif -%}
+{%- if package and language in ["go"] %}, package-checksum{% endif -%}
+{%- if docker %}, docker{% endif -%}
 {%- endset %}
 name: {{ language }} release
 on:
@@ -14,7 +22,7 @@ on:
       - '*'
 permissions:
   contents: write
-{% if workflow["package"] and language == "python" %}
+{% if package and language == "python" %}
   id-token: write
 {% endif %}
 jobs: {{ included_content | indent(2) }}
@@ -22,7 +30,7 @@ jobs: {{ included_content | indent(2) }}
   publish:
     name: Publish release
     runs-on: ubuntu-latest
-    needs: [changelog{% if workflow["package"] %}, package{% endif %}]
+    needs: [changelog{{ needs }}]
 {%- raw %}
     steps:
       - name: Checkout

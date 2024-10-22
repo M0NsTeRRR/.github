@@ -2,29 +2,63 @@
 package:
   name: Package
   runs-on: ubuntu-latest
+  outputs:
+    amd64: ${{ steps.binary-checksum.outputs.amd64 }}
+    arm64: ${{ steps.binary-checksum.outputs.arm64 }}
+  strategy:
+    matrix:
+      platform:
+        - linux/amd64
+        - linux/arm64
   steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+    - uses: actions/checkout@v4
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
     - name: Set up Go
       uses: actions/setup-go@v5
       with:
-        go-version: 1.21
-    - name: Login to GitHub Container Registry
-      uses: docker/login-action@v3
+        go-version: stable
+    - name: Extract metadata to build the binary
+      id: extract-metadata
+      run: |
+        # Get repo name
+        REPO_NAME=$(echo "${{ github.repository }}" | cut -d'/' -f2)
+
+        # Get version
+        VERSION=$(echo "${{ github.ref_name }}" | sed 's/^v//')
+
+        # Get os and arch
+        OS=$(echo "${{ matrix.platform }}" | cut -d'/' -f1)
+        ARCH=$(echo "${{ matrix.platform }}" | cut -d'/' -f2)
+
+        # Set output
+        echo "BINARY_NAME=${REPO_NAME}_${VERSION}_${OS}_${ARCH}" >> $GITHUB_OUTPUT
+        echo "TAR_GZ_NAME=${REPO_NAME}_${VERSION}_${OS}_${ARCH}.tar.gz" >> $GITHUB_OUTPUT
+    - name: Build binary
+      run: CGO_ENABLED=0 go -o "${{ steps.extract-metadata.outputs.BINARY_NAME }}" -ldflags "-X main.version=${{ github.ref_name }}" build main.go
+    - name: Create tar.gz of binary with license and readme
+      run: tar -czf ${{ steps.extract-metadata.outputs.TAR_GZ_NAME }} ${{ steps.extract-metadata.outputs.BINARY_NAME }} LICENSE LICENSE.fr README.md
+    - name: Caculate binary checksum
+      id: binary-checksum
+      run: |
+        CHECKSUM=$(sha256sum ${{ steps.extract-metadata.outputs.TAR_GZ_NAME }})
+        echo "${ARCH}=${CHECKSUM}" >> $GITHUB_OUTPUT
+    - name: Upload binary to release
+      uses: svenstaro/upload-release-action@v2
       with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-    - name: Run GoReleaser
-      uses: goreleaser/goreleaser-action@v5
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ github.ref }}
+        file: ${{ steps.extract-metadata.outputs.TAR_GZ_NAME }}
+package-checksum:
+  runs-on: ubuntu-latest
+  needs: [package]
+  steps:
+    - name: Create checksum file
+      run: echo ${{ toJSON(needs.package.outputs) }} | jq -r '.[]' > sha256sums.txt
+    - name: Upload checksum file to release
+      uses: svenstaro/upload-release-action@v2
       with:
-        version: latest
-        args: release --clean
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        REGISTRY: "ghcr.io"
-        REPOSITORY: ${{ github.repository }}
-        SOURCE_URL: ${{ github.server_url }}/${{ github.repository }}
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ github.ref }}
+        file: sha256sums.txt
 {%- endraw %}
