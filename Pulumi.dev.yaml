@@ -31,7 +31,9 @@ config:
       # generate readme
       readme: true
       # if it's a published package put the name here
-      package_name: "test-pulumi"
+      package: "test-pulumi"
+      # if it's a library (don't mention in doc how to run it)
+      library: false
       # generate issue/pr labels
       label:
         - default

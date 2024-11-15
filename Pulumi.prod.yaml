@@ -1,26 +1,37 @@
 encryptionsalt: v1:VQNwfBaxUMU=:v1:lrGEnMjjyHxzDTHK:N0BybejVYASPBcWj0QzMHlDHv5kP+w==
 config:
+  github:owner: m0nsterrr
+  branch_name: automation-sync
   author:
     email: ludovic.ortega@adminafk.fr
     fullname: Ludovic Ortega
-    username: m0nsterrr
   contact_email: contact@adminafk.fr
   funding:
     github: m0nsterrr
     ko_fi: ludovicortega
   security_email: security@adminafk.fr
   repositories:
-    - changelog: true
-      renovatebot:
-        configs:
-          - devcontainers
-      description: pulumi testing repository for https://github.com/M0NsTeRRR/.github
-      label:
-        - default
+    - name: octodns-infomaniak
+      title: octodns-infomaniak
+      description: Infomaniak provider for octoDNS 
       license: CECILL-2.1
       logo: unicornafk.svg
-      name: m0nsterrr/test-pulumi
+      topics:
+        - dns
+        - octodns
+        - infomaniak 
       readme: true
-      title: Pulumi test repository
+      package: "octodns-infomaniak"
+      library: true
+      label:
+        - default
+      renovatebot:
+        configs: []
+        additionnal_configs: []
+      changelog: true
+      language: python
+      gitignore: true
+      devcontainer: true
       workflow:
-        type: python
+        lint: true
+        test: true

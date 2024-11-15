@@ -28,6 +28,7 @@ for repository_config in config.get_object("repositories"):
     package = "package_name" in repository_config and repository_config["package_name"]
     docker = repository_config.get("docker", False)
     language = repository_config.get("language", None)
+    gitignore = repository_config.get("gitignore", False)
 
     repository = GitRepositoryComponent(
         owner=owner,
@@ -56,7 +57,14 @@ for repository_config in config.get_object("repositories"):
 
     repository.sync_issue_template()
 
-    repository.sync_codeowner(owner)
+    repository.sync_codeowner(language)
+
+    repository.sync_editorconfig(language)
+
+    repository.sync_gitattributes()
+
+    if gitignore:
+        repository.sync_gitignore(language, helm)
 
     if config.get("contact_email"):
         repository.sync_code_of_conduct(config.get("contact_email"))
@@ -76,6 +84,7 @@ for repository_config in config.get_object("repositories"):
             renovatebot_configs.append("helm")
         if docker and "docker" not in renovatebot_configs:
             renovatebot_configs.append("docker")
+        renovatebot_configs.append(language)
 
         repository.sync_renovatebot(
             owner,
@@ -93,26 +102,21 @@ for repository_config in config.get_object("repositories"):
         if devcontainer and "devcontainer":
             dev.append("devcontainer")
 
-        usage = []
-
-        if helm and "helm":
-            usage.append("helm")
-        if docker and "docker":
-            usage.append("docker")
-
         repository.sync_readme(
             repository_config["title"],
             repository_config["description"],
             repository_config.get("documentation_url", None),
             "logo" in repository_config and repository_config["logo"],
-            changelog,
-            package,
-            docker,
             language,
             workflow,
-            repository_config.get("package_name", None),
+            changelog,
+            docker,
+            helm,
+            repository_config.get("package", None),
+            repository_config.get("library", False),
+            workflow["lint"],
+            workflow["test"],
             dev,
-            usage,
         )
 
     if workflow or changelog:

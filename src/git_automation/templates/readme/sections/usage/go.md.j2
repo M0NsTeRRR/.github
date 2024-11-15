@@ -1,2 +1,5 @@
-### Classic
+{%- if library %}
+Install the package `go get github.com/{{ repository_name }}`.
+{%- else %}
 Download the binary on github release page and execute it.
+{%- endif %}

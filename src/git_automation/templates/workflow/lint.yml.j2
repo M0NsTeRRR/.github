@@ -6,7 +6,7 @@
 {%- include "workflow/go/lint.yml.j2" %}
 {%- endif %}
 {%- endset %}
-name: {{ language }} test
+name: {{ language }} lint
 on:
   - pull_request
 permissions:

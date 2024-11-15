@@ -1,2 +1,4 @@
-### Classic
-Install the package `pip install {{ package_name }}` and run it with `python3 -m {{ package_name }}`
+Install the package `pip install {{ package }}`.
+{%- if not library %}
+Run it with `python3 -m {{ package }}`.
+{%- endif %}

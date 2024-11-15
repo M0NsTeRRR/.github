@@ -1,12 +1,12 @@
 ## 🪐 Usage
-{% if "helm" in usage %}
-{% include "readme/sections/usage/helm.md.j2" %}
-{% endif %}
-{% if "docker" in usage %}
-{% include "readme/sections/usage/docker.md.j2" %}
-{% endif %}
 {% if language == "python" %}
 {% include "readme/sections/usage/python.md.j2" %}
 {% elif language == "go" %}
 {% include "readme/sections/usage/go.md.j2" %}
+{% endif %}
+{% if docker %}
+{% include "readme/sections/usage/docker.md.j2" %}
+{% endif %}
+{% if helm %}
+{% include "readme/sections/usage/helm.md.j2" %}
 {% endif %}

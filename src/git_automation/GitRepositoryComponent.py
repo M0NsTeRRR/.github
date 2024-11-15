@@ -219,6 +219,25 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             "codeowners", ".github/CODEOWNERS", template.render(owner=owner)
         )
 
+    def sync_editorconfig(self, language: str):
+        template = env.get_template(os.path.join("misc", "editorconfig.j2"))
+
+        self._repository_file(
+            "codeowners", ".editorconfig", template.render(language=language)
+        )
+
+    def sync_gitattributes(self):
+        template = env.get_template(os.path.join("misc", "gitattributes.j2"))
+
+        self._repository_file("codeowners", ".gitattributes", template.render())
+
+    def sync_gitignore(self, language: str, helm: bool):
+        template = env.get_template(os.path.join("misc", "gitignore.j2"))
+
+        self._repository_file(
+            "codeowners", ".gitignore", template.render(language=language, helm=helm)
+        )
+
     def sync_security(self, security_email: str):
         template = env.get_template(os.path.join("misc", "SECURITY.md.j2"))
 
@@ -299,11 +318,13 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         language: str,
         workflow: Dict[str, Any],
         changelog: bool,
-        package: bool,
         docker: bool,
-        package_name: str,
+        helm: bool,
+        package: str,
+        library: bool,
+        lint: bool,
+        test: bool,
         dev: List[str],
-        usage: List[str],
     ):
         template = env.get_template(os.path.join("readme", "readme.md.j2"))
 
@@ -319,15 +340,24 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 language=language,
                 workflow=workflow,
                 changelog=changelog,
-                package=package,
                 docker=docker,
-                package_name=package_name,
+                helm=helm,
+                package=package,
+                library=library,
+                lint=lint,
+                test=test,
                 dev=dev,
-                usage=usage,
             ),
         )
 
-    def sync_workflow(self, language: str, workflow: Dict[str, str], changelog: bool, package: bool, docker: bool):
+    def sync_workflow(
+        self,
+        language: str,
+        workflow: Dict[str, str],
+        changelog: bool,
+        package: bool,
+        docker: bool,
+    ):
         template = env.get_template(os.path.join("workflow", "lint_pr.yml.j2"))
 
         self._repository_file(
@@ -383,7 +413,11 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 "workflow",
                 ".github/workflows/release.yml",
                 template.render(
-                    language=language, workflow=workflow, changelog=changelog, package=package, docker=docker
+                    language=language,
+                    workflow=workflow,
+                    changelog=changelog,
+                    package=package,
+                    docker=docker,
                 ),
             )
 

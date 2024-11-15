@@ -23,9 +23,9 @@ _{{ repository_description }}_
 
 <div align="center">
 
-{% if language == "python" and package_name is defined %}
-[![Pypi](https://img.shields.io/pypi/v/{{ package_name }}?label=&logo=pypi&style=for-the-badge&logoColor=yellow&color=3776AB)](https://pypi.python.org/pypi/{{ package_name }})
-[![Python](https://img.shields.io/pypi/pyversions/{{ package_name }}?label=&logo=python&style=for-the-badge&logoColor=yellow&color=3776AB)](https://pypi.python.org/pypi/{{ package_name }})
+{% if language == "python" and package is defined %}
+[![Pypi](https://img.shields.io/pypi/v/{{ package }}?label=&logo=pypi&style=for-the-badge&logoColor=yellow&color=3776AB)](https://pypi.python.org/pypi/{{ package_name }})
+[![Python](https://img.shields.io/pypi/pyversions/{{ package }}?label=&logo=python&style=for-the-badge&logoColor=yellow&color=3776AB)](https://pypi.python.org/pypi/{{ package_name }})
 {%- endif %}
 
 </div>

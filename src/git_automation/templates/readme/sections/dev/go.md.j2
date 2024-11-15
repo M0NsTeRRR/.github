@@ -1,7 +1,15 @@
-### Classic
 Install [Go](https://go.dev/doc/install).
 
-### Run fmt
+{%- if lint %}
+### Run formatter
 ```
 go fmt .
 ```
+{%- endif %}
+
+{%- if test %}
+### Run test
+```
+go test
+```
+{%- endif %}

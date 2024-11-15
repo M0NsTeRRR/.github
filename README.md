@@ -34,5 +34,5 @@ pulumi state delete 'urn:XXXXXXXX'
 It's currently not possible to set some repository settings
 
 In `settings > actions`:  
-    - `Fork pull request workflows from outside collaborators` must be set to `Require approval for all outside collaborators`  
+    - `Approval for running fork pull request workflows from contributors` must be set to `Require approval for all external contributors`  
     - In `Workflow permissions`, `Allow GitHub Actions to create and approve pull requests` must be ticked ([Github PR](https://github.com/integrations/terraform-provider-github/pull/2309))
