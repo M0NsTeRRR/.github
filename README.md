@@ -16,22 +16,20 @@ To prevents accidental deletion of Github repository, this ressource is marked a
 ```sh
 export GITHUB_TOKEN=YYYYYYYYYYYYYY
 export PULUMI_CONFIG_PASSPHRASE=XXXXXXXXXXX
-./pulumi.sh login --local
-./pulumi.sh stack select <dev|prod>
-./pulumi.sh refresh
-./pulumi.sh up
+pulumi login --local
+pulumi stack select <dev|prod>
+pulumi refresh
+pulumi up
 ```
 
 ### Delete a ressource
 
 ```sh
-./pulumi.sh stack -u
-./pulumi.sh state delete 'urn:XXXXXXXX'
+pulumi stack -u
+pulumi state delete 'urn:XXXXXXXX'
 ```
 
 # WIP
-
-Pulumi doesn't support `uv` for now it's why we use a script for now.
 
 It's currently not possible to set some repository settings
 
