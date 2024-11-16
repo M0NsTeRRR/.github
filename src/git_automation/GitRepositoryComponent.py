@@ -223,19 +223,19 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         template = env.get_template(os.path.join("misc", "editorconfig.j2"))
 
         self._repository_file(
-            "codeowners", ".editorconfig", template.render(language=language)
+            "editorconfig", ".editorconfig", template.render(language=language)
         )
 
     def sync_gitattributes(self):
         template = env.get_template(os.path.join("misc", "gitattributes.j2"))
 
-        self._repository_file("codeowners", ".gitattributes", template.render())
+        self._repository_file("gitattributes", ".gitattributes", template.render())
 
     def sync_gitignore(self, language: str, helm: bool):
         template = env.get_template(os.path.join("misc", "gitignore.j2"))
 
         self._repository_file(
-            "codeowners", ".gitignore", template.render(language=language, helm=helm)
+            "gitignore", ".gitignore", template.render(language=language, helm=helm)
         )
 
     def sync_security(self, security_email: str):
