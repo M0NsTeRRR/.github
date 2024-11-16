@@ -421,7 +421,32 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 ),
             )
 
-    def sync_repository_ruleset(self):
+    def sync_repository_ruleset(self, language: str, lint: bool, test: bool):
+        required_checks = [
+            github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
+                context="DCO"
+            ),
+            github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
+                context="GitGuardian Security Checks"
+            ),
+            github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
+                context="validate PR title", integration_id=15368
+            ),
+        ]
+
+        if lint:
+            required_checks.append(
+                github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
+                    context=f"{language} lint", integration_id=15368
+                )
+            )
+        if test:
+            (
+                github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
+                    context=f"{language} test", integration_id=15368
+                ),
+            )
+
         github.RepositoryRuleset(
             f"{self.name}-ruleset",
             name="automation-sync",
@@ -454,23 +479,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                     required_review_thread_resolution=True,
                 ),
                 required_status_checks=github.RepositoryRulesetRulesRequiredStatusChecksArgs(
-                    required_checks=[
-                        github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
-                            context="DCO"
-                        ),
-                        github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
-                            context="GitGuardian"
-                        ),
-                        github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
-                            context="Validate PR title", integration_id=15368
-                        ),
-                        github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
-                            context="Lint", integration_id=15368
-                        ),
-                        github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
-                            context="Test", integration_id=15368
-                        ),
-                    ],
+                    required_checks=required_checks,
                     strict_required_status_checks_policy=False,
                 ),
             ),

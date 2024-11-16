@@ -43,7 +43,7 @@ for repository_config in config.get_object("repositories"):
         pages=repository_config.get("pages", None),
     )
 
-    repository.sync_repository_ruleset()
+    repository.sync_repository_ruleset(language, workflow["lint"], workflow["test"])
 
     if "license" in repository_config and repository_config["license"]:
         repository.sync_licence(repository_config["license"])
