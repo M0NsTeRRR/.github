@@ -2,15 +2,12 @@
 lint:
   name: Lint
   runs-on: ubuntu-latest
-  strategy:
-    matrix:
-      go: [oldstable, stable]
   steps:
     - uses: actions/checkout@v4
     - name: Install go
       uses: actions/setup-go@v5
       with:
-        go-version: ${{ matrix.go }}
+        go-version: stable
     - name: Run golangci-lint
       uses: golangci/golangci-lint-action@v6
       with:
