@@ -5,7 +5,9 @@ on:
     branches:
       - {{ branch_name }}
 permissions:
+  contents: read
   pull-requests: write
+  checks: write
 jobs:
   create-pull-request:
     name: Create Pull Request

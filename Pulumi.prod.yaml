@@ -22,7 +22,6 @@ config:
         - infomaniak 
       readme: true
       package: "octodns-infomaniak"
-      library: true
       label:
         - default
       renovatebot:
@@ -30,6 +29,7 @@ config:
         additionnal_configs: []
       changelog: true
       language: python
+      versions: ["3.9", "3.10", "3.11", "3.12", "3.13"]
       gitignore: true
       devcontainer: true
       workflow:

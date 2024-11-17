@@ -2,16 +2,18 @@
 # THIS FILE IS GENERATED! DO NOT EDIT! Maintained by Pulumi
 name: validate PR title
 on:
-  pull_request_target:
+  pull_request:
     types:
       - opened
       - edited
       - synchronize
       - reopened
 permissions:
+  contents: read
   pull-requests: read
+  checks: write
 jobs:
-  lint_pr:
+  lint-pr:
     name: Validate PR title
     runs-on: ubuntu-latest
     steps:

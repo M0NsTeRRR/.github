@@ -28,6 +28,7 @@ for repository_config in config.get_object("repositories"):
     package = "package_name" in repository_config and repository_config["package_name"]
     docker = repository_config.get("docker", False)
     language = repository_config.get("language", None)
+    versions = repository_config.get("versions", [])
     gitignore = repository_config.get("gitignore", False)
 
     repository = GitRepositoryComponent(
@@ -43,7 +44,7 @@ for repository_config in config.get_object("repositories"):
         pages=repository_config.get("pages", None),
     )
 
-    repository.sync_repository_ruleset(language, workflow["lint"], workflow["test"])
+    repository.sync_repository_ruleset(language, versions, workflow["lint"], workflow["test"])
 
     if "license" in repository_config and repository_config["license"]:
         repository.sync_licence(repository_config["license"])
@@ -57,7 +58,7 @@ for repository_config in config.get_object("repositories"):
 
     repository.sync_issue_template()
 
-    repository.sync_codeowner(language)
+    repository.sync_codeowner(owner)
 
     repository.sync_editorconfig(language)
 
@@ -113,7 +114,6 @@ for repository_config in config.get_object("repositories"):
             docker,
             helm,
             repository_config.get("package", None),
-            repository_config.get("library", False),
             workflow["lint"],
             workflow["test"],
             dev,
@@ -122,6 +122,7 @@ for repository_config in config.get_object("repositories"):
     if workflow or changelog:
         repository.sync_workflow(
             language,
+            versions,
             workflow,
             changelog,
             package,

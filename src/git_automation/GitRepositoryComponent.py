@@ -321,7 +321,6 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         docker: bool,
         helm: bool,
         package: str,
-        library: bool,
         lint: bool,
         test: bool,
         dev: List[str],
@@ -343,7 +342,6 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 docker=docker,
                 helm=helm,
                 package=package,
-                library=library,
                 lint=lint,
                 test=test,
                 dev=dev,
@@ -353,22 +351,23 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
     def sync_workflow(
         self,
         language: str,
+        versions: List[str],
         workflow: Dict[str, str],
         changelog: bool,
         package: bool,
         docker: bool,
     ):
-        template = env.get_template(os.path.join("workflow", "lint_pr.yml.j2"))
+        template = env.get_template(os.path.join("workflow", "lint-pr.yml.j2"))
 
         self._repository_file(
             "workflow",
-            ".github/workflows/lint_pr.yml",
+            ".github/workflows/lint-pr.yml",
             template.render(repository_name=f"{self.owner}/{self.name}"),
         )
 
         if self.is_pr_mode():
             template = env.get_template(
-                os.path.join("workflow", "automation-sync-pr.j2")
+                os.path.join("workflow", "automation-sync-pr.yml.j2")
             )
 
             self._repository_file(
@@ -395,7 +394,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             self._repository_file(
                 "workflow",
                 ".github/workflows/test.yml",
-                template.render(language=language, workflow=workflow),
+                template.render(language=language, versions=versions, workflow=workflow),
             )
 
         if changelog:
@@ -421,7 +420,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 ),
             )
 
-    def sync_repository_ruleset(self, language: str, lint: bool, test: bool):
+    def sync_repository_ruleset(self, language: str, versions: List[str], lint: bool, test: bool):
         required_checks = [
             github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
                 context="DCO"
@@ -430,22 +429,23 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 context="GitGuardian Security Checks"
             ),
             github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
-                context="validate PR title", integration_id=15368
+                context="Validate PR title", integration_id=15368
             ),
         ]
 
         if lint:
             required_checks.append(
                 github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
-                    context=f"{language} lint", integration_id=15368
+                    context="Lint", integration_id=15368
                 )
             )
         if test:
-            (
-                github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
-                    context=f"{language} test", integration_id=15368
-                ),
-            )
+            for version in versions:
+                required_checks.append(
+                    github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
+                        context=f"Test ({version})", integration_id=15368
+                    ),
+                )
 
         github.RepositoryRuleset(
             f"{self.name}-ruleset",

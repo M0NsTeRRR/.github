@@ -4,7 +4,10 @@ test:
   runs-on: ubuntu-latest
   strategy:
     matrix:
-      go: [oldstable, stable]
+      go:
+{%- for version in versions %}
+        - "{{ version }}"
+{%- endfor %}
   steps:
     - uses: actions/checkout@v4
     - name: Install go

@@ -32,8 +32,6 @@ config:
       readme: true
       # if it's a published package put the name here
       package: "test-pulumi"
-      # if it's a library (don't mention in doc how to run it)
-      library: false
       # generate issue/pr labels
       label:
         - default
@@ -49,6 +47,7 @@ config:
       changelog: true
       # set repository language if there is one
       language: python
+      versions: ["3.9", "3.10", "3.11", "3.12", "3.13"]
       # enable devcontainer (documentation, renovatebot)
       # devcontainer: true
       # enable helm (documentation, renovatebot)
