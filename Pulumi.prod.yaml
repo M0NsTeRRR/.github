@@ -27,7 +27,6 @@ config:
       renovatebot:
         configs: []
         additionnal_configs: []
-      changelog: true
       language: python
       versions: ["3.9", "3.10", "3.11", "3.12", "3.13"]
       gitignore: true
@@ -35,3 +34,4 @@ config:
       workflow:
         lint: true
         test: true
+        changelog: true

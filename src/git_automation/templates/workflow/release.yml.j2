@@ -1,7 +1,7 @@
 # THIS FILE IS GENERATED! DO NOT EDIT! Maintained by Pulumi
 {%- set included_content -%}
 {%- if package %}
-{% include "workflow/{}/package.yml.j2".format(language) %}
+{%- include "workflow/{}/package.yml.j2".format(language) %}
 {%- endif %}
 {%- if docker %}
 {%- include "workflow/docker.yml.j2" -%}
@@ -44,7 +44,7 @@ jobs:
   publish_release:
     name: Publish release
     runs-on: ubuntu-latest
-    needs: [create_draft_release{%- if changelog %}, changelog{% endif -%}{{ needs }}]
+    needs: [create_draft_release{{ needs }}]
 {%- raw %}
     steps:
       - name: Checkout

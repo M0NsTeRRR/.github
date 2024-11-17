@@ -43,8 +43,6 @@ config:
         configs: []
         # custom file available in the repository to add to renovatebot config
         additionnal_configs: []
-      # enable changelog workflow
-      changelog: true
       # set repository language if there is one
       language: python
       versions: ["3.9", "3.10", "3.11", "3.12", "3.13"]
@@ -58,6 +56,7 @@ config:
       workflow:
         lint: false
         test: false
+        changelog: true
       # enable pages
       # pages:
       #   branch: "gh-pages"

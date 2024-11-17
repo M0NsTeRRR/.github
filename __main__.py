@@ -9,20 +9,18 @@ author = config.get_object("author")
 owner = pulumi.Config("github").require("owner")
 
 for repository_config in config.get_object("repositories"):
+    workflow = False
+    workflow_lint = False
+    workflow_test = False
+    workflow_package = False
+    workflow_changelog = False
     if "workflow" in repository_config:
-        workflow = {
-            "lint": "lint" not in repository_config["workflow"]
-            or repository_config["workflow"]["lint"],
-            "test": "test" not in repository_config["workflow"]
-            or repository_config["workflow"]["test"],
-            "package": "package" not in repository_config["workflow"]
-            or repository_config["workflow"]["package"],
-        }
-    else:
-        workflow = None
-
-    changelog = repository_config.get("changelog", False)
-
+        workflow = True
+        workflow_lint = "lint" not in repository_config["workflow"] or repository_config["workflow"]["lint"]
+        workflow_test = "test" not in repository_config["workflow"] or repository_config["workflow"]["test"]
+        workflow_package = "package" not in repository_config["workflow"] or repository_config["workflow"]["package"]
+        workflow_changelog = "changelog" not in repository_config["workflow"] or repository_config["workflow"]["changelog"]
+        
     devcontainer = repository_config.get("devcontainer", False)
     helm = repository_config.get("helm", False)
     package = "package_name" in repository_config and repository_config["package_name"]
@@ -44,7 +42,7 @@ for repository_config in config.get_object("repositories"):
         pages=repository_config.get("pages", None),
     )
 
-    repository.sync_repository_ruleset(language, versions, workflow["lint"], workflow["test"])
+    repository.sync_repository_ruleset(versions, workflow_lint, workflow_test)
 
     if "license" in repository_config and repository_config["license"]:
         repository.sync_licence(repository_config["license"])
@@ -108,22 +106,22 @@ for repository_config in config.get_object("repositories"):
             repository_config.get("documentation_url", None),
             "logo" in repository_config and repository_config["logo"],
             language,
-            workflow,
-            changelog,
+            workflow_lint,
+            workflow_test,
+            workflow_package,
+            workflow_changelog,
             docker,
             helm,
-            repository_config.get("package", None),
-            workflow["lint"],
-            workflow["test"],
             dev,
         )
 
-    if workflow or changelog:
+    if workflow:
         repository.sync_workflow(
             language,
             versions,
-            workflow,
-            changelog,
-            package,
+            workflow_lint,
+            workflow_test,
+            workflow_package,
+            workflow_changelog,
             docker,
         )

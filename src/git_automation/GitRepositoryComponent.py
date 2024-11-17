@@ -338,18 +338,17 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         documentation_url: str,
         logo: bool,
         language: str,
-        workflow: Dict[str, Any],
+        lint: bool,
+        test: bool,
+        package: bool,
         changelog: bool,
         docker: bool,
         helm: bool,
-        package: str,
-        lint: bool,
-        test: bool,
         dev: List[str],
     ):
         # check if a readme already exist
         r = requests.get(
-            f"https://api.github.com/repos/{self.owner}/{self.name}/contents/README.md?ref={self.branch_name}",
+            f"https://api.github.com/repos/{self.owner}/{self.name}/contents/README.md",
             headers = {
                 "Accept": "application/vnd.github.raw+json",
                 "Authorization": f"Bearer {os.environ["GITHUB_TOKEN"]}"
@@ -370,13 +369,12 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 repository_description=repository_description,
                 logo=logo,
                 language=language,
-                workflow=workflow,
+                lint=lint,
+                test=test,
+                package=package,
                 changelog=changelog,
                 docker=docker,
                 helm=helm,
-                package=package,
-                lint=lint,
-                test=test,
                 dev=dev,
             ),
         )
@@ -385,13 +383,16 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         self,
         language: str,
         versions: List[str],
-        workflow: Dict[str, str],
-        changelog: bool,
+        lint: bool,
+        test: bool,
         package: bool,
+        changelog: bool,
         docker: bool,
     ):
         template = env.get_template(os.path.join("workflow", "lint-pr.yml.j2"))
 
+
+        
         self._repository_file(
             "workflow",
             ".github/workflows/lint-pr.yml",
@@ -412,22 +413,22 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 ),
             )
 
-        if workflow["lint"]:
+        if lint:
             template = env.get_template(os.path.join("workflow", "lint.yml.j2"))
 
             self._repository_file(
                 "workflow",
                 ".github/workflows/lint.yml",
-                template.render(language=language, workflow=workflow),
+                template.render(language=language),
             )
 
-        if workflow["test"]:
+        if test:
             template = env.get_template(os.path.join("workflow", "test.yml.j2"))
 
             self._repository_file(
                 "workflow",
                 ".github/workflows/test.yml",
-                template.render(language=language, versions=versions, workflow=workflow),
+                template.render(language=language, versions=versions),
             )
 
         if changelog:
@@ -446,14 +447,13 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 ".github/workflows/release.yml",
                 template.render(
                     language=language,
-                    workflow=workflow,
-                    changelog=changelog,
                     package=package,
+                    changelog=changelog,
                     docker=docker,
                 ),
             )
 
-    def sync_repository_ruleset(self, language: str, versions: List[str], lint: bool, test: bool):
+    def sync_repository_ruleset(self, versions: List[str], lint: bool, test: bool):
         required_checks = [
             github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
                 context="DCO"

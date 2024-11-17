@@ -12,10 +12,10 @@ _{{ repository_description }}_
 </div>
 <div align="center">
 
-{% if workflow["lint"] and language in ["python"] %}
+{% if lint and language in ["python"] %}
 [![Lint](https://img.shields.io/github/actions/workflow/status/{{ repository_name }}/lint.yml?branch=main&label=&logo=ruff&style=for-the-badge&logoColor=D7FF64&color=black)](https://github.com/{{ repository_name }}/tree/main/.github/workflows/lint.yml)
 {%- endif %}
-{%- if workflow["test"] and language in ["python"] %}
+{%- if test and language in ["python"] %}
 [![Test](https://img.shields.io/github/actions/workflow/status/{{ repository_name }}/test.yml?branch=main&label=&logo=pytest&style=for-the-badge&logoColor=white&color=0A9EDC)](https://github.com/{{ repository_name }}/tree/main/.github/workflows/test.yml)
 {%- endif %}
 {%- if changelog or package or docker %}
@@ -25,7 +25,7 @@ _{{ repository_description }}_
 
 <div align="center">
 
-{% if language == "python" and package is defined %}
+{% if language == "python" and package %}
 [![Pypi](https://img.shields.io/pypi/v/{{ package }}?label=&logo=pypi&style=for-the-badge&logoColor=yellow&color=3776AB)](https://pypi.python.org/pypi/{{ package_name }})
 [![Python](https://img.shields.io/pypi/pyversions/{{ package }}?label=&logo=python&style=for-the-badge&logoColor=yellow&color=3776AB)](https://pypi.python.org/pypi/{{ package_name }})
 {%- endif %}
