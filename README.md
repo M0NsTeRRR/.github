@@ -22,6 +22,12 @@ pulumi refresh
 pulumi up
 ```
 
+### Import an existing repository
+
+```sh
+pulumi import github:index/repository:Repository <repository_name> <repository_name> --parent urn:pulumi:prod::.github::pkg:index:GitRepositoryComponent::<repository_name>
+```
+
 ### Delete a ressource
 
 ```sh
