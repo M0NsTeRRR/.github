@@ -1,7 +1,9 @@
 import os
 from importlib import resources
 from typing import Mapping, Awaitable, Any, Dict, List
+import re
 
+import requests
 from jinja2 import Environment, PackageLoader
 import yaml
 import pulumi
@@ -122,6 +124,27 @@ class GitRepositoryComponent(pulumi.ComponentResource):
 
         self.register_outputs({"repository": self.repository.full_name})
 
+    def regenerate_readme_template(self, readme_contents: str) -> str:
+        pattern = r"<!-- template:begin:(.*?) -->(.*?)<!-- template:end:\1 -->"
+        matches = re.findall(pattern, readme_contents, re.DOTALL)
+
+        for template_name, contenu_actuel in matches:
+            actual_contents = f"""
+<!-- template:begin:{template_name} -->
+{contenu_actuel}
+<!-- template:end:{template_name} -->
+            """
+
+            new_contents = f"""
+<!-- template:begin:{template_name} -->
+{{% include "readme/sections/{template_name}.md.j2" %}}
+<!-- template:end:{template_name} -->
+            """
+
+            readme_contents = readme_contents.replace(actual_contents, new_contents)
+
+        return readme_contents
+
     def is_pr_mode(self) -> bool:
         return self.branch_name and self.branch_name != self.default_branch_name
 
@@ -212,11 +235,11 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             template.render(contact_email=contact_email),
         )
 
-    def sync_codeowner(self, owner: str):
+    def sync_codeowner(self):
         template = env.get_template(os.path.join("misc", "CODEOWNERS.j2"))
 
         self._repository_file(
-            "codeowners", ".github/CODEOWNERS", template.render(owner=owner)
+            "codeowners", ".github/CODEOWNERS", template.render(owner=self.owner)
         )
 
     def sync_editorconfig(self, language: str):
@@ -272,7 +295,6 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
 
     def sync_renovatebot(
         self,
-        owner: str,
         schedule: str,
         configs: List[str],
         additionnal_configs: List[str],
@@ -283,7 +305,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             "renovatebot",
             ".github/renovatebot.json5",
             template.render(
-                owner=owner,
+                owner=self.owner,
                 schedule=schedule,
                 configs=configs,
                 additionnal_configs=additionnal_configs,
@@ -325,7 +347,18 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         test: bool,
         dev: List[str],
     ):
-        template = env.get_template(os.path.join("readme", "readme.md.j2"))
+        # check if a readme already exist
+        r = requests.get(
+            f"https://api.github.com/repos/{self.owner}/{self.name}/contents/README.md?ref={self.branch_name}",
+            headers = {
+                "Accept": "application/vnd.github.raw+json",
+                "Authorization": f"Bearer {os.environ["GITHUB_TOKEN"]}"
+            }
+        )
+        if r.status_code == 200:
+            template = env.from_string(self.regenerate_readme_template(r.text))
+        else:
+            template = env.get_template(os.path.join("readme", "readme.md.j2"))
 
         self._repository_file(
             "readme",

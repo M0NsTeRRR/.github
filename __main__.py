@@ -58,7 +58,7 @@ for repository_config in config.get_object("repositories"):
 
     repository.sync_issue_template()
 
-    repository.sync_codeowner(owner)
+    repository.sync_codeowner()
 
     repository.sync_editorconfig(language)
 
@@ -88,7 +88,6 @@ for repository_config in config.get_object("repositories"):
         renovatebot_configs.append(language)
 
         repository.sync_renovatebot(
-            owner,
             repository_config["renovatebot"].get("schedule", None),
             renovatebot_configs,
             repository_config["renovatebot"].get("additionnal_configs", []),
