@@ -106,8 +106,6 @@ for repository_config in config.get_object("repositories"):
             repository_config.get("documentation_url", None),
             "logo" in repository_config and repository_config["logo"],
             language,
-            workflow_lint,
-            workflow_test,
             workflow_package,
             workflow_changelog,
             docker,

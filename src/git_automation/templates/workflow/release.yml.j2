@@ -36,8 +36,10 @@ jobs:
     needs: [changelog]
     {% endif -%}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Create release as draft
-        run: gh release create {{ " ${{" }} github.ref_name {{ " }}" }} -F {%- if changelog %}{{ " ${{" }} needs.changelog.outputs.release_body {{ " }}" }}{% endif %} --draft
+        run: gh release create {{ " ${{" }} github.ref_name {{ " }}" }}{%- if changelog %} -n "{{ " ${{" }} needs.changelog.outputs.release_body {{ " }}" }}"{% endif %} --draft
         env:
           GITHUB_TOKEN: {{ " ${{" }} secrets.GITHUB_TOKEN {{ " }}" }}
 {{- included_content | indent(2) }}
