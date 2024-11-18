@@ -16,11 +16,14 @@ _{{ repository_description }}_
 [![Pypi](https://img.shields.io/pypi/v/{{ package }}?label=&logo=pypi&style=for-the-badge&logoColor=yellow&color=3776AB)](https://pypi.python.org/pypi/{{ package }})
 [![Python](https://img.shields.io/pypi/pyversions/{{ package }}?label=&logo=python&style=for-the-badge&logoColor=yellow&color=3776AB)](https://pypi.python.org/pypi/{{ package }})
 {%- else if language == "go" %}
-[![Go](https://img.shields.io/github/v/tag/{{ repository_name }}?label=&logo=go&style=for-the-badge&logoColor=white&color=blue)](https://pkg.go.dev/github.com/{{ repository_name | lower }}/{{ package }})
+[![Go](https://img.shields.io/github/v/tag/{{ repository_name }}?label=&logo=go&style=for-the-badge&logoColor=white&color=00ACD7)](https://pkg.go.dev/github.com/{{ repository_name | lower }}/{{ package }})
 {%- endif %}
 {# note: Not supported for now see : https://github.com/badges/shields/issues/5594
 {% if docker %}
 [![Docker](https://img.shields.io/docker/v/{{ repository_name }}?label=&logo=docker&style=for-the-badge&logoColor=white&color=blue)](https://github.com/{{ repository_name }}/pkgs/container/{{ package }})
 {%- endif %}#}
+{% if helm %}
+[![Helm](https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fhelm-charts.adminafk.fr%2Findex.yaml&query=%24.entries.{{ package }}[0].version&label=&logo=helm&style=for-the-badge&logoColor=white&color=0F1487)](https://github.com/M0NsTeRRR/helm-charts/tree/main/charts/{{ package }})
+{%- endif %}
 </div>
 <!-- template:end:header -->
