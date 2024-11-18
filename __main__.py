@@ -16,11 +16,23 @@ for repository_config in config.get_object("repositories"):
     workflow_changelog = False
     if "workflow" in repository_config:
         workflow = True
-        workflow_lint = "lint" not in repository_config["workflow"] or repository_config["workflow"]["lint"]
-        workflow_test = "test" not in repository_config["workflow"] or repository_config["workflow"]["test"]
-        workflow_package = "package" not in repository_config["workflow"] or repository_config["workflow"]["package"]
-        workflow_changelog = "changelog" not in repository_config["workflow"] or repository_config["workflow"]["changelog"]
-        
+        workflow_lint = (
+            "lint" not in repository_config["workflow"]
+            or repository_config["workflow"]["lint"]
+        )
+        workflow_test = (
+            "test" not in repository_config["workflow"]
+            or repository_config["workflow"]["test"]
+        )
+        workflow_package = (
+            "package" not in repository_config["workflow"]
+            or repository_config["workflow"]["package"]
+        )
+        workflow_changelog = (
+            "changelog" not in repository_config["workflow"]
+            or repository_config["workflow"]["changelog"]
+        )
+
     devcontainer = repository_config.get("devcontainer", False)
     helm = repository_config.get("helm", False)
     package = "package_name" in repository_config and repository_config["package_name"]

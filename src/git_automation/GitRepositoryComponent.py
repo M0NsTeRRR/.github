@@ -347,10 +347,10 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         # check if a readme already exist
         r = requests.get(
             f"https://api.github.com/repos/{self.owner}/{self.name}/contents/README.md",
-            headers = {
+            headers={
                 "Accept": "application/vnd.github.raw+json",
-                "Authorization": f"Bearer {os.environ["GITHUB_TOKEN"]}"
-            }
+                "Authorization": f"{os.environ["GITHUB_TOKEN"]}"
+            },
         )
         if r.status_code == 200:
             template = env.from_string(self.regenerate_readme_template(r.text))
@@ -387,8 +387,6 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
     ):
         template = env.get_template(os.path.join("workflow", "lint-pr.yml.j2"))
 
-
-        
         self._repository_file(
             "workflow",
             ".github/workflows/lint-pr.yml",
