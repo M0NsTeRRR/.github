@@ -16,6 +16,10 @@ config:
     ko_fi: ludovicortega
   # used by security
   security_email: security@adminafk.fr
+  # app installation id
+  app_installation_ids:
+    renovatebot: "45460629"
+    dco: "38972756"
   repositories:
     - name: test-pulumi
       title: Pulumi test repository

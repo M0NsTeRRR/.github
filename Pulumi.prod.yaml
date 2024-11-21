@@ -10,6 +10,9 @@ config:
     github: m0nsterrr
     ko_fi: ludovicortega
   security_email: security@adminafk.fr
+  app_installation_ids:
+    renovatebot: "45460629"
+    dco: "38972756"
   repositories:
     - name: octodns-infomaniak
       title: octodns-infomaniak

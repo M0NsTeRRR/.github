@@ -511,3 +511,14 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             ),
             opts=pulumi.ResourceOptions(depends_on=[self.repository], parent=self),
         )
+
+    def sync_app_installation(
+        self, renovatebot: bool, app_installation_ids: Dict[str, str]
+    ):
+        for k, v in app_installation_ids:
+            if k == "renovatebot" and not renovatebot:
+                continue
+
+            github.AppInstallationRepository(
+                f"{self.name}-{k}", installation_id=f"{v}", repository=self.name
+            )

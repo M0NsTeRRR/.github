@@ -33,6 +33,7 @@ for repository_config in config.get_object("repositories"):
             or repository_config["workflow"]["changelog"]
         )
 
+    renovatebot = "renovatebot" in repository_config
     package_name = repository_config.get("package", None)
     devcontainer = repository_config.get("devcontainer", False)
     helm = repository_config.get("helm", False)
@@ -56,6 +57,8 @@ for repository_config in config.get_object("repositories"):
     )
 
     repository.sync_repository_ruleset(versions, workflow_lint, workflow_test)
+
+    # repository.sync_app_installation(renovatebot)
 
     if "license" in repository_config and repository_config["license"]:
         repository.sync_licence(repository_config["license"])
@@ -87,7 +90,7 @@ for repository_config in config.get_object("repositories"):
     if "label" in repository_config and repository_config["label"]:
         repository.sync_label(repository_config["label"])
 
-    if "renovatebot" in repository_config and repository_config["renovatebot"]:
+    if renovatebot:
         renovatebot_configs = repository_config["renovatebot"].get("configs", [])
 
         if devcontainer and "devcontainer" not in renovatebot_configs:
