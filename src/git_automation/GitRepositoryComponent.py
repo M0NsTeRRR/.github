@@ -128,18 +128,10 @@ class GitRepositoryComponent(pulumi.ComponentResource):
         pattern = r"<!-- template:begin:(.*?) -->(.*?)<!-- template:end:\1 -->"
         matches = re.findall(pattern, readme_contents, re.DOTALL)
 
-        for template_name, contenu_actuel in matches:
-            actual_contents = f"""
-<!-- template:begin:{template_name} -->
-{contenu_actuel}
-<!-- template:end:{template_name} -->
-            """
+        for template_name, section_contents in matches:
+            actual_contents = f"<!-- template:begin:{template_name} -->{section_contents}<!-- template:end:{template_name} -->"
 
-            new_contents = f"""
-<!-- template:begin:{template_name} -->
-{{% include "readme/sections/{template_name}.md.j2" %}}
-<!-- template:end:{template_name} -->
-            """
+            new_contents = f"{{% include 'readme/sections/{template_name}.md.j2' %}}"
 
             readme_contents = readme_contents.replace(actual_contents, new_contents)
 
@@ -164,7 +156,7 @@ class GitRepositoryComponent(pulumi.ComponentResource):
             file=file,
             content=content,
             commit_message=f"""\
-chore(pulumi): auto-applied {ressource_name_type}
+chore(git-sync): auto-applied {ressource_name_type}
 
 this file was auto-applied from pulumi
 located here:
@@ -250,9 +242,10 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         )
 
     def sync_gitattributes(self):
-        template = env.get_template(os.path.join("misc", "gitattributes.j2"))
+        with open(resources.files(PACKAGE_NAME) / "misc" / "gitattributes") as file:
+            file_content = file.read()
 
-        self._repository_file("gitattributes", ".gitattributes", template.render())
+        self._repository_file("gitattributes", ".gitattributes", file_content)
 
     def sync_gitignore(self, language: str, helm: bool):
         template = env.get_template(os.path.join("misc", "gitignore.j2"))
@@ -338,8 +331,11 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         documentation_url: str,
         logo: bool,
         language: str,
+        package_name: str,
         package: bool,
         changelog: bool,
+        lint: bool,
+        test: bool,
         docker: bool,
         helm: bool,
         dev: List[str],
@@ -349,7 +345,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             f"https://api.github.com/repos/{self.owner}/{self.name}/contents/README.md",
             headers={
                 "Accept": "application/vnd.github.raw+json",
-                "Authorization": f"{os.environ["GITHUB_TOKEN"]}"
+                "Authorization": f"{os.environ["GITHUB_TOKEN"]}",
             },
         )
         if r.status_code == 200:
@@ -367,8 +363,11 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 repository_description=repository_description,
                 logo=logo,
                 language=language,
+                package_name=package_name,
                 package=package,
                 changelog=changelog,
+                lint=lint,
+                test=test,
                 docker=docker,
                 helm=helm,
                 dev=dev,
