@@ -12,13 +12,13 @@
       "addLabels": ["renovate/go"]
     },
 {%- endif %}
-{%- if docker %}
+{%- if configs["docker"] %}
     {
       "matchDatasources": ["docker"],
       "addLabels": ["renovate/container"]
     },
 {%- endif %}
-{%- if helm %}
+{%- if configs["helm"] %}
     {
       "matchDatasources": ["helm"],
       "addLabels": ["renovate/helm"]

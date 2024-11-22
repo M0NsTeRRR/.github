@@ -94,7 +94,7 @@ for repository_config in config.get_object("repositories"):
         renovatebot_configs = repository_config["renovatebot"].get("configs", [])
 
         if devcontainer and "devcontainer" not in renovatebot_configs:
-            renovatebot_configs.append("devcontainer")
+            renovatebot_configs.append("devcontainers")
         if helm and "helm" not in renovatebot_configs:
             renovatebot_configs.append("helm")
         if docker and "docker" not in renovatebot_configs:
@@ -103,6 +103,7 @@ for repository_config in config.get_object("repositories"):
 
         repository.sync_renovatebot(
             repository_config["renovatebot"].get("schedule", None),
+            language,
             renovatebot_configs,
             repository_config["renovatebot"].get("additionnal_configs", []),
         )

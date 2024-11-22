@@ -12,7 +12,7 @@ _{{ repository_description }}_
 </div>
 
 <div align="center">
-{%- if language == "python" and package %}
+{% if language == "python" and package %}
 [![Pypi](https://img.shields.io/pypi/v/{{ package_name }}?label=&logo=pypi&style=for-the-badge&logoColor=yellow&color=3776AB)](https://pypi.python.org/pypi/{{ package_name }})
 [![Python](https://img.shields.io/pypi/pyversions/{{ package_name }}?label=&logo=python&style=for-the-badge&logoColor=yellow&color=3776AB)](https://pypi.python.org/pypi/{{ package_name }})
 {%- elif language == "go" %}

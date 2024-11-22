@@ -289,33 +289,41 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
     def sync_renovatebot(
         self,
         schedule: str,
+        language: str,
         configs: List[str],
         additionnal_configs: List[str],
     ):
-        template = env.get_template(os.path.join("renovatebot", "renovatebot.json5.j2"))
+        template = env.get_template(os.path.join("renovatebot", "renovate.json5.j2"))
 
         self._repository_file(
-            "renovatebot",
-            ".github/renovatebot.json5",
+            "renovate",
+            ".github/renovate.json5",
             template.render(
-                owner=self.owner,
+                repository_name=f"{self.owner}/{self.name}",
                 schedule=schedule,
                 configs=configs,
                 additionnal_configs=additionnal_configs,
             ),
         )
 
-        renovatebot_dir = (
+        renovatebot_config_dir = (
             resources.files(PACKAGE_NAME) / "templates" / "renovatebot" / "config"
         )
-        renovatebot_files = os.listdir(renovatebot_dir)
+        renovatebot_files = os.listdir(renovatebot_config_dir)
         for renovatebot_file in renovatebot_files:
-            with open(renovatebot_dir / renovatebot_file) as file:
-                renovatebot_content = file.read()
+            template = env.get_template(
+                os.path.join("renovatebot", "config", renovatebot_file)
+            )
+            filename = os.path.splitext(renovatebot_file)[0]
+
             self._repository_file(
-                os.path.splitext(renovatebot_file)[0],
-                f".github/renovatebot/{renovatebot_file}",
-                renovatebot_content,
+                filename,
+                f".github/renovate/{filename}",
+                template.render(
+                    language=language,
+                    configs=configs,
+                    additionnal_configs=additionnal_configs,
+                ),
             )
 
     def sync_logo(self, logo: str):
@@ -450,9 +458,6 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         required_checks = [
             github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
                 context="DCO"
-            ),
-            github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
-                context="GitGuardian Security Checks"
             ),
             github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
                 context="Validate PR title", integration_id=15368
