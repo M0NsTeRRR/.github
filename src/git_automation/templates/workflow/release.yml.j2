@@ -13,7 +13,7 @@
 {%- if package %}
 {%- if language == "python" %}, publish-package{%- elif language == "go" %}, publish-binary{% endif -%}
 {% endif -%}
-{%- if docker %}, docker{% endif -%}
+{%- if docker %}, docker-sign{% endif -%}
 {%- endset %}
 name: {{ language }} release
 on:

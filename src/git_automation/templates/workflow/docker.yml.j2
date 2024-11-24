@@ -5,7 +5,9 @@ docker:
   permissions:
     contents: read
     packages: write # needed for pushing docker image
-    id-token: write # needed for signing the images with GitHub OIDC Token
+  outputs:
+    tags: ${{ steps.meta.outputs.tags }}
+    digest: ${{ steps.build-and-push.outputs.digest }}
   strategy:
     matrix:
       platform:
@@ -23,14 +25,44 @@ docker:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker meta
+      id: meta 
+      uses: docker/metadata-action@v5
+      with:
+        images: ghcr.io/sigstore/sample-honk
+        tags: |
+          type=ref,event=pr
+          type=sha
+          type=raw,value=latest
+          type=semver,pattern={{version}}
     - name: Build and push
+      id: build-and-push
       uses: docker/build-push-action@v6
       with:
         platforms: ${{ matrix.platform }}
         sbom: true
         provenance: true
         push: true
-        tags: |
-          ${{ github.repository }}:${{ github.ref_name }}
-          ${{ github.repository }}:latest
+        tags: ${{ steps.docker_meta.outputs.tags }}
+docker-sign:
+  name: Docker sign
+  runs-on: ubuntu-latest
+  permissions:
+    packages: write # needed for pushing docker signature
+    id-token: write # needed for signing the images with GitHub OIDC Token
+  needs: [docker]
+  steps:
+    - name: Install Cosign
+      uses: sigstore/cosign-installer@v3
+    - name: Sign the images with GitHub OIDC Token
+      env:
+        DIGEST: ${{ needs.docker.outputs.digest }}
+        TAGS: ${{ needs.docker.outputs.tags }}
+        COSIGN_YES: true
+      run: |
+        images=""
+        for tag in ${TAGS}; do
+          images+="${tag}@${DIGEST} "
+        done
+        cosign sign ${images}
 {%- endraw %}
