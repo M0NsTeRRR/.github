@@ -2,6 +2,8 @@
 changelog:
   name: Generate changelog
   runs-on: ubuntu-latest
+  permissions:
+    contents: read
   outputs:
     release_body: ${{ steps.git-cliff.outputs.content }}
   steps:

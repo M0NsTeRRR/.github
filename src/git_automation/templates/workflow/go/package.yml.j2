@@ -1,7 +1,9 @@
 {%- raw %}
-package:
-  name: Package
+build-binary:
+  name: Build binary
   runs-on: ubuntu-latest
+  permissions:
+    contents: write
   outputs:
     amd64: ${{ steps.binary-checksum.outputs.amd64 }}
     arm64: ${{ steps.binary-checksum.outputs.arm64 }}
@@ -38,27 +40,40 @@ package:
       run: CGO_ENABLED=0 go -o "${{ steps.extract-metadata.outputs.BINARY_NAME }}" -ldflags "-X main.version=${{ github.ref_name }}" build main.go
     - name: Create tar.gz of binary with license and readme
       run: tar -czf ${{ steps.extract-metadata.outputs.TAR_GZ_NAME }} ${{ steps.extract-metadata.outputs.BINARY_NAME }} LICENSE LICENSE.fr README.md
-    - name: Caculate binary checksum
-      id: binary-checksum
-      run: |
-        CHECKSUM=$(sha256sum ${{ steps.extract-metadata.outputs.TAR_GZ_NAME }})
-        echo "${ARCH}=${CHECKSUM}" >> $GITHUB_OUTPUT
-    - name: Upload binary to release
-      uses: svenstaro/upload-release-action@v2
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
       with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        tag: ${{ github.ref }}
-        file: ${{ steps.extract-metadata.outputs.TAR_GZ_NAME }}
-package-checksum:
+        name: artifacts
+        path: ${{ steps.extract-metadata.outputs.TAR_GZ_NAME }}
+publish-binary:
+  name: Publish artifact
   runs-on: ubuntu-latest
-  needs: [package]
+  permissions:
+    contents: write
+  needs: [build-binary]
   steps:
-    - name: Create checksum file
-      run: echo ${{ toJSON(needs.package.outputs) }} | jq -r '.[]' > sha256sums.txt
-    - name: Upload checksum file to release
-      uses: svenstaro/upload-release-action@v2
+    - name: Downloads artifacts
+      uses: actions/download-artifact@v4
       with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        tag: ${{ github.ref }}
-        file: sha256sums.txt
+        name: artifacts
+        path: /build
+    - name: Create checksum file
+      run: |
+        > sha256sums.txt
+        shopt -s nullglob
+        for archive in /build/*; do
+          if [ -z "${archive:-}" ]; then
+            break
+          fi
+          CHECKSUM=$(sha256sum ${archive})
+          echo $CHECKSUM >> sha256sums.txt
+        done
+    - name: Upload checksum file to release
+      run: gh release upload ${{ github.ref }} sha256sums.txt
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload binary to release
+      run: gh release upload ${{ github.ref }} /build*
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 {%- endraw %}

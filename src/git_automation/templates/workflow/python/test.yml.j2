@@ -2,6 +2,9 @@
 test:
   name: Test
   runs-on: ubuntu-latest
+  permissions:
+    contents: read
+    pull-requests: read
   strategy:
     matrix:
       python-version:
@@ -13,7 +16,7 @@ test:
   steps:
     - uses: actions/checkout@v4
     - name: Install uv
-      uses: astral-sh/setup-uv@v3
+      uses: astral-sh/setup-uv@v4
     - name: Set up Python ${{ matrix.python-version }}
       run: uv python install ${{ matrix.python-version }}
     - name: Install the project

@@ -2,6 +2,9 @@
 lint:
   name: Lint
   runs-on: ubuntu-latest
+  permissions:
+    contents: read
+    pull-requests: read
   steps:
     - uses: actions/checkout@v4
     - name: Install go

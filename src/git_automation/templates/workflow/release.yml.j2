@@ -10,8 +10,9 @@
 {%- endif %}
 {%- endset -%}
 {%- set needs %}
-{%- if package %}, package{% endif -%}
-{%- if package and language in ["go"] %}, package-checksum{% endif -%}
+{%- if package %}
+{%- if language == "python" %}, publish-package{%- elif language == "go" %}, publish-binary{% endif -%}
+{% endif -%}
 {%- if docker %}, docker{% endif -%}
 {%- endset %}
 name: {{ language }} release
@@ -19,11 +20,7 @@ on:
   push:
     tags:
       - '*'
-permissions:
-  contents: write
-{%- if package and language == "python" %}
-  id-token: write
-{%- endif %}
+permissions: {}
 jobs:
 {%- if changelog %}
 {%- set included_template %}
@@ -31,9 +28,11 @@ jobs:
 {%- endset %}
 {{- included_template | indent(2) }}
 {%- endif %}
-  create_draft_release:
+  create-draft-release:
     name: Create release as draft
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     {%- if changelog %}
     needs: [changelog]
     {% endif -%}
@@ -48,7 +47,9 @@ jobs:
   publish_release:
     name: Publish release
     runs-on: ubuntu-latest
-    needs: [create_draft_release{{ needs }}]
+    permissions:
+      contents: write
+    needs: [create-draft-release{{ needs }}]
 {%- raw %}
     steps:
       - name: Checkout

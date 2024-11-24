@@ -11,8 +11,5 @@
 name: {{ language }} lint
 on:
   - pull_request
-permissions:
-  contents: read
-  pull-requests: read
-  checks: write
+permissions: {}
 jobs: {{ included_content | indent(2) }}

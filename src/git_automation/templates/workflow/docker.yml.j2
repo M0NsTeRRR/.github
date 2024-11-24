@@ -2,6 +2,10 @@
 docker:
   name: Docker
   runs-on: ubuntu-latest
+  permissions:
+    contents: read
+    packages: write # needed for pushing docker image
+    id-token: write # needed for signing the images with GitHub OIDC Token
   strategy:
     matrix:
       platform:
