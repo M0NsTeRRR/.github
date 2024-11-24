@@ -260,7 +260,10 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         self._repository_file(
             "security",
             ".github/SECURITY.md",
-            template.render(security_email=security_email),
+            template.render(
+                repository_name=f"{self.owner}/{self.name}",
+                security_email=security_email,
+            ),
         )
 
     def sync_label(self, label_files: List[str]):
