@@ -16,7 +16,7 @@ config:
   repositories:
     - name: octodns-infomaniak
       title: octodns-infomaniak
-      description: Infomaniak provider for octoDNS 
+      description: Infomaniak provider for octoDNS
       license: CECILL-2.1
       logo: unicornafk.svg
       topics:

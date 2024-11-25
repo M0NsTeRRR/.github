@@ -22,6 +22,11 @@ pulumi refresh
 pulumi up
 ```
 
+### Create a stack
+```sh
+pulumi stack init <name>
+```
+
 ### Import an existing repository
 
 ```sh
