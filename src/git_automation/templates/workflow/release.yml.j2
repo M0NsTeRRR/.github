@@ -11,9 +11,9 @@
 {%- endset -%}
 {%- set needs %}
 {%- if package %}
-{%- if language == "python" %}, publish-package{%- elif language == "go" %}, publish-binary{% endif -%}
+{%- if language == "python" %}, publish-package{%- elif language == "go" %}, sign-publish-artifact{% endif -%}
 {% endif -%}
-{%- if docker %}, docker-sign{% endif -%}
+{%- if docker %}, sign-docker{% endif -%}
 {%- endset %}
 name: {{ language }} release
 on:

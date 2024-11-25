@@ -1,6 +1,6 @@
 {%- raw %}
-docker:
-  name: Docker
+build-push-docker:
+  name: Build and publish docker
   runs-on: ubuntu-latest
   permissions:
     contents: read
@@ -44,13 +44,13 @@ docker:
         provenance: true
         push: true
         tags: ${{ steps.docker_meta.outputs.tags }}
-docker-sign:
-  name: Docker sign
+sign-docker:
+  name: Sign docker artifact
   runs-on: ubuntu-latest
   permissions:
     packages: write # needed for pushing docker signature
     id-token: write # needed for signing the images with GitHub OIDC Token
-  needs: [docker]
+  needs: [build-push-docker]
   steps:
     - name: Install Cosign
       uses: sigstore/cosign-installer@v3

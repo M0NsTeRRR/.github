@@ -1,12 +1,9 @@
 {%- raw %}
-build-binary:
+build-artifact:
   name: Build binary
   runs-on: ubuntu-latest
   permissions:
-    contents: write
-  outputs:
-    amd64: ${{ steps.binary-checksum.outputs.amd64 }}
-    arm64: ${{ steps.binary-checksum.outputs.arm64 }}
+    contents: read
   strategy:
     matrix:
       platform:
@@ -40,17 +37,17 @@ build-binary:
       run: CGO_ENABLED=0 go -o "${{ steps.extract-metadata.outputs.BINARY_NAME }}" -ldflags "-X main.version=${{ github.ref_name }}" build main.go
     - name: Create tar.gz of binary with license and readme
       run: tar -czf ${{ steps.extract-metadata.outputs.TAR_GZ_NAME }} ${{ steps.extract-metadata.outputs.BINARY_NAME }} LICENSE LICENSE.fr README.md
-    - name: Upload artifacts
+    - name: Upload tar.gz
       uses: actions/upload-artifact@v4
       with:
         name: artifacts
         path: ${{ steps.extract-metadata.outputs.TAR_GZ_NAME }}
-publish-binary:
-  name: Publish artifact
+create-checksum:
+  name: Publish checksum
   runs-on: ubuntu-latest
   permissions:
-    contents: write
-  needs: [build-binary]
+    contents: read
+  needs: [build-artifact]
   steps:
     - name: Downloads artifacts
       uses: actions/download-artifact@v4
@@ -59,7 +56,6 @@ publish-binary:
         path: /build
     - name: Create checksum file
       run: |
-        > sha256sums.txt
         shopt -s nullglob
         for archive in /build/*; do
           if [ -z "${archive:-}" ]; then
@@ -68,12 +64,39 @@ publish-binary:
           CHECKSUM=$(sha256sum ${archive})
           echo $CHECKSUM >> sha256sums.txt
         done
-    - name: Upload checksum file to release
-      run: gh release upload ${{ github.ref }} sha256sums.txt
+    - name: Upload checksum
+      uses: actions/upload-artifact@v4
+      with:
+        name: artifacts
+        path: sha256sums.txt
+sign-publish-artifact:
+  name: Sign and publish artifact
+  runs-on: ubuntu-latest
+  permissions:
+    contents: write
+    id-token: write # needed for signing the artifact with GitHub OIDC Token
+  needs: [create-checksum]
+  steps:
+    - name: Install Cosign
+      uses: sigstore/cosign-installer@v3
+    - name: Downloads artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: artifacts
+        path: /build
+    - name: Sign the images with GitHub OIDC Token
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: Upload binary to release
-      run: gh release upload ${{ github.ref }} /build*
+        COSIGN_YES: true
+      run: |
+        shopt -s nullglob
+        for archive in /build/*; do
+          if [ -z "${archive:-}" ]; then
+            break
+          fi
+          cosign sign-blob ${archive} --output-certificate ${archive}.pem --output-signature ${archive}.sig
+        done
+    - name: Upload artifact to release
+      run: gh release upload ${{ github.ref }} /build/*
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 {%- endraw %}
