@@ -195,6 +195,16 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             ".github/CONTRIBUTING.md",
             file_content,
         )
+        
+    def sync_support(self):
+        with open(resources.files(PACKAGE_NAME) / "misc" / "SUPPORT.md") as file:
+            file_content = file.read()
+
+        self._repository_file(
+            "support",
+            ".github/SUPPORT.md",
+            file_content,
+        )
 
     def sync_pull_request_template(self):
         with open(
