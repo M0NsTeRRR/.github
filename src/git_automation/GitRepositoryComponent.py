@@ -517,9 +517,9 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 required_signatures=True,
                 pull_request=github.RepositoryRulesetRulesPullRequestArgs(
                     required_approving_review_count=1,
-                    dismiss_stale_reviews_on_push=False,
+                    dismiss_stale_reviews_on_push=True,
                     require_code_owner_review=True,
-                    require_last_push_approval=False,
+                    require_last_push_approval=True,
                     required_review_thread_resolution=True,
                 ),
                 required_status_checks=github.RepositoryRulesetRulesRequiredStatusChecksArgs(
