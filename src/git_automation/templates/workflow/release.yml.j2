@@ -44,7 +44,7 @@ jobs:
         env:
           GITHUB_TOKEN: {{ " ${{" }} secrets.GITHUB_TOKEN {{ " }}" }}
 {{- included_content | indent(2) }}
-  publish_release:
+  publish-release:
     name: Publish release
     runs-on: ubuntu-latest
     permissions:
