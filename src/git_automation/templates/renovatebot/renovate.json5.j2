@@ -6,6 +6,7 @@
     "replacements:k8s-registry-move",
     ":automergePr",
     ":automergePatch",
+    ":automergeDigest",
     ":disableRateLimiting",
     ":dependencyDashboard",
     ":semanticCommits",
@@ -19,9 +20,6 @@
     "github>{{ repository_name }}//.github/renovate/{{ additionnal_config }}",
     {%- endfor %}
   ],
-  "lockFileMaintenance": {
-    "enabled": true,
-  },
   "dependencyDashboardTitle": "Renovate Dashboard 🤖",
   "suppressNotifications": ["prEditedNotification", "prIgnoreNotification"],
   "rebaseWhen": "conflicted",
