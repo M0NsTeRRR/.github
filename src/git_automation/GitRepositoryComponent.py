@@ -195,7 +195,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             ".github/CONTRIBUTING.md",
             file_content,
         )
-        
+
     def sync_support(self):
         with open(resources.files(PACKAGE_NAME) / "misc" / "SUPPORT.md") as file:
             file_content = file.read()
@@ -243,6 +243,19 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         self._repository_file(
             "codeowners", ".github/CODEOWNERS", template.render(owner=self.owner)
         )
+
+    def sync_vscode_config(self, language: str):
+        vscode_config_dir = resources.files(PACKAGE_NAME) / "templates" / "vscode"
+        vscode_files = os.listdir(vscode_config_dir)
+        for vscode_file in vscode_files:
+            template = env.get_template(os.path.join("vscode", vscode_file))
+            filename = os.path.splitext(vscode_file)[0]
+
+            self._repository_file(
+                filename,
+                f".vscode/{filename}",
+                template.render(language=language),
+            )
 
     def sync_editorconfig(self, language: str):
         template = env.get_template(os.path.join("misc", "editorconfig.j2"))

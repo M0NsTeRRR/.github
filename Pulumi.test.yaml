@@ -1,0 +1,40 @@
+encryptionsalt: v1:VQNwfBaxUMU=:v1:lrGEnMjjyHxzDTHK:N0BybejVYASPBcWj0QzMHlDHv5kP+w==
+config:
+  github:owner: m0nsterrr
+  branch_name: automation-sync
+  author:
+    email: ludovic.ortega@adminafk.fr
+    fullname: Ludovic Ortega
+  contact_email: contact@adminafk.fr
+  funding:
+    github: m0nsterrr
+    ko_fi: ludovicortega
+  security_email: security@adminafk.fr
+  app_installation_ids:
+    renovatebot: "45460629"
+    dco: "38972756"
+  repositories:
+    - name: test-python
+      title: test-python
+      description: test python
+      license: CECILL-2.1
+      logo: unicornafk.svg
+      topics:
+        - dns
+        - octodns
+        - infomaniak 
+      readme: true
+      package: "test-python"
+      label:
+        - default
+      renovatebot:
+        configs: []
+        additionnal_configs: []
+      language: python
+      versions: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+      gitignore: true
+      devcontainer: true
+      workflow:
+        lint: true
+        test: true
+        changelog: true

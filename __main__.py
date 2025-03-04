@@ -69,12 +69,14 @@ for repository_config in config.get_object("repositories"):
     repository.sync_pull_request_template()
 
     repository.sync_contributing()
-    
+
     repository.sync_support()
 
     repository.sync_issue_template()
 
     repository.sync_codeowner()
+
+    repository.sync_vscode_config(language)
 
     repository.sync_editorconfig(language)
 
