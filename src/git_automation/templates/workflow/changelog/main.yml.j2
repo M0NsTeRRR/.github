@@ -8,13 +8,13 @@ changelog:
     release_body: ${{ steps.git-cliff.outputs.content }}
   steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       with:
         fetch-depth: 0
         persist-credentials: false
     - name: Generate a changelog
       id: git-cliff
-      uses: orhun/git-cliff-action@v4
+      uses: orhun/git-cliff-action@4a4a951bc43fafe41cd2348d181853f52356bee7 # v4.4.2
       with:
         config: .github/cliff.toml
         args: -vv --current
