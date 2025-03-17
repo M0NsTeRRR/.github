@@ -37,8 +37,10 @@ jobs:
     needs: [changelog]
     {% endif -%}
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Create release as draft
         run: gh release create {{ "${{" }} github.ref_name {{ "}}" }}{%- if changelog %} -n "{{ "${{" }} needs.changelog.outputs.release_body {{ "}}" }}"{% endif %} --draft
         env:
@@ -52,8 +54,10 @@ jobs:
     needs: [create-draft-release{{ needs }}]
 {%- raw %}
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Create release
         run: gh release edit ${{ github.ref_name }} --draft=false
         env:

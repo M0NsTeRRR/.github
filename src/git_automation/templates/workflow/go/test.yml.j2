@@ -12,7 +12,10 @@ test:
         - "{{ version }}"
 {%- endfor %}
   steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        persist-credentials: false
     - name: Install go
       uses: actions/setup-go@v5
       with:
