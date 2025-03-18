@@ -2,9 +2,14 @@ name: Python test
 on:
   - push
   - pull_request
+permissions: {}
 jobs:
   test:
+    name: Test
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
     strategy:
       matrix:
         python-version:
