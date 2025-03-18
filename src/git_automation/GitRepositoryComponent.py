@@ -419,10 +419,16 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         docker: bool,
     ):
         template = env.get_template(os.path.join("workflow", "lint-pr.yml.j2"))
-
         self._repository_file(
             "workflow",
             ".github/workflows/lint-pr.yml",
+            template.render(repository_name=f"{self.owner}/{self.name}"),
+        )
+
+        template = env.get_template(os.path.join("workflow", "scorecard.yml.j2"))
+        self._repository_file(
+            "workflow",
+            ".github/workflows/scorecard.yml",
             template.render(repository_name=f"{self.owner}/{self.name}"),
         )
 

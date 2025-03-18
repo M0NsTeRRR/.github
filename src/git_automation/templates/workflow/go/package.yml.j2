@@ -14,12 +14,15 @@ build-artifact:
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       with:
         persist-credentials: false
+
     - name: Set up QEMU
       uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 # v3.6.0
+
     - name: Set up Go
       uses: actions/setup-go@f111f3307d8850f501ac008e886eec1fd1932a34 # v5.3.0
       with:
         go-version: stable
+
     - name: Extract metadata to build the binary
       id: extract-metadata
       run: |
@@ -36,15 +39,19 @@ build-artifact:
         # Set output
         echo "BINARY_NAME=${REPO_NAME}_${VERSION}_${OS}_${ARCH}" >> $GITHUB_OUTPUT
         echo "TAR_GZ_NAME=${REPO_NAME}_${VERSION}_${OS}_${ARCH}.tar.gz" >> $GITHUB_OUTPUT
+
     - name: Build binary
       run: CGO_ENABLED=0 go -o "${{ steps.extract-metadata.outputs.BINARY_NAME }}" -ldflags "-X main.version=${{ github.ref_name }}" build main.go
+
     - name: Create tar.gz of binary with license and readme
       run: tar -czf ${{ steps.extract-metadata.outputs.TAR_GZ_NAME }} ${{ steps.extract-metadata.outputs.BINARY_NAME }} LICENSE LICENSE.fr README.md
+
     - name: Upload tar.gz
       uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
       with:
         name: artifacts
         path: ${{ steps.extract-metadata.outputs.TAR_GZ_NAME }}
+
 create-checksum:
   name: Publish checksum
   runs-on: ubuntu-latest
@@ -57,6 +64,7 @@ create-checksum:
       with:
         name: artifacts
         path: /build
+
     - name: Create checksum file
       run: |
         shopt -s nullglob
@@ -67,11 +75,13 @@ create-checksum:
           CHECKSUM=$(sha256sum ${archive})
           echo $CHECKSUM >> sha256sums.txt
         done
+
     - name: Upload checksum
       uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
       with:
         name: artifacts
         path: sha256sums.txt
+
 sign-publish-artifact:
   name: Sign and publish artifact
   runs-on: ubuntu-latest
@@ -82,11 +92,13 @@ sign-publish-artifact:
   steps:
     - name: Install Cosign
       uses: sigstore/cosign-installer@d7d6bc7722e3daa8354c50bcb52f4837da5e9b6a # v3.8.1
+
     - name: Downloads artifacts
       uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
       with:
         name: artifacts
         path: /build
+
     - name: Sign the images with GitHub OIDC Token
       env:
         COSIGN_YES: true
@@ -98,6 +110,7 @@ sign-publish-artifact:
           fi
           cosign sign-blob ${archive} --output-certificate ${archive}.pem --output-signature ${archive}.sig
         done
+
     - name: Upload artifact to release
       run: gh release upload ${{ github.ref }} /build/*
       env:
