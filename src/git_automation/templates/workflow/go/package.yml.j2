@@ -47,7 +47,7 @@ build-artifact:
       run: tar -czf ${{ steps.extract-metadata.outputs.TAR_GZ_NAME }} ${{ steps.extract-metadata.outputs.BINARY_NAME }} LICENSE LICENSE.fr README.md
 
     - name: Upload tar.gz
-      uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
       with:
         name: artifacts
         path: ${{ steps.extract-metadata.outputs.TAR_GZ_NAME }}
@@ -60,7 +60,7 @@ create-checksum:
   needs: [build-artifact]
   steps:
     - name: Downloads artifacts
-      uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
+      uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
       with:
         name: artifacts
         path: /build
@@ -77,7 +77,7 @@ create-checksum:
         done
 
     - name: Upload checksum
-      uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
       with:
         name: artifacts
         path: sha256sums.txt
@@ -94,12 +94,12 @@ sign-publish-artifact:
       uses: sigstore/cosign-installer@d7d6bc7722e3daa8354c50bcb52f4837da5e9b6a # v3.8.1
 
     - name: Downloads artifacts
-      uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
+      uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
       with:
         name: artifacts
         path: /build
 
-    - name: Sign the images with GitHub OIDC Token
+    - name: Sign the artifacts with GitHub OIDC Token
       env:
         COSIGN_YES: true
       run: |

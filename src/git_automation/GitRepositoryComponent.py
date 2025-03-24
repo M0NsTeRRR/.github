@@ -87,6 +87,17 @@ class GitRepositoryComponent(pulumi.ComponentResource):
             is_template=False,
             name=name,
             pages=gh_pages,
+            security_and_analysis=github.RepositorySecurityAndAnalysisArgs(
+                advanced_security=github.RepositorySecurityAndAnalysisAdvancedSecurityArgs(
+                    status="enabled"
+                ),
+                secret_scanning=github.RepositorySecurityAndAnalysisSecretScanningArgs(
+                    status="enabled"
+                ),
+                secret_scanning_push_protection=github.RepositorySecurityAndAnalysisSecretScanningPushProtectionArgs(
+                    status="enabled"
+                ),
+            ),
             squash_merge_commit_message="PR_BODY",
             squash_merge_commit_title="PR_TITLE",
             topics=topics,
@@ -376,7 +387,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
     ):
         # check if a readme already exist
         r = requests.get(
-            f"https://api.github.com/repos/{self.owner}/{self.name}/contents/README.md",
+            f"https://api.github.com/repos/{self.owner.lower()}/{self.name.lower()}/contents/README.md",
             headers={
                 "Accept": "application/vnd.github.raw+json",
                 "Authorization": f"{os.environ["GITHUB_TOKEN"]}",
@@ -422,14 +433,21 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         self._repository_file(
             "workflow",
             ".github/workflows/lint-pr.yml",
-            template.render(repository_name=f"{self.owner}/{self.name}"),
+            template.render(),
         )
 
         template = env.get_template(os.path.join("workflow", "scorecard.yml.j2"))
         self._repository_file(
             "workflow",
             ".github/workflows/scorecard.yml",
-            template.render(repository_name=f"{self.owner}/{self.name}"),
+            template.render(),
+        )
+
+        template = env.get_template(os.path.join("workflow", "codeql.yml.j2"))
+        self._repository_file(
+            "workflow",
+            ".github/workflows/codeql.yml",
+            template.render(language=language),
         )
 
         if self.is_pr_mode():
@@ -494,6 +512,9 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
                 context="Validate PR title", integration_id=15368
             ),
+            github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
+                context="CodeQL", integration_id=15368
+            ),
         ]
 
         if lint:
@@ -532,6 +553,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 creation=False,
                 update=False,
                 deletion=True,
+                non_fast_forward=True,
                 required_linear_history=True,
                 required_signatures=True,
                 pull_request=github.RepositoryRulesetRulesPullRequestArgs(
@@ -544,6 +566,15 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 required_status_checks=github.RepositoryRulesetRulesRequiredStatusChecksArgs(
                     required_checks=required_checks,
                     strict_required_status_checks_policy=False,
+                ),
+                required_code_scanning=github.RepositoryRulesetRulesRequiredCodeScanningArgs(
+                    required_code_scanning_tools=[
+                        github.RepositoryRulesetRulesRequiredCodeScanningRequiredCodeScanningToolArgs(
+                            alerts_threshold="errors_and_warnings",
+                            security_alerts_threshold="medium_or_higher",
+                            tool="CodeQL",
+                        )
+                    ]
                 ),
             ),
             opts=pulumi.ResourceOptions(depends_on=[self.repository], parent=self),

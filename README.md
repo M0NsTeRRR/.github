@@ -23,6 +23,7 @@ pulumi up
 ```
 
 ### Create a stack
+
 ```sh
 pulumi stack init <name>
 ```
@@ -44,9 +45,17 @@ pulumi state delete 'urn:XXXXXXXX'
 
 It's currently not possible to set some repository settings
 
+In `Code security`:
+    - `Code scanning > Tools > CodeQL analysis` must be enabled
+    - `Dependabot > Dependabot alerts` must be enabled
+    - `Dependabot > Dependabot security updates` must be disabled
+
 In `settings > actions`:  
     - `Approval for running fork pull request workflows from contributors` must be set to `Require approval for all external contributors`  
     - In `Workflow permissions`, `Allow GitHub Actions to create and approve pull requests` must be ticked ([Github PR](https://github.com/integrations/terraform-provider-github/pull/2309))
+
+In `settings > Rules > Rulesets > automation-sync`:
+    - `Require status checks to pass > Require branches to be up to date before merging` must be checked
 
 It's currently not possible to set some user settings
 

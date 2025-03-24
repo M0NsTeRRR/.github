@@ -136,7 +136,7 @@ for repository_config in config.get_object("repositories"):
             helm,
             dev,
         )
-
+    
     if workflow:
         repository.sync_workflow(
             language,
