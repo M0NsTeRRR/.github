@@ -56,7 +56,7 @@ for repository_config in config.get_object("repositories"):
         pages=repository_config.get("pages", None),
     )
 
-    repository.sync_repository_ruleset(versions, workflow_lint, workflow_test)
+    repository.sync_repository_ruleset(language, versions, workflow_lint, workflow_test)
 
     # repository.sync_app_installation(renovatebot)
 

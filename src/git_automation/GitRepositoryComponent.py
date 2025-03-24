@@ -390,7 +390,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             f"https://api.github.com/repos/{self.owner.lower()}/{self.name.lower()}/contents/README.md",
             headers={
                 "Accept": "application/vnd.github.raw+json",
-                "Authorization": f"{os.environ["GITHUB_TOKEN"]}",
+                "Authorization": f"{os.environ['GITHUB_TOKEN']}",
             },
         )
         if r.status_code == 200:
@@ -504,7 +504,9 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 ),
             )
 
-    def sync_repository_ruleset(self, versions: List[str], lint: bool, test: bool):
+    def sync_repository_ruleset(
+        self, language: str, versions: List[str], lint: bool, test: bool
+    ):
         required_checks = [
             github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
                 context="DCO"
@@ -513,7 +515,10 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 context="Validate PR title", integration_id=15368
             ),
             github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
-                context="CodeQL", integration_id=15368
+                context="Analyze (actions)", integration_id=15368
+            ),
+            github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
+                context=f"Analyze ({language})", integration_id=15368
             ),
         ]
 

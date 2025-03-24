@@ -46,7 +46,6 @@ pulumi state delete 'urn:XXXXXXXX'
 It's currently not possible to set some repository settings
 
 In `Code security`:
-    - `Code scanning > Tools > CodeQL analysis` must be enabled
     - `Dependabot > Dependabot alerts` must be enabled
     - `Dependabot > Dependabot security updates` must be disabled
 
