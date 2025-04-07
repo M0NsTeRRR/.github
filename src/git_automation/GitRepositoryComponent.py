@@ -88,9 +88,6 @@ class GitRepositoryComponent(pulumi.ComponentResource):
             name=name,
             pages=gh_pages,
             security_and_analysis=github.RepositorySecurityAndAnalysisArgs(
-                advanced_security=github.RepositorySecurityAndAnalysisAdvancedSecurityArgs(
-                    status="enabled"
-                ),
                 secret_scanning=github.RepositorySecurityAndAnalysisSecretScanningArgs(
                     status="enabled"
                 ),
