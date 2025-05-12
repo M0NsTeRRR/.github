@@ -61,6 +61,7 @@ config:
         lint: false
         test: false
         changelog: true
+        documentation: true
       # enable pages
       # pages:
       #   branch: "gh-pages"

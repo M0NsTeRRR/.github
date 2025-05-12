@@ -5,6 +5,9 @@
 {%- if package %}
 {%- include "workflow/{}/package.yml.j2".format(language) %}
 {%- endif %}
+{%- if documentation %}
+{%- include "workflow/{}/documentation.yml.j2".format(language) %}
+{%- endif %}
 {%- if docker %}
 {%- include "workflow/docker.yml.j2" -%}
 {%- endif %}
@@ -13,6 +16,7 @@
 {%- if package %}
 {%- if language == "python" %}, publish-package{%- elif language == "go" %}, sign-publish-artifact{% endif -%}
 {% endif -%}
+{%- if documentation %}, documentation{% endif -%}
 {%- if docker %}, sign-docker{% endif -%}
 {%- endset %}
 name: {{ language }} release

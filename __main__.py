@@ -13,6 +13,7 @@ for repository_config in config.get_object("repositories"):
     workflow_lint = False
     workflow_test = False
     workflow_package = False
+    workflow_documentation = False
     workflow_changelog = False
     if "workflow" in repository_config:
         workflow = True
@@ -31,6 +32,10 @@ for repository_config in config.get_object("repositories"):
         workflow_changelog = (
             "changelog" not in repository_config["workflow"]
             or repository_config["workflow"]["changelog"]
+        )
+        workflow_documentation = (
+            "documentation" not in repository_config["workflow"]
+            or repository_config["workflow"]["documentation"]
         )
 
     renovatebot = "renovatebot" in repository_config
@@ -136,7 +141,7 @@ for repository_config in config.get_object("repositories"):
             helm,
             dev,
         )
-    
+
     if workflow:
         repository.sync_workflow(
             language,
@@ -144,6 +149,7 @@ for repository_config in config.get_object("repositories"):
             workflow_lint,
             workflow_test,
             workflow_package,
+            workflow_documentation,
             workflow_changelog,
             docker,
         )
