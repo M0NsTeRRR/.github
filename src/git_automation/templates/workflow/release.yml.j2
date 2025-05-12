@@ -43,7 +43,7 @@ jobs:
           persist-credentials: false
 
       - name: Create release as draft
-        run: gh release create {{ "${" }}GITHUB_REF_NAME{{ "}" }}{%- if changelog %} -n "{{ "${" }}RELEASE_BODY{{ "}" }}"{% endif %} --draft
+        run: gh release create {{ "${" }}GITHUB_REF_NAME{{ "}" }}  -t "Release {{ "${" }}GITHUB_REF_NAME{{ "}" }}" {%- if changelog %} -n "{{ "${" }}RELEASE_BODY{{ "}" }}"{% endif %} --draft
         env:
           GITHUB_TOKEN: {{ "${{" }} secrets.GITHUB_TOKEN {{ "}}" }}
           RELEASE_BODY: {{ "${{" }} needs.changelog.outputs.release_body {{ "}}" }}
