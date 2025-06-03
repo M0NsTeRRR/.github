@@ -3,29 +3,22 @@
 	"name": ".github",
 	"image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
 	"postCreateCommand": "./.devcontainer/postCreateCommand.sh",
-
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	"features": {
 		"ghcr.io/va-h/devcontainers-features/uv:1": {},
-		"ghcr.io/devcontainers-contrib/features/pulumi:1": {}
-    },
-
+		"ghcr.io/devcontainers-extra/features/pulumi:1": {}
+	},
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	"forwardPorts": [],
-
 	// Configure tool-specific properties.
 	// "customizations": {},
-
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
 	// "remoteUser": "root",
-
-    "mounts": [
-        // mount pulumi files
-        "source=${localEnv:HOME}${localEnv:USERPROFILE}/.pulumi,target=/home/vscode/pulumi-data/.pulumi,type=bind,consistency=cached"
-    ],
-
-    "userEnvProbe": "loginInteractiveShell",
-
+	"mounts": [
+		// mount pulumi files
+		"source=${localEnv:HOME}${localEnv:USERPROFILE}/.pulumi,target=/home/vscode/pulumi-data/.pulumi,type=bind,consistency=cached"
+	],
+	"userEnvProbe": "loginInteractiveShell",
 	"customizations": {
 		"vscode": {
 			"extensions": [
