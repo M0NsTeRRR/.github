@@ -23,9 +23,9 @@ build-package:
     - name: Install the project
       run: uv sync --all-extras
 
-    - name: Build package
+    - name: Build the project
       run: |
-        uv version "${GITHUB_REF#refs/*/}"
+        uv version "${GITHUB_REF#refs/*/}" --frozen
         uv build
 
     - name: Upload artifacts
