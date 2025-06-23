@@ -1,6 +1,6 @@
 import os
 from importlib import resources
-from typing import Mapping, Awaitable, Any, Dict, List
+from typing import Mapping, Awaitable, Any, Dict, List, Optional
 import re
 
 import requests
@@ -22,13 +22,13 @@ class GitRepositoryComponent(pulumi.ComponentResource):
         owner: str,
         name: str,
         default_branch_name: str,
-        branch_name: str,
         description: str,
         author_fullname: str,
         author_email: str,
-        homepage_url: str = None,
-        topics: List[str] = None,
-        pages: Dict[str, str] = None,
+        branch_name: Optional[str] = None,
+        homepage_url: Optional[str] = None,
+        topics: Optional[List[str]] = None,
+        pages: Optional[Dict[str, str]] = None,
         props: Mapping[str, Any | Awaitable[Any] | Output[Any]] | None = None,
         opts: pulumi.ResourceOptions | None = None,
         dependency: bool = False,
@@ -38,10 +38,10 @@ class GitRepositoryComponent(pulumi.ComponentResource):
         :param owner: Git owner
         :param name: Repository name
         :param default_branch_name: Repository default branch
-        :param branch_name: Repository branch used by pulumi
         :param description: Repository description
         :param author_fullname: Fullname used by pulumi to commit
         :param author_email: Email used by pulumi to commit
+        :param branch_name: Repository branch used by pulumi
         :param homepage_url: Repository homepage
         :param topics: Repository topics
         :param pages: Repository pages
@@ -49,17 +49,17 @@ class GitRepositoryComponent(pulumi.ComponentResource):
 
         self.owner = owner
         self.name = name
-        self.branch_name = branch_name
         self.default_branch_name = default_branch_name
         self.author_fullname = author_fullname
         self.author_email = author_email
+        self.branch_name = branch_name
 
         super().__init__(
             "pkg:index:GitRepositoryComponent", name, props, opts, dependency
         )
 
         if pages:
-            gh_pages = pages = github.RepositoryPagesArgs(
+            gh_pages = github.RepositoryPagesArgs(
                 source=github.RepositoryPagesSourceArgs(
                     branch=pages["branch"],
                     path=pages["path"],
@@ -146,7 +146,7 @@ class GitRepositoryComponent(pulumi.ComponentResource):
         return readme_contents
 
     def is_pr_mode(self) -> bool:
-        return self.branch_name and self.branch_name != self.default_branch_name
+        return bool(self.branch_name and self.branch_name != self.default_branch_name)
 
     def get_working_branch(self) -> github.Branch:
         if self.is_pr_mode():
@@ -180,12 +180,11 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         )
 
     def sync_licence(self, licence_name: str):
-        license_dir = resources.files(PACKAGE_NAME) / "license" / licence_name
-        license_files = os.listdir(license_dir)
-        for license_file in license_files:
-            with open(license_dir / license_file) as file:
+        license_dir = resources.files(PACKAGE_NAME).joinpath("license", licence_name)
+        for license_file in license_dir.iterdir():
+            with license_file.open() as file:
                 license_content = file.read()
-            self._repository_file("license", license_file, license_content)
+            self._repository_file("license", license_file.name, license_content)
 
     def sync_funding(self, fundings: Dict[str, str]):
         template = env.get_template(os.path.join("misc", "FUNDING.yml.j2"))
@@ -195,7 +194,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         )
 
     def sync_contributing(self):
-        with open(resources.files(PACKAGE_NAME) / "misc" / "CONTRIBUTING.md") as file:
+        with resources.files(PACKAGE_NAME).joinpath("misc", "CONTRIBUTING.md").open() as file:
             file_content = file.read()
 
         self._repository_file(
@@ -205,7 +204,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         )
 
     def sync_support(self):
-        with open(resources.files(PACKAGE_NAME) / "misc" / "SUPPORT.md") as file:
+        with resources.files(PACKAGE_NAME).joinpath("misc", "SUPPORT.md").open() as file:
             file_content = file.read()
 
         self._repository_file(
@@ -215,9 +214,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         )
 
     def sync_pull_request_template(self):
-        with open(
-            resources.files(PACKAGE_NAME) / "misc" / "pull_request_template.md"
-        ) as file:
+        with resources.files(PACKAGE_NAME).joinpath("misc", "pull_request_template.md").open() as file:
             file_content = file.read()
 
         self._repository_file(
@@ -227,13 +224,12 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         )
 
     def sync_issue_template(self):
-        issue_dir = resources.files(PACKAGE_NAME) / "issue"
-        issue_files = os.listdir(issue_dir)
-        for issue_file in issue_files:
-            with open(issue_dir / issue_file) as file:
+        issue_dir = resources.files(PACKAGE_NAME).joinpath("issue")
+        for issue_file in issue_dir.iterdir():
+            with issue_file.open() as file:
                 file_content = file.read()
             self._repository_file(
-                "issue_template", f".github/ISSUE_TEMPLATE/{issue_file}", file_content
+                "issue_template", f".github/ISSUE_TEMPLATE/{issue_file.name}", file_content
             )
 
     def sync_code_of_conduct(self, contact_email: str):
@@ -253,11 +249,10 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         )
 
     def sync_vscode_config(self, language: str):
-        vscode_config_dir = resources.files(PACKAGE_NAME) / "templates" / "vscode"
-        vscode_files = os.listdir(vscode_config_dir)
-        for vscode_file in vscode_files:
-            template = env.get_template(os.path.join("vscode", vscode_file))
-            filename = os.path.splitext(vscode_file)[0]
+        vscode_config_dir = resources.files(PACKAGE_NAME).joinpath("templates", "vscode")
+        for vscode_file in vscode_config_dir.iterdir():
+            template = env.get_template(os.path.join("vscode", vscode_file.name))
+            filename = os.path.splitext(vscode_file.name)[0]
 
             self._repository_file(
                 filename,
@@ -273,7 +268,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         )
 
     def sync_gitattributes(self):
-        with open(resources.files(PACKAGE_NAME) / "misc" / "gitattributes") as file:
+        with resources.files(PACKAGE_NAME).joinpath("misc", "gitattributes").open() as file:
             file_content = file.read()
 
         self._repository_file("gitattributes", ".gitattributes", file_content)
@@ -301,9 +296,8 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         labels = []
 
         for label_file in label_files:
-            with open(
-                resources.files(PACKAGE_NAME) / "label" / f"{label_file}.yml"
-            ) as file:
+            ressource_path = resources.files(PACKAGE_NAME).joinpath("label", f"{label_file}.yml")
+            with ressource_path.open() as file:
                 labels += yaml.safe_load(file.read())
 
         github.IssueLabels(
@@ -340,15 +334,14 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             ),
         )
 
-        renovatebot_config_dir = (
-            resources.files(PACKAGE_NAME) / "templates" / "renovatebot" / "config"
-        )
-        renovatebot_files = os.listdir(renovatebot_config_dir)
-        for renovatebot_file in renovatebot_files:
+        renovatebot_config_dir = resources.files(PACKAGE_NAME) / "templates" / "renovatebot" / "config"
+
+        renovatebot_config_dir = resources.files(PACKAGE_NAME).joinpath("templates", "renovatebot", "config")
+        for renovatebot_file in renovatebot_config_dir.iterdir():
             template = env.get_template(
-                os.path.join("renovatebot", "config", renovatebot_file)
+                os.path.join("renovatebot", "config", renovatebot_file.name)
             )
-            filename = os.path.splitext(renovatebot_file)[0]
+            filename = os.path.splitext(renovatebot_file.name)[0]
 
             self._repository_file(
                 filename,
@@ -361,7 +354,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             )
 
     def sync_logo(self, logo: str):
-        with open(resources.files(PACKAGE_NAME) / "logo" / logo) as file:
+        with resources.files(PACKAGE_NAME).joinpath("logo", logo).open() as file:
             file_content = file.read()
 
         self._repository_file("logo", "docs/assets/logo.svg", file_content)
@@ -481,9 +474,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             )
 
         if changelog:
-            with open(
-                resources.files(PACKAGE_NAME) / "git-cliff" / "cliff.toml"
-            ) as file:
+            with resources.files(PACKAGE_NAME).joinpath("git-cliff", "cliff.toml").open() as file:
                 cliff_config = file.read()
 
             self._repository_file("changelog", ".github/cliff.toml", cliff_config)

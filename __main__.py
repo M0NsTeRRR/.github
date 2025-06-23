@@ -8,7 +8,10 @@ config = pulumi.Config()
 author = config.get_object("author")
 owner = pulumi.Config("github").require("owner")
 
-for repository_config in config.get_object("repositories"):
+if author is None:
+    raise ValueError("Author can't be None")
+
+for repository_config in config.get_object("repositories", []):
     workflow = False
     workflow_lint = False
     workflow_test = False
@@ -68,8 +71,9 @@ for repository_config in config.get_object("repositories"):
     if "license" in repository_config and repository_config["license"]:
         repository.sync_licence(repository_config["license"])
 
-    if config.get_object("funding"):
-        repository.sync_funding(config.get_object("funding"))
+    funding = config.get_object("funding")
+    if funding:
+        repository.sync_funding(funding)
 
     repository.sync_pull_request_template()
 
@@ -90,11 +94,13 @@ for repository_config in config.get_object("repositories"):
     if gitignore:
         repository.sync_gitignore(language, helm)
 
-    if config.get("contact_email"):
-        repository.sync_code_of_conduct(config.get("contact_email"))
+    contact_email = config.get("contact_email")
+    if contact_email:
+        repository.sync_code_of_conduct(contact_email)
 
-    if config.get("security_email"):
-        repository.sync_security(config.get("security_email"))
+    security_email = config.get("security_email")
+    if security_email:
+        repository.sync_security(security_email)
 
     if "label" in repository_config and repository_config["label"]:
         repository.sync_label(repository_config["label"])
