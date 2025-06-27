@@ -194,7 +194,11 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         )
 
     def sync_contributing(self):
-        with resources.files(PACKAGE_NAME).joinpath("misc", "CONTRIBUTING.md").open() as file:
+        with (
+            resources.files(PACKAGE_NAME)
+            .joinpath("misc", "CONTRIBUTING.md")
+            .open() as file
+        ):
             file_content = file.read()
 
         self._repository_file(
@@ -204,7 +208,9 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         )
 
     def sync_support(self):
-        with resources.files(PACKAGE_NAME).joinpath("misc", "SUPPORT.md").open() as file:
+        with (
+            resources.files(PACKAGE_NAME).joinpath("misc", "SUPPORT.md").open() as file
+        ):
             file_content = file.read()
 
         self._repository_file(
@@ -214,7 +220,11 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         )
 
     def sync_pull_request_template(self):
-        with resources.files(PACKAGE_NAME).joinpath("misc", "pull_request_template.md").open() as file:
+        with (
+            resources.files(PACKAGE_NAME)
+            .joinpath("misc", "pull_request_template.md")
+            .open() as file
+        ):
             file_content = file.read()
 
         self._repository_file(
@@ -229,7 +239,9 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             with issue_file.open() as file:
                 file_content = file.read()
             self._repository_file(
-                "issue_template", f".github/ISSUE_TEMPLATE/{issue_file.name}", file_content
+                "issue_template",
+                f".github/ISSUE_TEMPLATE/{issue_file.name}",
+                file_content,
             )
 
     def sync_code_of_conduct(self, contact_email: str):
@@ -249,7 +261,9 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         )
 
     def sync_vscode_config(self, language: str):
-        vscode_config_dir = resources.files(PACKAGE_NAME).joinpath("templates", "vscode")
+        vscode_config_dir = resources.files(PACKAGE_NAME).joinpath(
+            "templates", "vscode"
+        )
         for vscode_file in vscode_config_dir.iterdir():
             template = env.get_template(os.path.join("vscode", vscode_file.name))
             filename = os.path.splitext(vscode_file.name)[0]
@@ -268,7 +282,11 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         )
 
     def sync_gitattributes(self):
-        with resources.files(PACKAGE_NAME).joinpath("misc", "gitattributes").open() as file:
+        with (
+            resources.files(PACKAGE_NAME)
+            .joinpath("misc", "gitattributes")
+            .open() as file
+        ):
             file_content = file.read()
 
         self._repository_file("gitattributes", ".gitattributes", file_content)
@@ -296,7 +314,9 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         labels = []
 
         for label_file in label_files:
-            ressource_path = resources.files(PACKAGE_NAME).joinpath("label", f"{label_file}.yml")
+            ressource_path = resources.files(PACKAGE_NAME).joinpath(
+                "label", f"{label_file}.yml"
+            )
             with ressource_path.open() as file:
                 labels += yaml.safe_load(file.read())
 
@@ -334,9 +354,13 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             ),
         )
 
-        renovatebot_config_dir = resources.files(PACKAGE_NAME) / "templates" / "renovatebot" / "config"
+        renovatebot_config_dir = (
+            resources.files(PACKAGE_NAME) / "templates" / "renovatebot" / "config"
+        )
 
-        renovatebot_config_dir = resources.files(PACKAGE_NAME).joinpath("templates", "renovatebot", "config")
+        renovatebot_config_dir = resources.files(PACKAGE_NAME).joinpath(
+            "templates", "renovatebot", "config"
+        )
         for renovatebot_file in renovatebot_config_dir.iterdir():
             template = env.get_template(
                 os.path.join("renovatebot", "config", renovatebot_file.name)
@@ -474,7 +498,11 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             )
 
         if changelog:
-            with resources.files(PACKAGE_NAME).joinpath("git-cliff", "cliff.toml").open() as file:
+            with (
+                resources.files(PACKAGE_NAME)
+                .joinpath("git-cliff", "cliff.toml")
+                .open() as file
+            ):
                 cliff_config = file.read()
 
             self._repository_file("changelog", ".github/cliff.toml", cliff_config)
