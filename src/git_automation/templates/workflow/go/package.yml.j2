@@ -5,6 +5,7 @@ build-artifact:
   permissions:
     contents: read
   strategy:
+    fail-fast: false
     matrix:
       include:
         - os: linux
@@ -46,11 +47,11 @@ build-artifact:
         VERSION=$(echo "${{ github.ref_name }}" | sed 's/^v//')
 
         # Set output
-        echo "BINARY_NAME=${REPO_NAME}_${VERSION}_${{ matrix.os }}_${{ matrix.arch }}" >> $GITHUB_OUTPUT
-        echo "TAR_GZ_NAME=${REPO_NAME}_${VERSION}_${{ matrix.os }}_${{ matrix.arch }}.tar.gz" >> $GITHUB_OUTPUT
+        echo "BINARY_NAME=${REPO_NAME}" >> $GITHUB_OUTPUT
+        echo "TAR_GZ_NAME=${REPO_NAME}-${VERSION}-${{ matrix.os }}-${{ matrix.arch }}.tar.gz" >> $GITHUB_OUTPUT
 
     - name: Build binary
-      run: go -o "${{ steps.extract-metadata.outputs.BINARY_NAME }}" -ldflags "-X main.version=${{ github.ref_name }}" build main.go
+      run: go build -o "${{ steps.extract-metadata.outputs.BINARY_NAME }}" -ldflags "-X main.version=${{ github.ref_name }}" main.go
       env:
         GOOS: ${{ matrix.os }}
         GOARCH: ${{ matrix.arch }}
