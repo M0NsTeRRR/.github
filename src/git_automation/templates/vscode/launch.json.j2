@@ -19,6 +19,14 @@
       "mode": "auto",
       "program": "${fileDirname}"
     }
+    {%- elif language == "rust" %}
+    {
+      "name": "Launch Package",
+      "type": "lldb-dap",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${fileDirname}"
+    }
     {%- endif %}
   ]
 }

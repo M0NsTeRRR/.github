@@ -7,6 +7,8 @@
 {% include "readme/sections/dev/python.md.j2" %}
 {%- elif language == "go" %}
 {% include "readme/sections/dev/go.md.j2" %}
+{%- elif language == "rust" %}
+{% include "readme/sections/dev/rust.md.j2" %}
 {%- endif %}
 {%- if "devcontainer" in dev %}
 {% include "readme/sections/dev/devcontainer.md.j2" %}

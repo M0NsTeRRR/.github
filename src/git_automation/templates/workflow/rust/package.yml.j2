@@ -1,6 +1,6 @@
 {%- raw %}
-build-artifact:
-  name: Build binary
+build-package:
+  name: Build package
   runs-on: ${{ matrix.runner }}
   permissions:
     contents: read
@@ -8,23 +8,23 @@ build-artifact:
     fail-fast: false
     matrix:
       include:
-        - os: linux
-          arch: amd64
+        - target: x86_64-unknown-linux-gnu
           runner: ubuntu-latest
-        - os: linux
-          arch: arm64
+        - target: x86_64-unknown-linux-musl
+          runner: ubuntu-latest
+        - target: aarch64-unknown-linux-gnu
           runner: ubuntu-24.04-arm
-        - os: darwin
-          arch: amd64
+        - target: aarch64-unknown-linux-musl
+          runner: ubuntu-24.04-arm
+        - target: x86_64-apple-darwin
           runner: macos-13
-        - os: darwin
-          arch: arm64
-          runner: macos-latest
-        - os: windows
-          arch: amd64
+        - target: aarch64-apple-darwin
+          runner: macos-13
+        - target: x86_64-pc-windows-msvc
           runner: windows-latest
-        - os: windows
-          arch: arm64
+        - target: x86_64-pc-windows-gnu
+          runner: windows-latest
+        - target: aarch64-pc-windows-msvc
           runner: windows-11-arm
   steps:
     - name: Checkout code
@@ -32,10 +32,17 @@ build-artifact:
       with:
         persist-credentials: false
 
-    - name: Set up Go
-      uses: actions/setup-go@f111f3307d8850f501ac008e886eec1fd1932a34 # v5.3.0
-      with:
-        go-version: stable
+    - name: Install dependencies
+      shell: bash
+      run: |
+        if [[ "${{ matrix.target }}" = *"-musl" ]]; then
+          sudo apt update
+          sudo apt install -y --no-install-recommends \
+            musl-tools
+        fi
+
+    - name: Configure rust toolchain stable
+      run: rustup update stable && rustup default stable
 
     - name: Extract metadata to build the binary
       id: extract-metadata
@@ -48,17 +55,13 @@ build-artifact:
 
         # Set output
         echo "BINARY_NAME=${REPO_NAME}" >> $GITHUB_OUTPUT
-        echo "TAR_GZ_NAME=${REPO_NAME}-${VERSION}-${{ matrix.os }}-${{ matrix.arch }}.tar.gz" >> $GITHUB_OUTPUT
+        echo "TAR_GZ_NAME=${REPO_NAME}-${VERSION}-${{ matrix.target }}.tar.gz" >> $GITHUB_OUTPUT
 
-    - name: Build binary
-      run: go build -o "${{ steps.extract-metadata.outputs.BINARY_NAME }}" -ldflags "-X main.version=${{ github.ref_name }}" main.go
-      env:
-        GOOS: ${{ matrix.os }}
-        GOARCH: ${{ matrix.arch }}
-        CGO_ENABLED: 0
+    - name: Build the binary
+      run: cargo build --release --locked --target=${{ matrix.job.target }}
 
     - name: Create tar.gz of binary with license and readme
-      run: tar -czf ${{ steps.extract-metadata.outputs.TAR_GZ_NAME }} ${{ steps.extract-metadata.outputs.BINARY_NAME }} LICENSE LICENSE.fr README.md
+      run: tar -czf ${{ steps.extract-metadata.outputs.TAR_GZ_NAME }} target/${{ matrix.job.target }}/release/${{ steps.extract-metadata.outputs.BINARY_NAME }} LICENSE LICENSE.fr README.md
 
     - name: Upload tar.gz
       uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2

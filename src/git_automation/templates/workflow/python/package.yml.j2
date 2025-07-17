@@ -33,6 +33,7 @@ build-package:
       with:
         name: artifacts
         path: dist/
+        if-no-files-found: error
 
 publish-package:
   name: Publish package

@@ -17,6 +17,9 @@ _{{ repository_description }}_
 [![Python](https://img.shields.io/pypi/pyversions/{{ package_name }}?label=&logo=python&style=for-the-badge&logoColor=yellow&color=3776AB)](https://pypi.python.org/pypi/{{ package_name }})
 {%- elif language == "go" %}
 [![Go](https://img.shields.io/github/v/tag/{{ repository_name | lower }}?label=&logo=go&style=for-the-badge&logoColor=white&color=00ACD7)](https://pkg.go.dev/github.com/{{ repository_name | lower }}/{{ package_name }})
+{%- elif language == "rust" %}
+[![Crates.io](https://img.shields.io/crates/v/{{ repository_name | lower }}?label=&logo=rust&style=for-the-badge&logoColor=white&color=black)](https://crates.io/crates/{{ package_name }})
+[![Rust](https://img.shields.io/crates/msrv/{{ repository_name | lower }}?label=&logo=rust&style=for-the-badge&logoColor=white&color=black)](https://crates.io/crates/{{ package_name }})
 {%- endif %}
 {# note: Not supported for now see : https://github.com/badges/shields/issues/5594
 {%- if docker %}

@@ -33,6 +33,9 @@ jobs:
         {%- elif language == "go" %}
         - language: go
           build-mode: none
+        {%- elif language == "rust" %}
+        - language: rust
+          build-mode: none
         {% endif +%}
     steps:
       - name: Checkout code

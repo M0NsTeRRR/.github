@@ -1,0 +1,30 @@
+{%- raw %}
+lint:
+  name: Lint
+  runs-on: ubuntu-latest
+  permissions:
+    contents: read
+    pull-requests: read
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      with:
+        persist-credentials: false
+
+    - name: Configure rust toolchain stable
+      run: rustup update stable && rustup default stable
+
+    - name: Add components
+      run: |
+        rustup component add clippy
+        rustup component add rustfmt
+
+    - name: Run cargo fmt
+      run: cargo fmt --all --check
+
+    - name: Run cargo clippy
+      run: cargo clippy --all-targets --all-features --workspace -- -D warnings
+
+    - name: Run cargo update locked
+      run: cargo update --workspace --locked
+{%- endraw %}
