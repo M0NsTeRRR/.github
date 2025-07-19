@@ -465,7 +465,9 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             template.render(language=language),
         )
 
-        template = env.get_template(os.path.join("workflow", "dependency-review.yml.j2"))
+        template = env.get_template(
+            os.path.join("workflow", "dependency-review.yml.j2")
+        )
         self._repository_file(
             "workflow",
             ".github/workflows/dependency-review.yml",
