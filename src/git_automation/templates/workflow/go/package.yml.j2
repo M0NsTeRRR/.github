@@ -75,7 +75,7 @@ create-checksum:
   needs: [build-artifact]
   steps:
     - name: Downloads artifacts
-      uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+      uses: actions/download-artifact@v3.0.2 # v4.3.0
       with:
         name: artifacts
         path: /build
@@ -107,7 +107,7 @@ sign-publish-artifact:
       uses: sigstore/cosign-installer@d7d6bc7722e3daa8354c50bcb52f4837da5e9b6a # v3.8.1
 
     - name: Downloads artifacts
-      uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+      uses: actions/download-artifact@v3.0.2 # v4.3.0
       with:
         name: artifacts
         path: /artifacts
