@@ -6,9 +6,17 @@
       "customType": "regex",
       "fileMatch": ["\\.ya?ml(\\.j2)?$"],
       "matchStrings": [
-        '-\\suses:\\s(?<depName>\\S+)@(?<currentValue>\\S+)'
+        '\\suses:\\s(?<depName>\\S+)@(?<currentDigest>\\S+)\s#\s(?<currentValue>\S+)'
       ],
       "datasourceTemplate": "github-releases",
     },
+  ],
+  "packageRules": [
+    {
+      "matchDepTypes": [
+        "action"
+      ],
+      "pinDigests": true
+    }
   ]
 }
