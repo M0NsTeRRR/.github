@@ -6,7 +6,7 @@
       "customType": "regex",
       "fileMatch": ["\\.ya?ml(\\.j2)?$"],
       "matchStrings": [
-        '-\\suses:\\s(?<depName>\\S+)@(?<currentValue>\\S+)'
+        '\\suses:\\s(?<depName>\\S+)@(?<currentValue>\\S+)'
       ],
       "datasourceTemplate": "github-releases",
     },
