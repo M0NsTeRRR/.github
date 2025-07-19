@@ -465,6 +465,13 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             template.render(language=language),
         )
 
+        template = env.get_template(os.path.join("workflow", "dependency-review.yml.j2"))
+        self._repository_file(
+            "workflow",
+            ".github/workflows/dependency-review.yml",
+            template.render(language=language),
+        )
+
         if self.is_pr_mode():
             template = env.get_template(
                 os.path.join("workflow", "automation-sync-pr.yml.j2")
