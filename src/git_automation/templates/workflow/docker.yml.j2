@@ -18,38 +18,38 @@ build-push-docker:
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       with:
         persist-credentials: false
- 
+
     - name: Set up QEMU
       uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 # v3.6.0
-   
+      with:
+        platforms: arm64
+
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@b5ca514318bd6ebac0fb2aedd5d36ec1b5c232a2 # v3.10.0
-  
+
     - name: Login to GitHub Container Registry
       uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3.4.0
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
-  
+
     - name: Docker meta
-      id: meta 
+      id: meta
       uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804 # v5.7.0
       with:
-        images: ghcr.io/sigstore/sample-honk
+        images: ghcr.io/${{ github.repository }}
         tags: |
           type=ref,event=pr
           type=sha
           type=raw,value=latest
           type=semver,pattern={{version}}
-  
+
     - name: Build and push
       id: build-and-push
       uses: docker/build-push-action@471d1dc4e07e5cdedd4c2171150001c434f0b7a4 # v6.15.0
       with:
         platforms: ${{ matrix.platform }}
-        sbom: true
-        provenance: true
         push: true
         tags: ${{ steps.docker_meta.outputs.tags }}
 
@@ -60,19 +60,35 @@ sign-docker:
     packages: write # needed for pushing docker signature
     id-token: write # needed for signing the images with GitHub OIDC Token
   needs: [build-push-docker]
+  env:
+    DIGEST: ${{ needs.docker.outputs.digest }}
+    TAGS: ${{ needs.docker.outputs.tags }}
   steps:
     - name: Install Cosign
       uses: sigstore/cosign-installer@d7d6bc7722e3daa8354c50bcb52f4837da5e9b6a # v3.8.1
-   
+
+    - name: Install Trivy
+      uses: aquasecurity/setup-trivy@dc5a429b52fcf669ce959baa2c2dd26090d2a6c4 # v0.32.0
+
     - name: Sign the images with GitHub OIDC Token
-      env:
-        DIGEST: ${{ needs.docker.outputs.digest }}
-        TAGS: ${{ needs.docker.outputs.tags }}
-        COSIGN_YES: true
       run: |
         images=""
         for tag in ${TAGS}; do
           images+="${tag}@${DIGEST} "
         done
-        cosign sign ${images}
+        cosign sign -y --recursive ${images}
+
+    - name: Generate SBOM
+      run: |
+        shopt -s nullglob
+        for tag in ${TAGS}; do
+          trivy i --format cosign-vuln ${tag}@${DIGEST} > ${tag}@${DIGEST}.sbom
+        done
+
+    - name: Attest images with SBOM
+      run: |
+        shopt -s nullglob
+        for tag in ${TAGS}; do
+          cosign attest -y --recursive --predicate ${tag}@${DIGEST}.sbom ${tag}@${DIGEST}
+        done
 {%- endraw %}
