@@ -82,13 +82,13 @@ sign-docker:
       run: |
         shopt -s nullglob
         for tag in ${TAGS}; do
-          trivy i --format cosign-vuln ${tag}@${DIGEST} > ${tag}@${DIGEST}.sbom
+          trivy i --format cyclonedx ${tag}@${DIGEST} > ${tag}@${DIGEST}.sbom
         done
 
     - name: Attest images with SBOM
       run: |
         shopt -s nullglob
         for tag in ${TAGS}; do
-          cosign attest -y --recursive --predicate ${tag}@${DIGEST}.sbom ${tag}@${DIGEST}
+          cosign attest -y --recursive --type cyclonedx --predicate ${tag}@${DIGEST}.sbom ${tag}@${DIGEST}
         done
 {%- endraw %}
