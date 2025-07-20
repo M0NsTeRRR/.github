@@ -72,11 +72,9 @@ sign-docker:
 
     - name: Sign the images with GitHub OIDC Token
       run: |
-        images=""
         for tag in ${TAGS}; do
-          images+="${tag}@${DIGEST} "
+          cosign sign -y --recursive ${tag}@${DIGEST}
         done
-        cosign sign -y --recursive ${images}
 
     - name: Generate SBOM
       run: |
