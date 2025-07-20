@@ -55,6 +55,7 @@ build-package:
 
         # Set output
         echo "BINARY_NAME=${REPO_NAME}" >> $GITHUB_OUTPUT
+        echo "SBOM_NAME=${REPO_NAME}-${VERSION}-${{ matrix.target }}.sbom" >> $GITHUB_OUTPUT
         echo "TAR_GZ_NAME=${REPO_NAME}-${VERSION}-${{ matrix.target }}.tar.gz" >> $GITHUB_OUTPUT
 
     - name: Build the binary
@@ -63,11 +64,21 @@ build-package:
     - name: Create tar.gz of binary with license and readme
       run: tar -czf ${{ steps.extract-metadata.outputs.TAR_GZ_NAME }} target/${{ matrix.job.target }}/release/${{ steps.extract-metadata.outputs.BINARY_NAME }} LICENSE LICENSE.fr README.md
 
-    - name: Upload tar.gz
+    - name: Generate SBOM
+      uses: anchore/sbom-action@cee1b8e05ae5b2593a75e197229729eabaa9f8ec # v0.20.2
+      with:
+        format: cyclonedx-json
+        artifact-name: ${{ steps.extract-metadata.outputs.SBOM_NAME }}
+        upload-artifact: false
+        upload-release-assets: false
+
+    - name: Upload artifacts
       uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
       with:
         name: artifacts
-        path: ${{ steps.extract-metadata.outputs.TAR_GZ_NAME }}
+        path: |
+          ${{ steps.extract-metadata.outputs.TAR_GZ_NAME }}
+          ${{ steps.extract-metadata.outputs.SBOM_NAME }}
         if-no-files-found: error
 
 create-checksum:
@@ -120,8 +131,17 @@ sign-publish-artifact:
         COSIGN_YES: true
       run: |
         shopt -s nullglob
-        for archive in /artifacts/*; do
-          cosign sign-blob ${archive} --output-certificate ${archive}.pem --output-signature ${archive}.sig
+        for archive in /artifacts/*.tar.gz; do
+          archive_without_ext="${archive%.tar.gz}"
+          cosign sign-blob ${archive} --output-certificate ${archive_without_ext}.pem --output-signature ${archive_without_ext}.sig
+        done
+
+    - name: Attest SBOM
+      run: |
+        shopt -s nullglob
+        for sbom in /artifacts/*.sbom; do
+          sbom_without_ext="${sbom%.sbom}"
+          cosign attest-blob -y --type cyclonedx --predicate ${sbom} --output-attestation ${sbom_without_ext}.sbom.intoto.jsonl ${sbom_without_ext}.tar.gz
         done
 
     - name: Upload artifact to release
