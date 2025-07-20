@@ -79,7 +79,7 @@ build-artifact:
         if-no-files-found: error
 
 create-checksum:
-  name: Publish checksum
+  name: Create checksum
   runs-on: ubuntu-latest
   permissions:
     contents: read
@@ -145,4 +145,16 @@ sign-publish-artifact:
       run: gh release upload ${{ github.ref }} /artifacts/*
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Trigger Go Proxy Indexing
+      run: |
+        MAJOR_VERSION=$(echo "${{ github.ref_name }}" | cut -d '.' -f 1 | sed 's/v//')
+
+        if [[ $MAJOR_VERSION -ge 2 ]]; then
+          curl https://sum.golang.org/lookup/github.com/${{ github.repository }}/v${MAJOR_VERSION}@${{ github.ref_name }}
+          curl https://proxy.golang.org/github.com/${{ github.repository }}/v${MAJOR_VERSION}/@v/${{ github.ref_name }}.info
+        else
+          curl https://sum.golang.org/lookup/github.com/${{ github.repository }}@${{ github.ref_name }}
+          curl https://proxy.golang.org/github.com/${{ github.repository }}/@v/${{ github.ref_name }}.info
+        fi
 {%- endraw %}
