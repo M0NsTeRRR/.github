@@ -62,7 +62,7 @@ build-package:
       run: cargo build --release --locked --target=${{ matrix.job.target }}
 
     - name: Create tar.gz of binary with license and readme
-      run: tar -czf ${{ steps.extract-metadata.outputs.TAR_GZ_NAME }} target/${{ matrix.job.target }}/release/${{ steps.extract-metadata.outputs.BINARY_NAME }} LICENSE LICENSE.fr README.md
+      run: tar -czf ${{ steps.extract-metadata.outputs.TAR_GZ_NAME }} target/${{ matrix.job.target }}/release/${{ steps.extract-metadata.outputs.BINARY_NAME }} LICENSE.txt LICENSE_en.txt README.md
 
     - name: Generate SBOM
       uses: anchore/sbom-action@cee1b8e05ae5b2593a75e197229729eabaa9f8ec # v0.20.2
