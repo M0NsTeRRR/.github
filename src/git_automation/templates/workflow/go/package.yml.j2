@@ -4,6 +4,8 @@ build-artifact:
   runs-on: ${{ matrix.runner }}
   permissions:
     contents: read
+  outputs:
+    version: ${{ steps.generate-filename.outputs.VERSION }}
   strategy:
     fail-fast: false
     matrix:
@@ -37,8 +39,9 @@ build-artifact:
       with:
         go-version: stable
 
-    - name: Extract metadata to build the binary
-      id: extract-metadata
+    - name: Generate filenames
+      id: generate-filename
+      shell: bash
       run: |
         # Get repo name
         REPO_NAME=$(echo "${{ github.repository }}" | cut -d'/' -f2)
@@ -47,63 +50,36 @@ build-artifact:
         VERSION=$(echo "${{ github.ref_name }}" | sed 's/^v//')
 
         # Set output
+        echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
         echo "BINARY_NAME=${REPO_NAME}" >> $GITHUB_OUTPUT
         echo "SBOM_NAME=${REPO_NAME}-${VERSION}-${{ matrix.os }}-${{ matrix.arch }}.sbom" >> $GITHUB_OUTPUT
         echo "TAR_GZ_NAME=${REPO_NAME}-${VERSION}-${{ matrix.os }}-${{ matrix.arch }}.tar.gz" >> $GITHUB_OUTPUT
 
     - name: Build binary
-      run: go build -o "${{ steps.extract-metadata.outputs.BINARY_NAME }}" -ldflags "-X main.version=${{ github.ref_name }}" main.go
+      run: go build -o "${{ steps.generate-filename.outputs.BINARY_NAME }}" -ldflags "-X main.version=${{ github.ref_name }}" main.go
       env:
         GOOS: ${{ matrix.os }}
         GOARCH: ${{ matrix.arch }}
         CGO_ENABLED: 0
 
     - name: Create tar.gz of binary with license and readme
-      run: tar -czf ${{ steps.extract-metadata.outputs.TAR_GZ_NAME }} ${{ steps.extract-metadata.outputs.BINARY_NAME }} LICENSE.txt LICENSE_en.txt README.md
+      run: tar -czf ${{ steps.generate-filename.outputs.TAR_GZ_NAME }} ${{ steps.generate-filename.outputs.BINARY_NAME }} LICENSE.txt LICENSE_en.txt README.md
 
     - name: Generate SBOM
       uses: anchore/sbom-action@cee1b8e05ae5b2593a75e197229729eabaa9f8ec # v0.20.2
       with:
         format: cyclonedx-json
-        artifact-name: ${{ steps.extract-metadata.outputs.SBOM_NAME }}
+        output-file: ${{ steps.generate-filename.outputs.SBOM_NAME }}
         upload-artifact: false
         upload-release-assets: false
 
     - name: Upload artifacts
       uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
       with:
-        name: artifacts
+        name: artifacts-${{ matrix.os }}-${{ matrix.arch }}
         path: |
-          ${{ steps.extract-metadata.outputs.TAR_GZ_NAME }}
-          ${{ steps.extract-metadata.outputs.SBOM_NAME }}
-        if-no-files-found: error
-
-create-checksum:
-  name: Create checksum
-  runs-on: ubuntu-latest
-  permissions:
-    contents: read
-  needs: [build-artifact]
-  steps:
-    - name: Downloads artifacts
-      uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
-      with:
-        name: artifacts
-        path: /build
-
-    - name: Create checksum file
-      run: |
-        shopt -s nullglob
-        for archive in /build/*; do
-          CHECKSUM=$(sha256sum ${archive})
-          echo $CHECKSUM >> checksums.txt
-        done
-
-    - name: Upload checksum
-      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-      with:
-        name: artifacts
-        path: checksums.txt
+          ${{ steps.generate-filename.outputs.TAR_GZ_NAME }}
+          ${{ steps.generate-filename.outputs.SBOM_NAME }}
         if-no-files-found: error
 
 sign-publish-artifact:
@@ -112,7 +88,7 @@ sign-publish-artifact:
   permissions:
     contents: write
     id-token: write # needed for signing the artifact with GitHub OIDC Token
-  needs: [create-checksum]
+  needs: [create-draft-release, build-artifact]
   steps:
     - name: Install Cosign
       uses: sigstore/cosign-installer@d58896d6a1865668819e1d91763c7751a165e159 # v3.9.2
@@ -120,15 +96,26 @@ sign-publish-artifact:
     - name: Downloads artifacts
       uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
       with:
-        name: artifacts
-        path: /artifacts
+        pattern: artifacts-*
+        merge-multiple: true
+        path: /tmp/artifacts
+
+    - name: Create checksum file
+      run: |
+        shopt -s nullglob
+        for archive in /tmp/artifacts/*.tar.gz; do
+          echo "Generate checksum for ${archive}"
+          CHECKSUM=$(sha256sum ${archive})
+          echo $CHECKSUM >> checksums.txt
+        done
 
     - name: Sign the artifacts with GitHub OIDC Token
       env:
         COSIGN_YES: true
       run: |
         shopt -s nullglob
-        for archive in /artifacts/*.tar.gz; do
+        for archive in /tmp/artifacts/*.tar.gz; do
+          echo "Sign archive for ${archive}"
           archive_without_ext="${archive%.tar.gz}"
           cosign sign-blob ${archive} --output-certificate ${archive_without_ext}.pem --output-signature ${archive_without_ext}.sig
         done
@@ -136,13 +123,15 @@ sign-publish-artifact:
     - name: Attest SBOM
       run: |
         shopt -s nullglob
-        for sbom in /artifacts/*.sbom; do
+        for sbom in /tmp/artifacts/*.sbom; do
+          echo "Attest sbom file ${sbom}"
           sbom_without_ext="${sbom%.sbom}"
           cosign attest-blob -y --type cyclonedx --predicate ${sbom} --output-attestation ${sbom_without_ext}.sbom.intoto.jsonl ${sbom_without_ext}.tar.gz
+          rm ${sbom}
         done
 
     - name: Upload artifact to release
-      run: gh release upload ${{ github.ref }} /artifacts/*
+      run: gh release upload v${{ needs.build-artifact.outputs.version }} /tmp/artifacts/* -R ${{ github.repository }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

@@ -203,7 +203,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
 
         self._repository_file(
             "contributing",
-            ".github/CONTRIBUTING.md",
+            "CONTRIBUTING.md",
             file_content,
         )
 
@@ -215,7 +215,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
 
         self._repository_file(
             "support",
-            ".github/SUPPORT.md",
+            "SUPPORT.md",
             file_content,
         )
 
@@ -249,7 +249,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
 
         self._repository_file(
             "code_of_conduct",
-            ".github/CODE_OF_CONDUCT.md",
+            "CODE_OF_CONDUCT.md",
             template.render(contact_email=contact_email),
         )
 
@@ -257,7 +257,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         template = env.get_template(os.path.join("misc", "CODEOWNERS.j2"))
 
         self._repository_file(
-            "codeowners", ".github/CODEOWNERS", template.render(owner=self.owner)
+            "codeowners", "CODEOWNERS", template.render(owner=self.owner)
         )
 
     def sync_vscode_config(self, language: str):
@@ -303,7 +303,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
 
         self._repository_file(
             "security",
-            ".github/SECURITY.md",
+            "SECURITY.md",
             template.render(
                 repository_name=f"{self.owner}/{self.name}",
                 security_email=security_email,

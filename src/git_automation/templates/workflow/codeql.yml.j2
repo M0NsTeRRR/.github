@@ -4,7 +4,7 @@
 name: CodeQL
 on:
   schedule:
-    - cron: '34 7 * * 5'
+    - cron: '0 7 * * *'
   push:
     branches:
       - main
@@ -32,10 +32,10 @@ jobs:
           build-mode: none
         {%- elif language == "go" %}
         - language: go
-          build-mode: none
+          build-mode: autobuild
         {%- elif language == "rust" %}
         - language: rust
-          build-mode: none
+          build-mode: autobuild
         {% endif +%}
     steps:
       - name: Checkout code

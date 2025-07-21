@@ -38,4 +38,3 @@ config:
         lint: true
         test: true
         changelog: true
-        documentation: false

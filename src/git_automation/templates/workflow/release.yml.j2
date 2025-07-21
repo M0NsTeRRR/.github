@@ -6,10 +6,10 @@
 {%- include "workflow/{}/package.yml.j2".format(language) %}
 {%- endif %}
 {%- if documentation %}
-{%- include "workflow/{}/documentation.yml.j2".format(language) %}
+{% include "workflow/{}/documentation.yml.j2".format(language) %}
 {%- endif %}
 {%- if docker %}
-{%- include "workflow/docker.yml.j2" -%}
+{% include "workflow/docker.yml.j2" -%}
 {%- endif %}
 {%- endset -%}
 {%- set needs %}

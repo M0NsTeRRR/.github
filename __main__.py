@@ -37,8 +37,8 @@ for repository_config in config.get_object("repositories", []):
             or repository_config["workflow"]["changelog"]
         )
         workflow_documentation = (
-            "documentation" not in repository_config["workflow"]
-            or repository_config["workflow"]["documentation"]
+            "documentation" in repository_config["workflow"]
+            and repository_config["workflow"]["documentation"]
         )
 
     renovatebot = "renovatebot" in repository_config
