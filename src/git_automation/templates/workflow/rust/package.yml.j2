@@ -54,7 +54,7 @@ build-package:
         REPO_NAME=$(echo "${{ github.repository }}" | cut -d'/' -f2)
 
         # Get version
-        VERSION=$(echo "${{ github.ref_name }}" | sed 's/^v//')
+        VERSION=$(echo "${{ github.ref_name }}" | sed 's/^v/')
 
         # Set output
         echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
@@ -85,6 +85,7 @@ build-package:
           ${{ steps.generate-filename.outputs.TAR_GZ_NAME }}
           ${{ steps.generate-filename.outputs.SBOM_NAME }}
         if-no-files-found: error
+        retention-days: 1
 
 sign-publish-artifact:
   name: Sign and publish artifact
@@ -102,33 +103,35 @@ sign-publish-artifact:
       with:
         pattern: artifacts-*
         merge-multiple: true
-        path: /tmp/artifacts
+        path: ${{ runner.temp }}/artifacts
 
     - name: Create checksum file
+      working-directory: ${{ runner.temp }}/artifacts
       run: |
         shopt -s nullglob
-        cd /tmp/artifacts
         for archive in *.tar.gz; do
           echo "Generate checksum for ${archive}"
           CHECKSUM=$(sha256sum ${archive})
-          echo $CHECKSUM >> /tmp/artifacts/checksums.txt
+          echo $CHECKSUM >> checksums.txt
         done
 
     - name: Sign the artifacts with GitHub OIDC Token
+      working-directory: ${{ runner.temp }}/artifacts
       env:
         COSIGN_YES: true
       run: |
         shopt -s nullglob
-        for archive in /tmp/artifacts/*.tar.gz; do
+        for archive in *.tar.gz; do
           echo "Sign archive for ${archive}"
           archive_without_ext="${archive%.tar.gz}"
           cosign sign-blob ${archive} --output-certificate ${archive_without_ext}.pem --output-signature ${archive_without_ext}.sig
         done
 
     - name: Attest SBOM
+      working-directory: ${{ runner.temp }}/artifacts
       run: |
         shopt -s nullglob
-        for sbom in /tmp/artifacts/*.sbom; do
+        for sbom in *.sbom; do
           echo "Attest sbom file ${sbom}"
           sbom_without_ext="${sbom%.sbom}"
           cosign attest-blob -y --type cyclonedx --predicate ${sbom} --output-attestation ${sbom_without_ext}.sbom.intoto.jsonl ${sbom_without_ext}.tar.gz
@@ -136,7 +139,8 @@ sign-publish-artifact:
         done
 
     - name: Upload artifact to release
-      run: gh release upload ${{ needs.build-artifact.outputs.version }} /tmp/artifacts/* -R ${{ github.repository }}
+      working-directory: ${{ runner.temp }}/artifacts
+      run: gh release upload ${{ needs.build-artifact.outputs.version }} * -R ${{ github.repository }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 {%- endraw %}
