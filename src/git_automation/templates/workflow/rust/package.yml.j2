@@ -107,10 +107,11 @@ sign-publish-artifact:
     - name: Create checksum file
       run: |
         shopt -s nullglob
-        for archive in /tmp/artifacts/*.tar.gz; do
+        cd /tmp/artifacts
+        for archive in *.tar.gz; do
           echo "Generate checksum for ${archive}"
           CHECKSUM=$(sha256sum ${archive})
-          echo $CHECKSUM >> checksums.txt
+          echo $CHECKSUM >> /tmp/artifacts/checksums.txt
         done
 
     - name: Sign the artifacts with GitHub OIDC Token

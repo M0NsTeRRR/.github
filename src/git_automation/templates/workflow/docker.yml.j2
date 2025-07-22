@@ -37,8 +37,6 @@ build-push-docker:
       uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804 # v5.7.0
       with:
         images: ghcr.io/${{ github.repository }}
-        tags: |
-          type=semver,pattern={{version}}
 
     - name: Build and push
       id: build-and-push
@@ -47,6 +45,7 @@ build-push-docker:
         platforms: ${{ matrix.platform }}
         push: true
         tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
 
 sign-docker:
   name: Sign docker artifact
@@ -75,23 +74,21 @@ sign-docker:
     - name: Sign the images with GitHub OIDC Token
       run: |
         for tag in ${TAGS}; do
-          echo "Sign image for ${tag}"
+          echo "Sign image for ${tag}@${DIGEST}"
           cosign sign -y --recursive ${tag}@${DIGEST}
         done
 
     - name: Generate SBOM
       run: |
-        shopt -s nullglob
         for tag in ${TAGS}; do
-          echo "Generate sbom for ${tag}"
+          echo "Generate sbom for ${tag}@${DIGEST}"
           syft --output cyclonedx-json=${tag}@${DIGEST}.sbom ${tag}@${DIGEST}
         done
 
     - name: Attest images with SBOM
       run: |
-        shopt -s nullglob
         for tag in ${TAGS}; do
-          echo "Attest image for ${tag}"
+          echo "Attest image for ${tag}@${DIGEST}"
           cosign attest -y --recursive --type cyclonedx --predicate ${tag}@${DIGEST}.sbom ${tag}@${DIGEST}
         done
 {%- endraw %}

@@ -103,10 +103,11 @@ sign-publish-artifact:
     - name: Create checksum file
       run: |
         shopt -s nullglob
-        for archive in /tmp/artifacts/*.tar.gz; do
+        cd /tmp/artifacts
+        for archive in *.tar.gz; do
           echo "Generate checksum for ${archive}"
           CHECKSUM=$(sha256sum ${archive})
-          echo $CHECKSUM >> checksums.txt
+          echo $CHECKSUM >> /tmp/artifacts/checksums.txt
         done
 
     - name: Sign the artifacts with GitHub OIDC Token
@@ -140,10 +141,12 @@ sign-publish-artifact:
         MAJOR_VERSION=$(echo "${{ github.ref_name }}" | cut -d '.' -f 1 | sed 's/v//')
 
         if [[ $MAJOR_VERSION -ge 2 ]]; then
-          curl https://sum.golang.org/lookup/github.com/${{ github.repository }}/v${MAJOR_VERSION}@${{ github.ref_name }}
-          curl https://proxy.golang.org/github.com/${{ github.repository }}/v${MAJOR_VERSION}/@v/${{ github.ref_name }}.info
+          curl https://sum.golang.org/lookup/github.com/${REPOSITORY}/v${MAJOR_VERSION}@${{ github.ref_name }}
+          curl https://proxy.golang.org/github.com/${REPOSITORY@L}/v${MAJOR_VERSION}/@v/${{ github.ref_name }}.info
         else
-          curl https://sum.golang.org/lookup/github.com/${{ github.repository }}@${{ github.ref_name }}
-          curl https://proxy.golang.org/github.com/${{ github.repository }}/@v/${{ github.ref_name }}.info
+          curl https://sum.golang.org/lookup/github.com/${REPOSITORY}@${{ github.ref_name }}
+          curl https://proxy.golang.org/github.com/${REPOSITORY@L}/@v/${{ github.ref_name }}.info
         fi
+      env:
+        REPOSITORY: ${{ github.repository }}
 {%- endraw %}
