@@ -1,6 +1,6 @@
 encryptionsalt: v1:VQNwfBaxUMU=:v1:lrGEnMjjyHxzDTHK:N0BybejVYASPBcWj0QzMHlDHv5kP+w==
 config:
-  github:owner: m0nsterrr
+  github:owner: M0NsTeRRR
   # default_branch_name: main
   # used to push commit to a working branch instead of main
   branch_name: automation-sync
@@ -12,7 +12,7 @@ config:
   contact_email: contact@adminafk.fr
   # used by funding
   funding:
-    github: m0nsterrr
+    github: M0NsTeRRR
     ko_fi: ludovicortega
   # used by security
   security_email: security@adminafk.fr

@@ -1,13 +1,13 @@
 encryptionsalt: v1:VQNwfBaxUMU=:v1:lrGEnMjjyHxzDTHK:N0BybejVYASPBcWj0QzMHlDHv5kP+w==
 config:
-  github:owner: m0nsterrr
+  github:owner: M0NsTeRRR
   branch_name: automation-sync
   author:
     email: ludovic.ortega@adminafk.fr
     fullname: Ludovic Ortega
   contact_email: contact@adminafk.fr
   funding:
-    github: m0nsterrr
+    github: M0NsTeRRR
     ko_fi: ludovicortega
   security_email: security@adminafk.fr
   app_installation_ids:

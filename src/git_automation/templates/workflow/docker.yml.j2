@@ -42,6 +42,12 @@ build-docker:
       env:
         REPOSITORY: ${{ github.repository }}
 
+    - name: Docker meta
+      id: meta
+      uses: docker/metadata-action@c1e51972afc2121e065aed6d45c65596fe445f3f # v5.8.0
+      with:
+        images: ghcr.io/${{ github.repository }}
+
     - name: Build and push by digest
       id: build
       uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
