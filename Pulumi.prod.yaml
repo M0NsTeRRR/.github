@@ -38,3 +38,27 @@ config:
         lint: true
         test: true
         changelog: true
+    - name: as212510.net
+      title: as212510.net
+      description: as212510.net website
+      license: CECILL-2.1
+      logo: unicornafk.svg
+      topics:
+        - asn
+        - network
+      readme: true
+      package: "as212510.net"
+      label:
+        - default
+      renovatebot:
+        configs: []
+        additionnal_configs: []
+      language: go
+      versions: ["1.23", "1.24"]
+      gitignore: true
+      devcontainer: true
+      docker: true
+      workflow:
+        lint: true
+        test: true
+        changelog: true
