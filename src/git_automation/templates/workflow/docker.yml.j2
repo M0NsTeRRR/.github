@@ -42,6 +42,9 @@ build-docker:
       env:
         REPOSITORY: ${{ github.repository }}
 
+    - name: Get Git commit timestamps
+      run: echo "TIMESTAMP=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
+
     - name: Docker meta
       id: meta
       uses: docker/metadata-action@c1e51972afc2121e065aed6d45c65596fe445f3f # v5.8.0
@@ -55,7 +58,9 @@ build-docker:
         platforms: ${{ matrix.os }}/${{ matrix.arch }}
         tags: ghcr.io/${{ steps.repository_lc.outputs.REPOSITORY_LC }}
         labels: ${{ steps.meta.outputs.labels }}
-        outputs: type=image,push-by-digest=true,name-canonical=true,push=true,oci-mediatypes=true
+        outputs: type=image,push-by-digest=true,name-canonical=true,push=true,oci-mediatypes=true,rewrite-timestamp=true
+      env:
+        SOURCE_DATE_EPOCH: ${{ env.TIMESTAMP }}
 
     - name: Export digest
       run: |
