@@ -39,6 +39,9 @@ build-artifact:
       with:
         go-version: stable
 
+    - name: Get Git commit timestamps
+      run: echo "TIMESTAMP=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
+
     - name: Generate filenames
       id: generate-filename
       shell: bash
@@ -56,7 +59,7 @@ build-artifact:
         echo "TAR_GZ_NAME=${REPO_NAME}-${VERSION}-${{ matrix.os }}-${{ matrix.arch }}.tar.gz" >> $GITHUB_OUTPUT
 
     - name: Build binary
-      run: go build -o "${{ steps.generate-filename.outputs.BINARY_NAME }}" -ldflags "-X main.version=${{ github.ref_name }}" main.go
+      run: go build -trimpath -a -o "${{ steps.generate-filename.outputs.BINARY_NAME }}" -ldflags '-w -X main.version=${{ github.ref_name }} -X main.buildTime=${{ env.TIMESTAMP }} -extldflags "-static"'
       env:
         GOOS: ${{ matrix.os }}
         GOARCH: ${{ matrix.arch }}
