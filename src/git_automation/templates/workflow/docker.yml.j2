@@ -61,6 +61,7 @@ build-docker:
         outputs: type=image,push-by-digest=true,name-canonical=true,push=true,oci-mediatypes=true,rewrite-timestamp=true
       env:
         SOURCE_DATE_EPOCH: ${{ env.TIMESTAMP }}
+        VERSION: ${{ github.ref_name }}
 
     - name: Export digest
       run: |
