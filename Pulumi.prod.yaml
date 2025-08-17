@@ -1,6 +1,5 @@
 encryptionsalt: v1:VQNwfBaxUMU=:v1:lrGEnMjjyHxzDTHK:N0BybejVYASPBcWj0QzMHlDHv5kP+w==
 config:
-  github:owner: M0NsTeRRR
   branch_name: automation-sync
   author:
     email: ludovic.ortega@adminafk.fr

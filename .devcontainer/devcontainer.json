@@ -1,34 +1,37 @@
 // For format details, see https://aka.ms/devcontainer.json
 {
-	"name": ".github",
-	"image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
-	"postCreateCommand": "./.devcontainer/postCreateCommand.sh",
-	// Features to add to the dev container. More info: https://containers.dev/features.
-	"features": {
-		"ghcr.io/va-h/devcontainers-features/uv:1": {},
-		"ghcr.io/devcontainers-extra/features/pulumi:1": {}
-	},
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [],
-	// Configure tool-specific properties.
-	// "customizations": {},
-	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	// "remoteUser": "root",
-	"mounts": [
-		// mount pulumi files
-		"source=${localEnv:HOME}${localEnv:USERPROFILE}/.pulumi,target=/home/vscode/pulumi-data/.pulumi,type=bind,consistency=cached"
-	],
-	"userEnvProbe": "loginInteractiveShell",
-	"customizations": {
-		"vscode": {
-			"extensions": [
-				"medo64.render-crlf",
-				"redhat.vscode-yaml",
-				"github.vscode-github-actions",
-				"donjayamanne.githistory",
-				"wholroyd.jinja",
-				"ms-python.python"
-			]
-		}
-	}
+  "name": ".github",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
+  "postCreateCommand": "./.devcontainer/postCreateCommand.sh",
+  // Features to add to the dev container. More info: https://containers.dev/features.
+  "features": {
+    "ghcr.io/va-h/devcontainers-features/uv:1": {},
+    "ghcr.io/devcontainers-extra/features/pulumi:1": {}
+  },
+  // Use 'forwardPorts' to make a list of ports inside the container available locally.
+  "forwardPorts": [],
+  "containerEnv": {
+    "AWS_CA_BUNDLE": "/etc/ssl/certs/ca-certificates.crt"
+  },
+  // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+  // "remoteUser": "root",
+  "mounts": [
+    // mount pulumi files
+    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.pulumi,target=/home/vscode/.pulumi,type=bind,consistency=cached",
+    "source=/etc/ssl/certs/ca-certificates.crt,target=/etc/ssl/certs/ca-certificates.crt,type=bind,consistency=cached,readonly"
+  ],
+  "userEnvProbe": "loginInteractiveShell",
+  // Configure tool-specific properties.
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "medo64.render-crlf",
+        "redhat.vscode-yaml",
+        "github.vscode-github-actions",
+        "donjayamanne.githistory",
+        "wholroyd.jinja",
+        "ms-python.python"
+      ]
+    }
+  }
 }

@@ -14,9 +14,12 @@ To prevents accidental deletion of Github repository, this ressource is marked a
 ## Run
 
 ```sh
-export GITHUB_TOKEN=YYYYYYYYYYYYYY
-export PULUMI_CONFIG_PASSPHRASE=XXXXXXXXXXX
-pulumi login --local
+export GITHUB_TOKEN=xxxx
+export PULUMI_CONFIG_PASSPHRASE=xxxx
+export AWS_ACCESS_KEY_ID=xxxx
+export AWS_SECRET_ACCESS_KEY=xxxx
+export AWS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
+pulumi login 's3://pulumi?region=eu-west-1&endpoint=https://nas.unicornafk.fr:9000&s3ForcePathStyle=true'
 pulumi stack select <dev|prod>
 pulumi refresh
 pulumi up

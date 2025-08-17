@@ -6,5 +6,6 @@ uv sync --all-extras
 # see https://github.com/microsoft/vscode-remote-release/issues/11024
 git config --global gpg.program "/usr/bin/gpg"
 
-pulumi login file://~/pulumi-data
+pulumi login 's3://pulumi?region=eu-west-1&endpoint=https://nas.unicornafk.fr:9000&s3ForcePathStyle=true'
+
 pulumi stack select dev

@@ -8,3 +8,4 @@ config:
   pulumi:tags:
     value:
       pulumi:template: github-python
+  github:owner: M0NsTeRRR

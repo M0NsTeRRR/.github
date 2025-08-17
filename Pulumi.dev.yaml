@@ -1,69 +1,62 @@
 encryptionsalt: v1:VQNwfBaxUMU=:v1:lrGEnMjjyHxzDTHK:N0BybejVYASPBcWj0QzMHlDHv5kP+w==
 config:
-  github:owner: M0NsTeRRR
-  # default_branch_name: main
-  # used to push commit to a working branch instead of main
   branch_name: automation-sync
-  # used when pulumi commit
   author:
     email: ludovic.ortega@adminafk.fr
     fullname: Ludovic Ortega
-  # used by code of conduct
   contact_email: contact@adminafk.fr
-  # used by funding
   funding:
     github: M0NsTeRRR
     ko_fi: ludovicortega
-  # used by security
   security_email: security@adminafk.fr
-  # app installation id
   app_installation_ids:
     renovatebot: "45460629"
     dco: "38972756"
   repositories:
-    - name: test-pulumi
-      title: Pulumi test repository
-      description: pulumi testing repository for https://github.com/M0NsTeRRR/.github
-      # documentation_url: "https://test.fr"
-      # homepage_url: "https://test.fr"
+    - name: test-python
+      title: test-python
+      description: test python
       license: CECILL-2.1
-      # display logo in readme and upload it to /docs/assets
       logo: unicornafk.svg
       topics:
+        - test
         - pulumi
-        - pulumi-github
-      # generate readme
       readme: true
-      # if it's a published package put the name here
-      package: "test-pulumi"
-      # generate issue/pr labels
+      package: "test-python"
       label:
         - default
-      # enable renovatebot
       renovatebot:
-        # if you want to run renovatebot on certain schedule
-        # schedule: "before 9pm on friday"
-        # if you want to add template configs
         configs: []
-        # custom file available in the repository to add to renovatebot config
         additionnal_configs: []
-      # set repository language if there is one
       language: python
       versions: ["3.9", "3.10", "3.11", "3.12", "3.13"]
-      # enable devcontainer (documentation, renovatebot)
-      # devcontainer: true
-      # enable helm (documentation, renovatebot)
-      # helm: true
-      # enable docker (documentation, renovatebot)
-      # docker: true
-      # set workflow
+      gitignore: true
+      devcontainer: true
       workflow:
-        lint: false
-        test: false
+        lint: true
+        test: true
         changelog: true
-        documentation: true
-      # enable pages
-      # pages:
-      #   branch: "gh-pages"
-      #   path: "/docs"
-      #   cname: test-pulumi.adminafk.fr
+    - name: test-go
+      title: test-go
+      description: test go
+      license: CECILL-2.1
+      logo: unicornafk.svg
+      topics:
+        - test
+        - pulumi
+      readme: true
+      package: "test-go"
+      label:
+        - default
+      renovatebot:
+        configs: []
+        additionnal_configs: []
+      language: go
+      versions: ["1.23", "1.24"]
+      gitignore: true
+      devcontainer: true
+      docker: true
+      workflow:
+        lint: true
+        test: true
+        changelog: true
