@@ -1,2 +1,15 @@
+{%- set tag_prefix %}
+{%- if language == "go" %}v{% endif -%}
+{%- endset %}
 ### Docker
-`docker pull ghcr.io/{{ repository_name | lower }}:latest`
+```bash
+version="1.0.0"
+
+# Pull image
+docker pull ghcr.io/{{ repository_name | lower }}:${version}
+
+# Verify image signature
+cosign verify ghcr.io/{{ repository_name | lower }}:{{ tag_prefix }}${version} \
+  --certificate-identity "https://github.com/{{ repository_name | lower }}/.github/workflows/release.yml@refs/tags/{{ tag_prefix }}${version}" \
+  --certificate-oidc-issuer "https://token.actions.githubusercontent.com"
+```

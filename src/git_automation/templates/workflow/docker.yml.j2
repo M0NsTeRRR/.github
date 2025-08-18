@@ -6,8 +6,7 @@ build-docker:
     contents: read
     packages: write # needed for pushing docker image
   outputs:
-    tags: ${{ steps.meta.outputs.tags }}
-    digest: ${{ steps.build-and-push.outputs.digest }}
+    tags: ${{ steps.build.outputs.tags }}
     repository_lc: ${{ steps.repository_lc.outputs.REPOSITORY_LC }}
   strategy:
     fail-fast: false
@@ -83,6 +82,8 @@ merge-docker:
   permissions:
     contents: read
     packages: write # needed for pushing docker image
+  outputs:
+    manifest-name-digest: ${{ steps.manifest.outputs.MANIFEST_NAME_DIGEST }}
   needs: [build-docker]
   steps:
     - name: Downloads digests
@@ -109,10 +110,13 @@ merge-docker:
         images: ghcr.io/${{ github.repository }}
 
     - name: Create manifest list and push
+      id: manifest
       working-directory: ${{ runner.temp }}/digests
       run: |
         docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
           $(printf 'ghcr.io/${{ needs.build-docker.outputs.REPOSITORY_LC }}@sha256:%s ' *)
+        MANIFEST_DIGEST=$(docker buildx imagetools inspect "ghcr.io/${{ needs.build-docker.outputs.REPOSITORY_LC }}:${{ github.ref_name }}" --format "{{json .Manifest.Digest}}" | tr -d '"')
+        echo "MANIFEST_NAME_DIGEST=ghcr.io/${{ needs.build-docker.outputs.REPOSITORY_LC }}@${MANIFEST_DIGEST}" >> $GITHUB_OUTPUT
 
 sign-docker:
   name: Sign Docker
@@ -120,10 +124,9 @@ sign-docker:
   permissions:
     packages: write # needed for pushing docker signature
     id-token: write # needed for signing the images with GitHub OIDC Token
-  needs: [merge-docker]
   env:
-    TAGS: ${{ needs.build-docker.outputs.tags }}
-    DIGEST: ${{ needs.build-docker.outputs.digest }}
+    IMAGE_DIGEST: ${{ needs.merge-docker.outputs.manifest-name-digest }}
+  needs: [merge-docker]
   steps:
     - name: Install Cosign
       uses: sigstore/cosign-installer@d58896d6a1865668819e1d91763c7751a165e159 # v3.9.2
@@ -140,22 +143,16 @@ sign-docker:
 
     - name: Sign the images with GitHub OIDC Token
       run: |
-        for tag in ${TAGS}; do
-          echo "Sign image for ${tag}@${DIGEST}"
-          cosign sign -y --recursive ${tag}@${DIGEST}
-        done
+        echo "Sign image for ${IMAGE_DIGEST}"
+        cosign sign -y --recursive ${IMAGE_DIGEST}
 
     - name: Generate SBOM
       run: |
-        for tag in ${TAGS}; do
-          echo "Generate sbom for ${tag}@${DIGEST}"
-          syft --output cyclonedx-json=${tag}@${DIGEST}.sbom ${tag}@${DIGEST}
-        done
+        echo "Generate sbom for ${IMAGE_DIGEST}"
+        syft --output cyclonedx-json=${IMAGE_DIGEST}.sbom ${IMAGE_DIGEST}
 
     - name: Attest images with SBOM
       run: |
-        for tag in ${TAGS}; do
-          echo "Attest image for ${tag}@${DIGEST}"
-          cosign attest -y --recursive --type cyclonedx --predicate ${tag}@${DIGEST}.sbom ${tag}@${DIGEST}
-        done
+        echo "Attest image for ${IMAGE_DIGEST}"
+        cosign attest -y --type cyclonedx --predicate ${IMAGE_DIGEST}.sbom ${IMAGE_DIGEST}
 {%- endraw %}

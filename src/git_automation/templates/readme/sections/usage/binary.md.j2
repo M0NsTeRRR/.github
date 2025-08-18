@@ -1,0 +1,22 @@
+{%- set tag_prefix %}
+{%- if language == "go" %}v{% endif -%}
+{%- endset %}
+### Binary
+```bash
+version="1.0.0"
+
+# Download binary
+wget "https://github.com/{{ repository_name | lower }}/releases/download/{{ tag_prefix }}${version}/test-go-${version}-linux-amd64.tar.gz"
+
+# Verify checksum
+wget "https://github.com/{{ repository_name | lower }}/releases/download/{{ tag_prefix }}${version}/checksums.txt"
+sha256sum --ignore-missing -c checksums.txt
+
+# Verify signature
+cosign verify-blob \
+  --certificate-identity "https://github.com/{{ repository_name | lower }}/.github/workflows/release.yml@refs/tags/{{ tag_prefix }}${version}" \
+  --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+  --cert "https://github.com/{{ repository_name | lower }}/releases/download/{{ tag_prefix }}${version}/test-go-${version}-linux-amd64.pem" \
+  --signature "https://github.com/{{ repository_name | lower }}/releases/download/{{ tag_prefix }}${version}/test-go-${version}-linux-amd64.sig" \
+  ./test-go-${version}-linux-amd64.tar.gz
+```
