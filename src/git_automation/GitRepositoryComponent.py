@@ -444,10 +444,10 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         changelog: bool,
         docker: bool,
     ):
-        template = env.get_template(os.path.join("workflow", "lint-pr.yml.j2"))
+        template = env.get_template(os.path.join("workflow", "validate-pr-title.yml.j2"))
         self._repository_file(
             "workflow",
-            ".github/workflows/lint-pr.yml",
+            ".github/workflows/validate-pr-title.yml",
             template.render(),
         )
 

@@ -14,10 +14,10 @@
 {%- endset -%}
 {%- set needs %}
 {%- if package %}
-{%- if language == "python" %}, publish-package{%- elif language in ["go", "rust"] %}, sign-publish-artifact{% endif -%}
+{%- if language == "python" %}, publish-package{% endif -%}
 {% endif -%}
 {%- if documentation %}, documentation{% endif -%}
-{%- if docker %}, sign-docker{% endif -%}
+{%- if docker %}, verify-docker{% endif -%}
 {%- endset %}
 name: {{ language }} release
 on:

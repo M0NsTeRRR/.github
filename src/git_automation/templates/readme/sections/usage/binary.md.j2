@@ -4,9 +4,10 @@
 ### Binary
 ```bash
 version="1.0.0"
+platform="linux-amd64"
 
 # Download binary
-wget "https://github.com/{{ repository_name | lower }}/releases/download/{{ tag_prefix }}${version}/test-go-${version}-linux-amd64.tar.gz"
+wget "https://github.com/{{ repository_name | lower }}/releases/download/{{ tag_prefix }}${version}/{{ repository_name.split("/")[1] }}-${version}-${platform}.tar.gz"
 
 # Verify checksum
 wget "https://github.com/{{ repository_name | lower }}/releases/download/{{ tag_prefix }}${version}/checksums.txt"
@@ -16,7 +17,10 @@ sha256sum --ignore-missing -c checksums.txt
 cosign verify-blob \
   --certificate-identity "https://github.com/{{ repository_name | lower }}/.github/workflows/release.yml@refs/tags/{{ tag_prefix }}${version}" \
   --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
-  --cert "https://github.com/{{ repository_name | lower }}/releases/download/{{ tag_prefix }}${version}/test-go-${version}-linux-amd64.pem" \
-  --signature "https://github.com/{{ repository_name | lower }}/releases/download/{{ tag_prefix }}${version}/test-go-${version}-linux-amd64.sig" \
-  ./test-go-${version}-linux-amd64.tar.gz
+  --cert "https://github.com/{{ repository_name | lower }}/releases/download/{{ tag_prefix }}${version}/{{ repository_name.split("/")[1] }}-${version}-${platform}.pem" \
+  --signature "https://github.com/{{ repository_name | lower }}/releases/download/{{ tag_prefix }}${version}/{{ repository_name.split("/")[1] }}-${version}-${platform}.sig" \
+  ./{{ repository_name.split("/")[1] }}-${version}-${platform}.tar.gz
+
+# Extract binary
+tar -xvzf {{ repository_name.split("/")[1] }}-${version}-${platform}.tar.gz
 ```

@@ -2,7 +2,7 @@
 ---
 # THIS FILE IS GENERATED! DO NOT EDIT! Maintained by Pulumi
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
-name: validate PR title
+name: Validate PR title
 on:
   pull_request:
     types:
@@ -12,7 +12,7 @@ on:
       - reopened
 permissions: {}
 jobs:
-  lint-pr:
+  validate-pr-title:
     name: Validate PR title
     runs-on: ubuntu-latest
     permissions:
