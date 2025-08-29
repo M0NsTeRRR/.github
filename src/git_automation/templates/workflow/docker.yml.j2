@@ -136,8 +136,8 @@ sign-docker:
     - name: Install Cosign
       uses: sigstore/cosign-installer@d58896d6a1865668819e1d91763c7751a165e159 # v3.9.2
 
-    - name: Install Syft
-      uses: anchore/sbom-action/download-syft@da167eac915b4e86f08b264dbdbc867b61be6f0c # v0.20.5
+    - name: Install Trivy
+      uses: aquasecurity/setup-trivy@e6c2c5e321ed9123bda567646e2f96565e34abe1 # v0.2.4
 
     - name: Login to GitHub Container Registry
       uses: docker/login-action@184bdaa0721073962dff0199f1fb9940f07167d1 # v3.5.0
@@ -158,18 +158,19 @@ sign-docker:
     - name: Generate SBOM
       run: |
         for tag in ${TAGS}; do
+          sbom_filename=$(echo "$tag" | cut -d'/' -f3-)
           echo "Generate sbom for ${tag}@${DIGEST}"
-          syft --output cyclonedx-json=${tag}@${DIGEST}.sbom ${tag}@${DIGEST}
+          trivy image --format cyclonedx --output ${sbom_filename}.sbom ${tag}@${DIGEST}
         done
 
     - name: Attest images with SBOM
       run: |
         for tag in ${TAGS}; do
+          sbom_filename=$(echo "$tag" | cut -d'/' -f3-)
           echo "Attest image for ${tag}@${DIGEST}"
-          syft --output cyclonedx-json=${tag}@${DIGEST}.sbom ${tag}@${DIGEST}
           cosign attest -y \
             --type cyclonedx \
-            --predicate ${tag}@${DIGEST}.sbom \
+            --predicate ${sbom_filename}.sbom \
             ${tag}@${DIGEST}
         done
 

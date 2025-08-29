@@ -69,12 +69,12 @@ build-package:
       run: tar -czf ${{ steps.generate-filename.outputs.TAR_GZ_NAME }} target/${{ matrix.job.target }}/release/${{ steps.generate-filename.outputs.BINARY_NAME }} LICENSE.txt LICENSE_en.txt README.md
 
     - name: Generate SBOM
-      uses: anchore/sbom-action@da167eac915b4e86f08b264dbdbc867b61be6f0c # v0.20.5
+      uses: aquasecurity/trivy-action@f9424c10c36e288d5fa79bd3dfd1aeb2d6eae808 # v0.33.0
       with:
-        format: cyclonedx-json
-        output-file: ${{ steps.generate-filename.outputs.SBOM_NAME }}
-        upload-artifact: false
-        upload-release-assets: false
+        scan-type: fs
+        scan-ref: .
+        format: cyclonedx
+        output: ${{ steps.generate-filename.outputs.SBOM_NAME }}
 
     - name: Upload artifacts
       uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -164,6 +164,9 @@ verify-artifact:
     - name: Install Cosign
       uses: sigstore/cosign-installer@d58896d6a1865668819e1d91763c7751a165e159 # v3.9.2
 
+    - name: Install Trivy
+      uses: aquasecurity/setup-trivy@e6c2c5e321ed9123bda567646e2f96565e34abe1 # v0.2.4
+
     - name: Download assets from release
       run: gh release download ${{ github.ref_name }} -R ${{ github.repository }}
       env:
@@ -183,6 +186,21 @@ verify-artifact:
             --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
             --cert "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/${binary_basename}.pem" \
             --signature "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/${binary_basename}.sig" \
+            ./${binary}
+        done
+
+    - name: Verify sbom attestation
+      run: |
+        for binary in *.tar.gz; do
+          binary_basename="${binary%.tar.gz}"
+
+          echo "Verify sbom for ${sbom}"
+          cosign verify-blob-attestation \
+            --type=cyclonedx \
+            --new-bundle-format \
+            --certificate-identity "https://github.com/${{ github.repository }}/.github/workflows/release.yml@refs/tags/${{ github.ref_name }}" \
+            --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+            --bundle ./${binary_basename}.sbom.bundle \
             ./${binary}
         done
 {%- endraw %}

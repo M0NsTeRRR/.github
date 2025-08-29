@@ -1,24 +1,24 @@
 {%- set tag_prefix %}
 {%- if language == "go" %}v{% endif -%}
 {%- endset %}
-### Docker
+### 🐳 Docker
 ```bash
 version="1.0.0"
 
 # Pull image
 docker pull ghcr.io/{{ repository_name | lower }}:{{ tag_prefix }}${version}
 
-# Verify image signature
+# Verify image signature (recommended but not required)
 cosign verify ghcr.io/{{ repository_name | lower }}:{{ tag_prefix }}${version} \
   --certificate-identity "https://github.com/{{ repository_name }}/.github/workflows/release.yml@refs/tags/{{ tag_prefix }}${version}" \
   --certificate-oidc-issuer "https://token.actions.githubusercontent.com"
 
-# Verify image attestation
+# Verify image attestation (recommended but not required)
 cosign verify-attestation ghcr.io/{{ repository_name | lower }}:{{ tag_prefix }}${version} \
   --type=cyclonedx \
   --certificate-identity "https://github.com/{{ repository_name }}/.github/workflows/release.yml@refs/tags/{{ tag_prefix }}${version}" \
   --certificate-oidc-issuer "https://token.actions.githubusercontent.com" > ./extracted-sbom.cdx.json
 
-# Scan SBOM attestation (SBOM attestation was saved from the previous step)
+# Scan SBOM attestation, SBOM attestation was saved from the previous step  (recommended but not required)
 trivy sbom ./extracted-sbom.cdx.json
 ```

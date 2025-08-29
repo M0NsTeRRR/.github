@@ -5,7 +5,25 @@
 - [Documentation](#-documentation)
 {%- else %}
 - [Usage](#-usage)
+{%- if language == "python" %}
+    - [Pypi](#-pypi)
+{%- elif language == "go" %}
+    - [Go CLI](#-go-cli)
+{%- elif language == "rust" %}
+    - [Cargo](#-cargo)
+{%- endif %}
+{%- if language in ["go", "rust"] %}
+    - [Binary](#-binary)
+{%- endif %}
+{%- if docker %}
+    - [Docker](#-docker)
+{%- endif %}
+{%- if helm %}
+    - [Helm chart](#helm-chart)
+{%- endif %}
 - [Dev](#%EF%B8%8F-dev)
+    - [Run linter and formatter](#run-linter-and-formatter)
+    - [Run test](#run-test)
 {%- endif %}
 - [Support &amp; Assistance](#%EF%B8%8F-support--assistance)
 - [Contributing](#-contributing)

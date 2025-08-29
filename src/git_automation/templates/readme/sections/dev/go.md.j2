@@ -1,9 +1,12 @@
 Install [Go](https://go.dev/doc/install).
 
 {%- if lint %}
-### Run formatter
+### Run linter and formatter
+
+[golangci-lint](https://golangci-lint.run/docs/welcome/install/#local-installation) must be installed.
 
 ```
+golangci-lint run
 go fmt .
 ```
 {%- endif %}
