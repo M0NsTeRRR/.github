@@ -1,13 +1,12 @@
-{%- set tag_prefix %}
-{%- if language == "go" %}v{% endif -%}
-{%- endset %}
+{%- set tag_prefix %}{%- if language == "go" %}v{% endif -%}{%- endset %}
+{%- set basename %}{{ basename }}{%- endset %}
 ### Binary
 ```bash
 version="1.0.0"
 platform="linux-amd64"
 
 # Download binary
-wget "https://github.com/{{ repository_name | lower }}/releases/download/{{ tag_prefix }}${version}/{{ repository_name.split("/")[1] }}-${version}-${platform}.tar.gz"
+wget "https://github.com/{{ repository_name | lower }}/releases/download/{{ tag_prefix }}${version}/{{ basename }}.tar.gz"
 
 # Verify checksum
 wget "https://github.com/{{ repository_name | lower }}/releases/download/{{ tag_prefix }}${version}/checksums.txt"
@@ -17,10 +16,23 @@ sha256sum --ignore-missing -c checksums.txt
 cosign verify-blob \
   --certificate-identity "https://github.com/{{ repository_name | lower }}/.github/workflows/release.yml@refs/tags/{{ tag_prefix }}${version}" \
   --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
-  --cert "https://github.com/{{ repository_name | lower }}/releases/download/{{ tag_prefix }}${version}/{{ repository_name.split("/")[1] }}-${version}-${platform}.pem" \
-  --signature "https://github.com/{{ repository_name | lower }}/releases/download/{{ tag_prefix }}${version}/{{ repository_name.split("/")[1] }}-${version}-${platform}.sig" \
-  ./{{ repository_name.split("/")[1] }}-${version}-${platform}.tar.gz
+  --cert "https://github.com/{{ repository_name | lower }}/releases/download/{{ tag_prefix }}${version}/{{ basename }}.pem" \
+  --signature "https://github.com/{{ repository_name | lower }}/releases/download/{{ tag_prefix }}${version}/{{ basename }}.sig" \
+  ./{{ basename }}.tar.gz
 
 # Extract binary
-tar -xvzf {{ repository_name.split("/")[1] }}-${version}-${platform}.tar.gz
+tar -xvzf {{ basename }}.tar.gz
+
+# Scan SBOM attestation
+wget "https://github.com/{{ repository_name | lower }}/releases/download/{{ tag_prefix }}${version}/{{ basename }}.sbom.bundle"
+cosign verify-blob-attestation {{ basename }}.tar.gz
+  --type=cyclonedx \
+  --new-bundle-format \
+  --certificate-identity "https://github.com/{{ repository_name | lower }}/.github/workflows/release.yml@refs/tags/{{ tag_prefix }}${version}" \
+  --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+  --bundle {{ basename }}.sbom.bundle
+
+# Scan SBOM attestation (SBOM attestation was saved from the previous step)
+jq -r '.dsseEnvelope.payload' {{ basename }}.sbom.bundle | base64 -d | jq -r '.predicate' > extracted-sbom.cdx.json
+trivy sbom ./extracted-sbom.cdx.json
 ```

@@ -122,9 +122,12 @@ sign-publish-artifact:
       run: |
         shopt -s nullglob
         for archive in *.tar.gz; do
-          echo "Sign archive for ${archive}"
           archive_without_ext="${archive%.tar.gz}"
-          cosign sign-blob ${archive} --output-certificate ${archive_without_ext}.pem --output-signature ${archive_without_ext}.sig
+
+          echo "Sign archive for ${archive}"
+          cosign sign-blob ${archive} \
+            --output-certificate ${archive_without_ext}.pem \
+            --output-signature ${archive_without_ext}.sig
         done
 
     - name: Attest SBOM
@@ -132,9 +135,16 @@ sign-publish-artifact:
       run: |
         shopt -s nullglob
         for sbom in *.sbom; do
-          echo "Attest sbom file ${sbom}"
           sbom_without_ext="${sbom%.sbom}"
-          cosign attest-blob -y --type cyclonedx --predicate ${sbom} --output-attestation ${sbom_without_ext}.sbom.intoto.jsonl ${sbom_without_ext}.tar.gz
+
+          echo "Attest sbom file ${sbom}"
+          cosign attest-blob -y \
+            --type cyclonedx \
+            --new-bundle-format \
+            --predicate ${sbom} \
+            --bundle ${sbom_without_ext}.sbom.bundle \
+            ${sbom_without_ext}.tar.gz
+
           rm ${sbom}
         done
 
@@ -165,8 +175,9 @@ verify-artifact:
     - name: Verify signature
       run: |
         for binary in ./*.tar.gz; do
-          echo "Verify binary for ${binary}"
           binary_basename="${binary%.tar.gz}"
+
+          echo "Verify binary for ${binary}"
           cosign verify-blob \
             --certificate-identity "https://github.com/${{ github.repository }}/.github/workflows/release.yml@refs/tags/${{ github.ref_name }}" \
             --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
