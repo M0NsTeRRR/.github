@@ -32,7 +32,7 @@ Please use your real name and a valid email address.
 ## Submitting changes
 
 Please create a new PR against the `main` branch which must be based on the
-project's [pull request template](.github/pull_request_template.md).
+project's [pull request template](.github/PULL_REQUEST_TEMPLATE.md).
 
 We usually squash all PRs commits on merge, and use the PR title as the commit
 message. Therefore, the PR title should follow the

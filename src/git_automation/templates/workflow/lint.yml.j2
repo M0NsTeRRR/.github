@@ -4,7 +4,7 @@
 {%- set included_content %}
 {%- include "workflow/{}/lint.yml.j2".format(language) %}
 {%- endset %}
-name: {{ language }} lint
+name: {{ language | capitalize }} lint
 on:
   - pull_request
 permissions: {}

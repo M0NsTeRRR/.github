@@ -64,7 +64,7 @@ for repository_config in config.get_object("repositories", []):
         pages=repository_config.get("pages", None),
     )
 
-    repository.sync_repository_ruleset(language, versions, workflow_lint, workflow_test)
+    repository.sync_repository_ruleset(language, versions, workflow_lint, workflow_test, docker)
 
     # repository.sync_app_installation(renovatebot)
 
@@ -81,7 +81,7 @@ for repository_config in config.get_object("repositories", []):
 
     repository.sync_support()
 
-    repository.sync_issue_template()
+    repository.sync_issue_template(language)
 
     repository.sync_codeowner()
 
@@ -103,7 +103,7 @@ for repository_config in config.get_object("repositories", []):
         repository.sync_security(security_email)
 
     if "label" in repository_config and repository_config["label"]:
-        repository.sync_label(repository_config["label"])
+        repository.sync_label(language, docker, renovatebot)
 
     if renovatebot:
         renovatebot_configs = repository_config["renovatebot"].get("configs", [])

@@ -220,29 +220,28 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         )
 
     def sync_pull_request_template(self):
-        with (
-            resources.files(PACKAGE_NAME)
-            .joinpath("misc", "pull_request_template.md")
-            .open() as file
-        ):
-            file_content = file.read()
+        template = env.get_template(os.path.join("misc", "pull_request_template.md.j2"))
 
         self._repository_file(
             "pull_request_template",
-            ".github/pull_request_template.md",
-            file_content,
+            ".github/PULL_REQUEST_TEMPLATE.md",
+            template.render(repositor_name={self.name}),
         )
 
-    def sync_issue_template(self):
-        issue_dir = resources.files(PACKAGE_NAME).joinpath("issue")
-        for issue_file in issue_dir.iterdir():
-            with issue_file.open() as file:
-                file_content = file.read()
+    def sync_issue_template(self, language: str):
+        issue_config_dir = resources.files(PACKAGE_NAME).joinpath(
+            "templates", "issue"
+        )
+        for issue_file in issue_config_dir.iterdir():
+            template = env.get_template(os.path.join("issue", issue_file.name))
+            filename = os.path.splitext(issue_file.name)[0]
+
             self._repository_file(
                 "issue_template",
-                f".github/ISSUE_TEMPLATE/{issue_file.name}",
-                file_content,
+                f".github/ISSUE_TEMPLATE/{filename}",
+                template.render(assignees=[self.owner], language=language),
             )
+              
 
     def sync_code_of_conduct(self, contact_email: str):
         template = env.get_template(os.path.join("misc", "CODE_OF_CONDUCT.md.j2"))
@@ -310,15 +309,12 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             ),
         )
 
-    def sync_label(self, label_files: List[str]):
+    def sync_label(self, language: str, docker: bool, renovatebot: bool):
         labels = []
 
-        for label_file in label_files:
-            ressource_path = resources.files(PACKAGE_NAME).joinpath(
-                "label", f"{label_file}.yml"
-            )
-            with ressource_path.open() as file:
-                labels += yaml.safe_load(file.read())
+        template = env.get_template(os.path.join("misc", "labels.yml.j2"))
+
+        labels = yaml.safe_load(template.render(language=language, docker=docker, renovatebot=renovatebot))
 
         github.IssueLabels(
             f"{self.name}-labels",
@@ -508,6 +504,15 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 template.render(language=language, versions=versions),
             )
 
+            if docker:
+                template = env.get_template(os.path.join("workflow", "docker", "test.yml.j2"))
+
+                self._repository_file(
+                    "workflow",
+                    ".github/workflows/test-docker.yml",
+                    template.render(language=language),
+                )
+
         if changelog:
             with (
                 resources.files(PACKAGE_NAME)
@@ -534,7 +539,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             )
 
     def sync_repository_ruleset(
-        self, language: str, versions: List[str], lint: bool, test: bool
+        self, language: str, versions: List[str], lint: bool, test: bool, docker: bool
     ):
         required_checks = [
             github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
@@ -544,10 +549,16 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 context="Validate PR title", integration_id=15368
             ),
             github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
+                context=f"Analyze ({language})", integration_id=15368
+            ),
+            github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
                 context="Analyze (actions)", integration_id=15368
             ),
             github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
-                context=f"Analyze ({language})", integration_id=15368
+                context=f"CodeQL", integration_id=57789
+            ),
+            github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
+                context=f"Dependency review", integration_id=15368
             ),
         ]
 
@@ -564,6 +575,13 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                         context=f"Test ({version})", integration_id=15368
                     ),
                 )
+            if docker:
+                for platform in ["linux, amd64, ubuntu-latest", "linux, arm64, ubuntu-24.04-arm"]:
+                    required_checks.append(
+                        github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
+                            context=f"Test ({platform})", integration_id=15368
+                        ),
+                    )
 
         github.RepositoryRuleset(
             f"{self.name}-ruleset",

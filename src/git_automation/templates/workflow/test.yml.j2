@@ -4,7 +4,7 @@
 {%- set included_content %}
 {%- include "workflow/{}/test.yml.j2".format(language) %}
 {%- endset %}
-name: {{ language }} test
+name: {{ language | capitalize }} test
 on:
   - pull_request
 permissions: {}

@@ -9,7 +9,7 @@
 {% include "workflow/{}/documentation.yml.j2".format(language) %}
 {%- endif %}
 {%- if docker %}
-{% include "workflow/docker.yml.j2" -%}
+{% include "workflow/docker/package.yml.j2" -%}
 {%- endif %}
 {%- endset -%}
 {%- set needs %}
@@ -19,7 +19,7 @@
 {%- if documentation %}, documentation{% endif -%}
 {%- if docker %}, verify-docker{% endif -%}
 {%- endset %}
-name: {{ language }} release
+name: {{ language | capitalize }} release
 on:
   push:
     tags:

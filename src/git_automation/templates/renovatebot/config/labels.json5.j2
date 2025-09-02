@@ -1,10 +1,11 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "labels": ["dependencies"],
   "packageRules": [
 {%- if language == "python" %}
     {
       "matchDatasources": ["pypi"],
-      "addLabels": ["renovate/pip"]
+      "addLabels": ["renovate/python"]
     },
 {%- elif language == "go" %}
     {
@@ -20,7 +21,7 @@
 {%- if configs["docker"] %}
     {
       "matchDatasources": ["docker"],
-      "addLabels": ["renovate/container"]
+      "addLabels": ["renovate/docker"]
     },
 {%- endif %}
 {%- if configs["helm"] %}
