@@ -229,9 +229,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         )
 
     def sync_issue_template(self, language: str):
-        issue_config_dir = resources.files(PACKAGE_NAME).joinpath(
-            "templates", "issue"
-        )
+        issue_config_dir = resources.files(PACKAGE_NAME).joinpath("templates", "issue")
         for issue_file in issue_config_dir.iterdir():
             template = env.get_template(os.path.join("issue", issue_file.name))
             filename = os.path.splitext(issue_file.name)[0]
@@ -241,7 +239,6 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 f".github/ISSUE_TEMPLATE/{filename}",
                 template.render(assignees=[self.owner], language=language),
             )
-              
 
     def sync_code_of_conduct(self, contact_email: str):
         template = env.get_template(os.path.join("misc", "CODE_OF_CONDUCT.md.j2"))
@@ -314,7 +311,9 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
 
         template = env.get_template(os.path.join("misc", "labels.yml.j2"))
 
-        labels = yaml.safe_load(template.render(language=language, docker=docker, renovatebot=renovatebot))
+        labels = yaml.safe_load(
+            template.render(language=language, docker=docker, renovatebot=renovatebot)
+        )
 
         github.IssueLabels(
             f"{self.name}-labels",
@@ -505,7 +504,9 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             )
 
             if docker:
-                template = env.get_template(os.path.join("workflow", "docker", "test.yml.j2"))
+                template = env.get_template(
+                    os.path.join("workflow", "docker", "test.yml.j2")
+                )
 
                 self._repository_file(
                     "workflow",
@@ -555,10 +556,10 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 context="Analyze (actions)", integration_id=15368
             ),
             github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
-                context=f"CodeQL", integration_id=57789
+                context="CodeQL", integration_id=57789
             ),
             github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
-                context=f"Dependency review", integration_id=15368
+                context="Dependency review", integration_id=15368
             ),
         ]
 
@@ -576,7 +577,10 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                     ),
                 )
             if docker:
-                for platform in ["linux, amd64, ubuntu-latest", "linux, arm64, ubuntu-24.04-arm"]:
+                for platform in [
+                    "linux, amd64, ubuntu-latest",
+                    "linux, arm64, ubuntu-24.04-arm",
+                ]:
                     required_checks.append(
                         github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
                             context=f"Test ({platform})", integration_id=15368
