@@ -49,7 +49,7 @@ build-artifact:
         echo "TAR_GZ_NAME=${REPO_NAME}-${VERSION}-${{ matrix.os }}-${{ matrix.arch }}.tar.gz" >> $GITHUB_OUTPUT
 
     - name: Build binary
-      run: go build -trimpath -a -o "${{ steps.generate-filename.outputs.BINARY_NAME }}" -ldflags '-w -X main.version=${{ github.ref_name }} -X main.buildTime=${{ env.TIMESTAMP }} -extldflags "-static"'
+      run: go build -trimpath -a -o "${{ steps.generate-filename.outputs.BINARY_NAME }}" -ldflags '-w -X main.version=${GITHUB_REF_NAME} -X main.buildTime=${{ env.TIMESTAMP }} -extldflags "-static"'
       env:
         GOOS: ${{ matrix.os }}
         GOARCH: ${{ matrix.arch }}
@@ -145,14 +145,14 @@ sign-publish-artifact:
 
     - name: Trigger Go Proxy Indexing
       run: |
-        MAJOR_VERSION=$(echo "${{ github.ref_name }}" | cut -d '.' -f 1 | sed 's/v//')
+        MAJOR_VERSION=$(echo "${GITHUB_REF_NAME}" | cut -d '.' -f 1 | sed 's/v//')
 
         if [[ $MAJOR_VERSION -ge 2 ]]; then
-          curl https://sum.golang.org/lookup/github.com/${REPOSITORY}/v${MAJOR_VERSION}@${{ github.ref_name }}
-          curl https://proxy.golang.org/github.com/${REPOSITORY@L}/v${MAJOR_VERSION}/@v/${{ github.ref_name }}.info
+          curl https://sum.golang.org/lookup/github.com/${REPOSITORY}/v${MAJOR_VERSION}@${GITHUB_REF_NAME}
+          curl https://proxy.golang.org/github.com/${REPOSITORY@L}/v${MAJOR_VERSION}/@v/${GITHUB_REF_NAME}.info
         else
-          curl https://sum.golang.org/lookup/github.com/${REPOSITORY}@${{ github.ref_name }}
-          curl https://proxy.golang.org/github.com/${REPOSITORY@L}/@v/${{ github.ref_name }}.info
+          curl https://sum.golang.org/lookup/github.com/${REPOSITORY}@${GITHUB_REF_NAME}
+          curl https://proxy.golang.org/github.com/${REPOSITORY@L}/@v/${GITHUB_REF_NAME}.info
         fi
       env:
         REPOSITORY: ${{ github.repository }}
@@ -171,7 +171,7 @@ verify-artifact:
       uses: aquasecurity/setup-trivy@e6c2c5e321ed9123bda567646e2f96565e34abe1 # v0.2.4
 
     - name: Download assets from release
-      run: gh release download ${{ github.ref_name }} -R ${{ github.repository }}
+      run: gh release download ${GITHUB_REF_NAME} -R ${{ github.repository }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -186,10 +186,10 @@ verify-artifact:
 
           echo "Verify binary for ${binary}"
           cosign verify-blob \
-            --certificate-identity "https://github.com/${{ github.repository }}/.github/workflows/release.yml@refs/tags/${{ github.ref_name }}" \
+            --certificate-identity "https://github.com/${{ github.repository }}/.github/workflows/release.yml@refs/tags/${GITHUB_REF_NAME}" \
             --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
-            --cert "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/${binary_basename}.pem" \
-            --signature "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/${binary_basename}.sig" \
+            --cert "https://github.com/${{ github.repository }}/releases/download/${GITHUB_REF_NAME}/${binary_basename}.pem" \
+            --signature "https://github.com/${{ github.repository }}/releases/download/${GITHUB_REF_NAME}/${binary_basename}.sig" \
             ./${binary}
         done
 
@@ -202,7 +202,7 @@ verify-artifact:
           cosign verify-blob-attestation \
             --type=cyclonedx \
             --new-bundle-format \
-            --certificate-identity "https://github.com/${{ github.repository }}/.github/workflows/release.yml@refs/tags/${{ github.ref_name }}" \
+            --certificate-identity "https://github.com/${{ github.repository }}/.github/workflows/release.yml@refs/tags/${GITHUB_REF_NAME}" \
             --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
             --bundle ./${binary_basename}.sbom.bundle \
             ./${binary}

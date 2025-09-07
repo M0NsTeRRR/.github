@@ -13,7 +13,9 @@ import pulumi_github as github
 
 PACKAGE_NAME = __name__.split(".")[0]
 
-env = Environment(loader=PackageLoader(PACKAGE_NAME, "templates"))
+env = Environment(
+    loader=PackageLoader(PACKAGE_NAME, "templates"), keep_trailing_newline=True
+)
 
 
 class GitRepositoryComponent(pulumi.ComponentResource):
@@ -220,7 +222,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         )
 
     def sync_pull_request_template(self):
-        template = env.get_template(os.path.join("misc", "pull_request_template.md.j2"))
+        template = env.get_template(os.path.join("misc", "PULL_REQUEST_TEMPLATE.md.j2"))
 
         self._repository_file(
             "pull_request_template",

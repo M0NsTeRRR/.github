@@ -45,7 +45,7 @@ build-binary:
         echo "BINARY_NAME=${REPO_NAME}" >> $GITHUB_OUTPUT
 
     - name: Build binary
-      run: go build -trimpath -a -o "${{ steps.generate-filename.outputs.BINARY_NAME }}" -ldflags '-w -X main.version=${{ github.ref_name }} -X main.buildTime=${{ env.TIMESTAMP }} -extldflags "-static"'
+      run: go build -trimpath -a -o "${{ steps.generate-filename.outputs.BINARY_NAME }}" -ldflags '-w -X main.version=${GITHUB_REF_NAME} -X main.buildTime=${{ env.TIMESTAMP }} -extldflags "-static"'
       env:
         GOOS: ${{ matrix.os }}
         GOARCH: ${{ matrix.arch }}

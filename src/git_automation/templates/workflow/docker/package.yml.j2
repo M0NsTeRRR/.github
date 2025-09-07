@@ -64,7 +64,7 @@ build-docker:
         outputs: type=image,push-by-digest=true,name-canonical=true,push=true,oci-mediatypes=true,rewrite-timestamp=true
       env:
         SOURCE_DATE_EPOCH: ${{ env.TIMESTAMP }}
-        VERSION: ${{ github.ref_name }}
+        VERSION: ${GITHUB_REF_NAME}
 
     - name: Export digest
       run: |
@@ -120,7 +120,7 @@ merge-docker:
       run: |
         docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
           $(printf 'ghcr.io/${{ needs.build-docker.outputs.REPOSITORY_LC }}@sha256:%s ' *)
-        DIGEST=$(docker buildx imagetools inspect "ghcr.io/${{ needs.build-docker.outputs.REPOSITORY_LC }}:${{ github.ref_name }}" --format "{{json .Manifest.Digest}}" | tr -d '"')
+        DIGEST=$(docker buildx imagetools inspect "ghcr.io/${{ needs.build-docker.outputs.REPOSITORY_LC }}:${GITHUB_REF_NAME}" --format "{{json .Manifest.Digest}}" | tr -d '"')
         echo "DIGEST=${DIGEST}" >> $GITHUB_OUTPUT
 
 sign-docker:
@@ -193,7 +193,7 @@ verify-docker:
         for tag in ${TAGS}; do
           echo "Verify image for ${tag}@${DIGEST}"
           cosign verify ${tag}@${DIGEST} \
-            --certificate-identity "https://github.com/${{ github.repository }}/.github/workflows/release.yml@refs/tags/${{ github.ref_name }}" \
+            --certificate-identity "https://github.com/${{ github.repository }}/.github/workflows/release.yml@refs/tags/${GITHUB_REF_NAME}" \
             --certificate-oidc-issuer "https://token.actions.githubusercontent.com"
         done
 
@@ -203,7 +203,7 @@ verify-docker:
           echo "Verify image for ${tag}@${DIGEST}"
           cosign verify-attestation ${tag}@${DIGEST} \
             --type=cyclonedx \
-            --certificate-identity "https://github.com/${{ github.repository }}/.github/workflows/release.yml@refs/tags/${{ github.ref_name }}" \
+            --certificate-identity "https://github.com/${{ github.repository }}/.github/workflows/release.yml@refs/tags/${GITHUB_REF_NAME}" \
             --certificate-oidc-issuer "https://token.actions.githubusercontent.com"
         done
 {%- endraw %}

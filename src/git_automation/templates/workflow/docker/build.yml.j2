@@ -9,11 +9,11 @@ build-docker:
     matrix:
       include:
 {%- endraw %}
-      {%- for platform in docker_platforms %}
-      - os: {{ platform["os"] }}
-        arch: {{ platform["arch"] }}
-        runner: {{ platform["runner"] }}
-      {%- endfor %}
+        {%- for platform in docker_platforms %}
+        - os: {{ platform["os"] }}
+          arch: {{ platform["arch"] }}
+          runner: {{ platform["runner"] }}
+        {%- endfor %}
 {%- raw %}
   steps:
     - name: Checkout code
@@ -34,5 +34,5 @@ build-docker:
         push: false
       env:
         SOURCE_DATE_EPOCH: ${{ env.TIMESTAMP }}
-        VERSION: ${{ github.ref_name }}
+        VERSION: ${GITHUB_REF_NAME}
 {%- endraw %}

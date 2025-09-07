@@ -42,7 +42,7 @@ build-package:
         REPO_NAME=$(echo "${{ github.repository }}" | cut -d'/' -f2)
 
         # Get version
-        VERSION=$(echo "${{ github.ref_name }}" | sed 's/^v/')
+        VERSION=$(echo "${GITHUB_REF_NAME}" | sed 's/^v/')
 
         # Set output
         echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
@@ -156,7 +156,7 @@ verify-artifact:
       uses: aquasecurity/setup-trivy@e6c2c5e321ed9123bda567646e2f96565e34abe1 # v0.2.4
 
     - name: Download assets from release
-      run: gh release download ${{ github.ref_name }} -R ${{ github.repository }}
+      run: gh release download ${GITHUB_REF_NAME} -R ${{ github.repository }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -170,10 +170,10 @@ verify-artifact:
 
           echo "Verify binary for ${binary}"
           cosign verify-blob \
-            --certificate-identity "https://github.com/${{ github.repository }}/.github/workflows/release.yml@refs/tags/${{ github.ref_name }}" \
+            --certificate-identity "https://github.com/${{ github.repository }}/.github/workflows/release.yml@refs/tags/${GITHUB_REF_NAME}" \
             --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
-            --cert "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/${binary_basename}.pem" \
-            --signature "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/${binary_basename}.sig" \
+            --cert "https://github.com/${{ github.repository }}/releases/download/${GITHUB_REF_NAME}/${binary_basename}.pem" \
+            --signature "https://github.com/${{ github.repository }}/releases/download/${GITHUB_REF_NAME}/${binary_basename}.sig" \
             ./${binary}
         done
 
@@ -186,7 +186,7 @@ verify-artifact:
           cosign verify-blob-attestation \
             --type=cyclonedx \
             --new-bundle-format \
-            --certificate-identity "https://github.com/${{ github.repository }}/.github/workflows/release.yml@refs/tags/${{ github.ref_name }}" \
+            --certificate-identity "https://github.com/${{ github.repository }}/.github/workflows/release.yml@refs/tags/${GITHUB_REF_NAME}" \
             --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
             --bundle ./${binary_basename}.sbom.bundle \
             ./${binary}
