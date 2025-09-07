@@ -10,24 +10,13 @@ build-artifact:
     fail-fast: false
     matrix:
       include:
-        - os: linux
-          arch: amd64
-          runner: ubuntu-latest
-        - os: linux
-          arch: arm64
-          runner: ubuntu-24.04-arm
-        - os: darwin
-          arch: amd64
-          runner: macos-13
-        - os: darwin
-          arch: arm64
-          runner: macos-latest
-        - os: windows
-          arch: amd64
-          runner: windows-latest
-        - os: windows
-          arch: arm64
-          runner: windows-11-arm
+{%- endraw %}
+        {%- for platform in binary_platforms %}
+        - os: {{ platform["os"] }}
+          arch: {{ platform["arch"] }}
+          runner: {{ platform["runner"] }}
+        {%- endfor %}
+{%- raw %}
   steps:
     - name: Checkout code
       uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
@@ -38,6 +27,7 @@ build-artifact:
       uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5.5.0
       with:
         go-version: stable
+        cache: false
 
     - name: Get Git commit timestamps
       run: echo "TIMESTAMP=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
@@ -50,7 +40,7 @@ build-artifact:
         REPO_NAME=$(echo "${{ github.repository }}" | cut -d'/' -f2)
 
         # Get version
-        VERSION=$(echo "${{ github.ref_name }}" | sed 's/^v//')
+        VERSION=$(echo "${GITHUB_REF_NAME}" | sed 's/^v//')
 
         # Set output
         echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT

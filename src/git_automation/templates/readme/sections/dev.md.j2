@@ -3,13 +3,7 @@
 {%- if not documentation_url %}
 ## 🛠️ Dev
 
-{%- if language == "python" %}
-{% include "readme/sections/dev/python.md.j2" %}
-{%- elif language == "go" %}
-{% include "readme/sections/dev/go.md.j2" %}
-{%- elif language == "rust" %}
-{% include "readme/sections/dev/rust.md.j2" %}
-{%- endif %}
+{% include "readme/sections/dev/{}.md.j2".format(language) %}
 {%- if "devcontainer" in dev %}
 {% include "readme/sections/dev/devcontainer.md.j2" %}
 {%- endif %}

@@ -2,22 +2,10 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "labels": ["dependencies"],
   "packageRules": [
-{%- if language == "python" %}
     {
-      "matchDatasources": ["pypi"],
-      "addLabels": ["renovate/python"]
+      "matchDatasources": ["{% if language == "python" -%}pypi{%- else %}{{ language }}{%- endif %}"],
+      "addLabels": ["renovate/{{ language }}"]
     },
-{%- elif language == "go" %}
-    {
-      "matchDatasources": ["go"],
-      "addLabels": ["renovate/go"]
-    },
-{%- elif language == "rust" %}
-    {
-      "matchDatasources": ["rust"],
-      "addLabels": ["renovate/rust"]
-    },
-{%- endif %}
 {%- if configs["docker"] %}
     {
       "matchDatasources": ["docker"],

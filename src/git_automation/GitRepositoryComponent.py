@@ -1,6 +1,6 @@
 import os
 from importlib import resources
-from typing import Mapping, Awaitable, Any, Dict, List, Optional
+from typing import Mapping, Awaitable, Any
 import re
 
 import requests
@@ -25,10 +25,10 @@ class GitRepositoryComponent(pulumi.ComponentResource):
         description: str,
         author_fullname: str,
         author_email: str,
-        branch_name: Optional[str] = None,
-        homepage_url: Optional[str] = None,
-        topics: Optional[List[str]] = None,
-        pages: Optional[Dict[str, str]] = None,
+        branch_name: str | None = None,
+        homepage_url: str | None = None,
+        topics: list[str] | None = None,
+        pages: dict[str, str] | None = None,
         props: Mapping[str, Any | Awaitable[Any] | Output[Any]] | None = None,
         opts: pulumi.ResourceOptions | None = None,
         dependency: bool = False,
@@ -186,7 +186,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 license_content = file.read()
             self._repository_file("license", license_file.name, license_content)
 
-    def sync_funding(self, fundings: Dict[str, str]):
+    def sync_funding(self, fundings: dict[str, str]):
         template = env.get_template(os.path.join("misc", "FUNDING.yml.j2"))
 
         self._repository_file(
@@ -333,8 +333,8 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         self,
         schedule: str,
         language: str,
-        configs: List[str],
-        additionnal_configs: List[str],
+        configs: list[str],
+        additionnal_configs: list[str],
     ):
         template = env.get_template(os.path.join("renovatebot", "renovate.json5.j2"))
 
@@ -388,11 +388,12 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         package_name: str,
         package: bool,
         changelog: bool,
+        binary: bool,
         lint: bool,
         test: bool,
         docker: bool,
         helm: bool,
-        dev: List[str],
+        dev: list[str],
     ):
         # check if a readme already exist
         r = requests.get(
@@ -420,6 +421,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 package_name=package_name,
                 package=package,
                 changelog=changelog,
+                binary=binary,
                 lint=lint,
                 test=test,
                 docker=docker,
@@ -431,13 +433,16 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
     def sync_workflow(
         self,
         language: str,
-        versions: List[str],
+        versions: list[str],
+        binary: bool,
+        binary_platforms: list[dict[str, str]] | None,
         lint: bool,
         test: bool,
         package: bool,
         documentation: bool,
         changelog: bool,
         docker: bool,
+        docker_platforms: list[dict[str, str]] | None,
     ):
         template = env.get_template(
             os.path.join("workflow", "validate-pr-title.yml.j2")
@@ -485,34 +490,23 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 ),
             )
 
-        if lint:
-            template = env.get_template(os.path.join("workflow", "lint.yml.j2"))
+        if lint or test or binary or docker:
+            template = env.get_template(os.path.join("workflow", "ci.yml.j2"))
 
             self._repository_file(
                 "workflow",
-                ".github/workflows/lint.yml",
-                template.render(language=language),
+                ".github/workflows/ci.yml",
+                template.render(
+                    language=language,
+                    versions=versions,
+                    lint=lint,
+                    test=test,
+                    binary=binary,
+                    binary_platforms=binary_platforms,
+                    docker=docker,
+                    docker_platforms=docker_platforms,
+                ),
             )
-
-        if test:
-            template = env.get_template(os.path.join("workflow", "test.yml.j2"))
-
-            self._repository_file(
-                "workflow",
-                ".github/workflows/test.yml",
-                template.render(language=language, versions=versions),
-            )
-
-            if docker:
-                template = env.get_template(
-                    os.path.join("workflow", "docker", "test.yml.j2")
-                )
-
-                self._repository_file(
-                    "workflow",
-                    ".github/workflows/test-docker.yml",
-                    template.render(language=language),
-                )
 
         if changelog:
             with (
@@ -533,14 +527,25 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 template.render(
                     language=language,
                     package=package,
+                    binary=binary,
+                    binary_platforms=binary_platforms,
                     documentation=documentation,
                     changelog=changelog,
                     docker=docker,
+                    docker_platforms=docker_platforms,
                 ),
             )
 
     def sync_repository_ruleset(
-        self, language: str, versions: List[str], lint: bool, test: bool, docker: bool
+        self,
+        language: str,
+        versions: list[str],
+        binary: bool,
+        binary_platforms: list[dict[str, str]] | None,
+        lint: bool,
+        test: bool,
+        docker: bool,
+        docker_platforms: list[dict[str, str]] | None,
     ):
         required_checks = [
             github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
@@ -576,16 +581,28 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                         context=f"Test ({version})", integration_id=15368
                     ),
                 )
-            if docker:
-                for platform in [
-                    "linux, amd64, ubuntu-latest",
-                    "linux, arm64, ubuntu-24.04-arm",
-                ]:
-                    required_checks.append(
-                        github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
-                            context=f"Test ({platform})", integration_id=15368
-                        ),
+        if binary and binary_platforms:
+            for platform in binary_platforms:
+                if language == "rust":
+                    matrix_context = f"{platform['target']}, {platform['runner']}"
+                else:
+                    matrix_context = (
+                        f"{platform['os']}, {platform['arch']}, {platform['runner']}"
                     )
+                required_checks.append(
+                    github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
+                        context=f"Build binary ({matrix_context})",
+                        integration_id=15368,
+                    ),
+                )
+        if docker and docker_platforms:
+            for platform in docker_platforms:
+                required_checks.append(
+                    github.RepositoryRulesetRulesRequiredStatusChecksRequiredCheckArgs(
+                        context=f"Build docker ({platform['os']}, {platform['arch']}, {platform['runner']})",
+                        integration_id=15368,
+                    ),
+                )
 
         github.RepositoryRuleset(
             f"{self.name}-ruleset",
@@ -637,7 +654,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         )
 
     def sync_app_installation(
-        self, renovatebot: bool, app_installation_ids: Dict[str, str]
+        self, renovatebot: bool, app_installation_ids: dict[str, str]
     ):
         for k, v in app_installation_ids:
             if k == "renovatebot" and not renovatebot:

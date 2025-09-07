@@ -15,12 +15,13 @@ build-docker:
     fail-fast: false
     matrix:
       include:
-        - os: linux
-          arch: amd64
-          runner: ubuntu-latest
-        - os: linux
-          arch: arm64
-          runner: ubuntu-24.04-arm
+{%- endraw %}
+        {%- for platform in docker_platforms %}
+        - os: {{ platform["os"] }}
+          arch: {{ platform["arch"] }}
+          runner: {{ platform["runner"] }}
+        {%- endfor %}
+{%- raw %}
   steps:
     - name: Checkout code
       uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
