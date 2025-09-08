@@ -57,6 +57,7 @@ config:
       gitignore: true
       devcontainer: true
       docker: true
+      helm: true
       workflow:
         lint: true
         test: true

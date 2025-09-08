@@ -54,7 +54,9 @@ build-package:
       run: cargo build --release --locked --target=${{ matrix.job.target }}
 
     - name: Create tar.gz of binary with license and readme
-      run: tar -czf ${{ steps.generate-filename.outputs.TAR_GZ_NAME }} target/${{ matrix.job.target }}/release/${{ steps.generate-filename.outputs.BINARY_NAME }} LICENSE.txt LICENSE_en.txt README.md
+      run: tar -czf ${TAR_GZ_NAME} target/${{ matrix.job.target }}/release/${BINARY_NAME} LICENSE.txt LICENSE_en.txt README.md
+      env:
+        BINARY_NAME: ${{ steps.generate-filename.outputs.BINARY_NAME }}
 
     - name: Generate SBOM
       uses: aquasecurity/trivy-action@b6643a29fecd7f34b3597bc6acb0a98b03d33ff8 # v0.33.1
@@ -138,9 +140,10 @@ sign-publish-artifact:
 
     - name: Upload artifact to release
       working-directory: ${{ runner.temp }}/artifacts
-      run: gh release upload ${{ needs.build-artifact.outputs.version }} * -R ${{ github.repository }}
+      run: gh release upload ${VERSION} * -R ${{ github.repository }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        VERSION: ${{ needs.build-artifact.outputs.version }}
 
 verify-artifact:
   name: Verify artifact

@@ -49,14 +49,19 @@ build-artifact:
         echo "TAR_GZ_NAME=${REPO_NAME}-${VERSION}-${{ matrix.os }}-${{ matrix.arch }}.tar.gz" >> $GITHUB_OUTPUT
 
     - name: Build binary
-      run: go build -trimpath -a -o "${{ steps.generate-filename.outputs.BINARY_NAME }}" -ldflags '-w -X main.version=${GITHUB_REF_NAME} -X main.buildTime=${{ env.TIMESTAMP }} -extldflags "-static"'
+      run: go build -trimpath -a -o "${BINARY_NAME}" -ldflags '-w -X main.version=${GITHUB_REF_NAME} -X main.buildTime=${TIMESTAMP} -extldflags "-static"'
       env:
         GOOS: ${{ matrix.os }}
         GOARCH: ${{ matrix.arch }}
         CGO_ENABLED: 0
+        BINARY_NAME: ${{ steps.generate-filename.outputs.BINARY_NAME }}
+        TIMESTAMP: ${{ env.TIMESTAMP }}
 
     - name: Create tar.gz of binary with license and readme
-      run: tar -czf ${{ steps.generate-filename.outputs.TAR_GZ_NAME }} ${{ steps.generate-filename.outputs.BINARY_NAME }} LICENSE.txt LICENSE_en.txt README.md
+      run: tar -czf ${TAR_GZ_NAME} ${BINARY_NAME} LICENSE.txt LICENSE_en.txt README.md
+      env:
+        TAR_GZ_NAME: ${{ steps.generate-filename.outputs.TAR_GZ_NAME }}
+        BINARY_NAME: ${{ steps.generate-filename.outputs.BINARY_NAME }}
 
     - name: Generate SBOM
       uses: aquasecurity/trivy-action@b6643a29fecd7f34b3597bc6acb0a98b03d33ff8 # v0.33.1
@@ -139,9 +144,10 @@ sign-publish-artifact:
 
     - name: Upload artifact to release
       working-directory: ${{ runner.temp }}/artifacts
-      run: gh release upload v${{ needs.build-artifact.outputs.version }} * -R ${{ github.repository }}
+      run: gh release upload v${VERSION} * -R ${{ github.repository }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        VERSION: ${{ needs.build-artifact.outputs.version }}
 
     - name: Trigger Go Proxy Indexing
       run: |
