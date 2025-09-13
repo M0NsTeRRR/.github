@@ -1,3 +1,4 @@
+<!-- template:begin:usage/binary -->
 {%- set tag_prefix %}{%- if language == "go" %}v{% endif -%}{%- endset %}
 {%- set basename %}{{ repository_name.split("/")[1] }}-${version}-${platform}{%- endset %}
 {%- set platform %}{%- if language == "go" %}linux-amd64{%- else %}x86_64-unknown-linux-gnu{% endif -%}{%- endset %}
@@ -38,3 +39,4 @@ cosign verify-blob-attestation \
 jq -r '.dsseEnvelope.payload' {{ basename }}.sbom.bundle | base64 -d | jq -r '.predicate' > ./{{ basename }}-extracted.sbom.bundle
 trivy sbom ./{{ basename }}-extracted.sbom.bundle
 ```
+<!-- template:end:usage/binary -->

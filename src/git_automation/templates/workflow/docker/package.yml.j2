@@ -120,12 +120,21 @@ merge-docker:
       id: manifest
       working-directory: ${{ runner.temp }}/digests
       run: |
-        docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
-          $(printf 'ghcr.io/${REPOSITORY_LC}@sha256:%s ' *)
-        DIGEST=$(docker buildx imagetools inspect "ghcr.io/${REPOSITORY_LC}:${GITHUB_REF_NAME}" --format "{{json .Manifest.Digest}}" | tr -d '"')
-        echo "DIGEST=${DIGEST}" >> $GITHUB_OUTPUT
+        # Generate the list of tags
+        TAGS=$(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON")
+
+        # Generate the list of valid digests
+        DIGESTS=""
+        for file in *; do
+          DIGESTS+="ghcr.io/${REPOSITORY_LC}@sha256:${file} "
+        done
+
+        docker buildx imagetools create $TAGS $DIGESTS
+
+        MANIFEST_DIGEST=$(docker buildx imagetools inspect "ghcr.io/${REPOSITORY_LC}:${GITHUB_REF_NAME}" --format "{{json .Manifest.Digest}}" | tr -d '"')
+        echo "DIGEST=${MANIFEST_DIGEST}" >> $GITHUB_OUTPUT
       env:
-        REPOSITORY_LC: ${{ needs.build-docker.outputs.REPOSITORY_LC }}
+        REPOSITORY_LC: ${{ needs.build-docker.outputs.repository_lc }}
 
 sign-docker:
   name: Sign Docker
@@ -139,7 +148,7 @@ sign-docker:
   needs: [merge-docker]
   steps:
     - name: Install Cosign
-      uses: sigstore/cosign-installer@d58896d6a1865668819e1d91763c7751a165e159 # v3.9.2
+      uses: sigstore/cosign-installer@d7543c93d881b35a8faa02e8e3605f69b7a1ce62 # v3.10.0
 
     - name: Install Trivy
       uses: aquasecurity/setup-trivy@e6c2c5e321ed9123bda567646e2f96565e34abe1 # v0.2.4
@@ -190,7 +199,7 @@ verify-docker:
   needs: [merge-docker, sign-docker]
   steps:
     - name: Install Cosign
-      uses: sigstore/cosign-installer@d58896d6a1865668819e1d91763c7751a165e159 # v3.9.2
+      uses: sigstore/cosign-installer@d7543c93d881b35a8faa02e8e3605f69b7a1ce62 # v3.10.0
 
     - name: Verify docker signature
       run: |

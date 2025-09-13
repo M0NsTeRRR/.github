@@ -1,3 +1,6 @@
+{%- set tag_prefix %}
+{%- if language == "go" %}v{% endif -%}
+{% endset -%}
 ---
 # THIS FILE IS GENERATED! DO NOT EDIT! Maintained by Pulumi
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
@@ -19,11 +22,11 @@
 {%- if documentation %}, documentation{% endif -%}
 {%- if docker %}, verify-docker{% endif -%}
 {%- endset %}
-name: {{ language | capitalize }} release
+name: Release
 on:
   push:
     tags:
-      - "*"
+      - "{{ tag_prefix }}*"
 permissions: {}
 jobs:
 {%- if changelog %}

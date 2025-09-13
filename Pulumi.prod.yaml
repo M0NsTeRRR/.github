@@ -53,7 +53,7 @@ config:
         configs: []
         additionnal_configs: []
       language: go
-      versions: ["1.23", "1.24"]
+      versions: ["1.24", "1.25"]
       gitignore: true
       devcontainer: true
       docker: true

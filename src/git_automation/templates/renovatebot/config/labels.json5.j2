@@ -6,13 +6,13 @@
       "matchDatasources": ["{% if language == "python" -%}pypi{%- else %}{{ language }}{%- endif %}"],
       "addLabels": ["renovate/{{ language }}"]
     },
-{%- if configs["docker"] %}
+{%- if "docker" in configs %}
     {
       "matchDatasources": ["docker"],
       "addLabels": ["renovate/docker"]
     },
 {%- endif %}
-{%- if configs["helm"] %}
+{%- if "helm" in configs %}
     {
       "matchDatasources": ["helm"],
       "addLabels": ["renovate/helm"]
