@@ -57,7 +57,7 @@ config:
       gitignore: true
       devcontainer: true
       docker: true
-      helm: true
+      helm_chart_name: "as212510-net"
       workflow:
         lint: true
         test: true

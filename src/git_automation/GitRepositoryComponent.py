@@ -395,6 +395,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         test: bool,
         docker: bool,
         helm: bool,
+        helm_chart_name: str | None,
         dev: list[str],
     ):
         # check if a readme already exist
@@ -428,6 +429,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 test=test,
                 docker=docker,
                 helm=helm,
+                helm_chart_name=helm_chart_name,
                 dev=dev,
             ),
         )

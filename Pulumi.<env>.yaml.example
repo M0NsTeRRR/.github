@@ -52,7 +52,7 @@ config:
       # enable devcontainer (documentation, renovatebot)
       # devcontainer: true
       # enable helm (documentation, renovatebot)
-      # helm: true
+      # helm_chart_name: test-pulumi
       # enable docker (documentation, renovatebot)
       # docker: true
       # set workflow

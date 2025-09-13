@@ -25,7 +25,7 @@ _{{ repository_description }}_
 [![Docker](https://img.shields.io/docker/v/{{ repository_name | lower }}?label=&logo=docker&style=for-the-badge&logoColor=white&color=blue)](https://github.com/{{ repository_name | lower }}/pkgs/container/{{ package_name }})
 {%- endif %}-#}
 {%- if helm %}
-[![Helm](https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fraw.githubusercontent.com%2FM0NsTeRRR%2Fhelm-charts%2Frefs%2Fheads%2Fmain%2Fcharts%2F{{ package_name }}%2FChart.yaml&query=%24.version&label=&logo=helm&style=for-the-badge&logoColor=0F1487&color=white)](https://github.com/M0NsTeRRR/helm-charts/tree/main/charts/{{ package_name }})
+[![Helm](https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fraw.githubusercontent.com%2FM0NsTeRRR%2Fhelm-charts%2Frefs%2Fheads%2Fmain%2Fcharts%2F{{ helm_chart_name }}%2FChart.yaml&query=%24.version&label=&logo=helm&style=for-the-badge&logoColor=0F1487&color=white)](https://github.com/M0NsTeRRR/helm-charts/tree/main/charts/{{ helm_chart_name }})
 {%- endif %}
 </div>
 
