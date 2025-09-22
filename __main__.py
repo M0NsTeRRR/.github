@@ -4,26 +4,26 @@ from git_automation.GitRepositoryComponent import GitRepositoryComponent
 
 _BUILD_PLATFORMS = {
     "docker": [
-        {"os": "linux", "arch": "amd64", "runner": "ubuntu-latest"},
+        {"os": "linux", "arch": "amd64", "runner": "ubuntu-24.04"},
         {"os": "linux", "arch": "arm64", "runner": "ubuntu-24.04-arm"},
     ],
     "go": [
-        {"os": "linux", "arch": "amd64", "runner": "ubuntu-latest"},
+        {"os": "linux", "arch": "amd64", "runner": "ubuntu-24.04"},
         {"os": "linux", "arch": "arm64", "runner": "ubuntu-24.04-arm"},
         {"os": "darwin", "arch": "amd64", "runner": "macos-13"},
-        {"os": "darwin", "arch": "arm64", "runner": "macos-latest"},
-        {"os": "windows", "arch": "amd64", "runner": "windows-latest"},
+        {"os": "darwin", "arch": "arm64", "runner": "macos-15"},
+        {"os": "windows", "arch": "amd64", "runner": "windows-2025"},
         {"os": "windows", "arch": "arm64", "runner": "windows-11-arm"},
     ],
     "rust": [
-        {"target": "x86_64-unknown-linux-gnu", "runner": "ubuntu-latest"},
-        {"target": "x86_64-unknown-linux-musl", "runner": "ubuntu-latest"},
+        {"target": "x86_64-unknown-linux-gnu", "runner": "ubuntu-24.04"},
+        {"target": "x86_64-unknown-linux-musl", "runner": "ubuntu-24.04"},
         {"target": "aarch64-unknown-linux-gnu", "runner": "ubuntu-24.04-arm"},
         {"target": "aarch64-unknown-linux-musl", "runner": "ubuntu-24.04-arm"},
         {"target": "x86_64-apple-darwin", "runner": "macos-13"},
-        {"target": "aarch64-apple-darwin", "runner": "macos-13"},
-        {"target": "x86_64-pc-windows-msvc", "runner": "windows-latest"},
-        {"target": "x86_64-pc-windows-gnu", "runner": "windows-latest"},
+        {"target": "aarch64-apple-darwin", "runner": "macos-15"},
+        {"target": "x86_64-pc-windows-msvc", "runner": "windows-2025"},
+        {"target": "x86_64-pc-windows-gnu", "runner": "windows-2025"},
         {"target": "aarch64-pc-windows-msvc", "runner": "windows-11-arm"},
     ],
 }
