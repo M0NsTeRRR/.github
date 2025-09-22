@@ -1,7 +1,7 @@
 {%- raw %}
 build-package:
   name: Build package
-  runs-on: ubuntu-latest
+  runs-on: ubuntu-24.04
   permissions:
     contents: read
   steps:
@@ -38,7 +38,7 @@ build-package:
 
 publish-package:
   name: Publish package
-  runs-on: ubuntu-latest
+  runs-on: ubuntu-24.04
   permissions:
     id-token: write # needed for signing the images with GitHub OIDC Token
   needs: [build-package]

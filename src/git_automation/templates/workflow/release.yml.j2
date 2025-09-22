@@ -40,7 +40,7 @@ jobs:
 {% endif %}
   create-draft-release:
     name: Create release as draft
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
     {%- if changelog %}
@@ -60,7 +60,7 @@ jobs:
 {{ included_content | indent(2) }}
   publish-release:
     name: Publish release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
     needs: [create-draft-release{{ needs }}]
