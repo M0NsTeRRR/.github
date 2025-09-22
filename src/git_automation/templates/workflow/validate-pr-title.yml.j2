@@ -11,6 +11,9 @@ on:
       - synchronize
       - reopened
 permissions: {}
+concurrency:
+  group: validate-pr-title-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   validate-pr-title:
     name: Validate PR title

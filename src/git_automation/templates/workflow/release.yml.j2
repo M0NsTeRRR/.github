@@ -28,6 +28,9 @@ on:
     tags:
       - "{{ tag_prefix }}*"
 permissions: {}
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
 {%- if changelog %}
 {%- set included_template %}
