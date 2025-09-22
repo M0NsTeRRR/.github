@@ -12,12 +12,6 @@
       "addLabels": ["renovate/docker"]
     },
 {%- endif %}
-{%- if "helm" in configs %}
-    {
-      "matchDatasources": ["helm"],
-      "addLabels": ["renovate/helm"]
-    },
-{%- endif %}
     {
       "matchDatasources": ["github-tags"],
       "addLabels": ["renovate/github-tags"]

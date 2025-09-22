@@ -10,7 +10,7 @@ on:
       - main
 permissions: {}
 concurrency:
-  group: scorecard-${{ github.ref }}
+  group: scorecard-{{ "${{" }} github.ref {{ "}}" }}
   cancel-in-progress: true
 jobs:
   analysis:

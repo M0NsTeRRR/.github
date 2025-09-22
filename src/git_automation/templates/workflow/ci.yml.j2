@@ -20,6 +20,6 @@ on:
   - pull_request
 permissions: {}
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ci-{{ "${{" }} github.ref {{ "}}" }}
   cancel-in-progress: true
 jobs:{{ included_content | indent(2) }}

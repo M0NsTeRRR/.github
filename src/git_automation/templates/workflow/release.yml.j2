@@ -29,7 +29,7 @@ on:
       - "{{ tag_prefix }}*"
 permissions: {}
 concurrency:
-  group: release-${{ github.ref }}
+  group: release-{{ "${{" }} github.ref {{ "}}" }}
   cancel-in-progress: true
 jobs:
 {%- if changelog %}
