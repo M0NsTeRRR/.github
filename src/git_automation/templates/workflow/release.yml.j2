@@ -15,13 +15,16 @@
 {%- include "workflow/docker/package.yml.j2" -%}
 {%- endif %}
 {%- endset -%}
-{%- set needs %}
+{%- set needs = ["create-draft-release"] %}
 {%- if package %}
-{%- if language == "python" %}, publish-package{% endif -%}
-{% endif -%}
-{%- if documentation %}, documentation{% endif -%}
-{%- if docker %}, verify-docker{% endif -%}
-{%- endset %}
+{%- if language == "python" %}
+{% do needs.append("publish-package") %}
+{%- else %}
+{% do needs.append("verify-artifact") %}
+{%- endif %}
+{%- endif %}
+{%- if documentation %}{% do needs.append("documentation") %}{% endif -%}
+{%- if docker %}{% do needs.append("verify-docker") %}{% endif -%}
 name: Release
 on:
   push:
@@ -63,7 +66,7 @@ jobs:
     runs-on: ubuntu-24.04
     permissions:
       contents: write
-    needs: [create-draft-release{{ needs }}]
+    needs: [{{ needs | join(", ") }}]
 {%- raw %}
     steps:
       - name: Checkout code

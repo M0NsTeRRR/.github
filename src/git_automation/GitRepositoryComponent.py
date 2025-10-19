@@ -14,7 +14,9 @@ import pulumi_github as github
 PACKAGE_NAME = __name__.split(".")[0]
 
 env = Environment(
-    loader=PackageLoader(PACKAGE_NAME, "templates"), keep_trailing_newline=True
+    loader=PackageLoader(PACKAGE_NAME, "templates"),
+    keep_trailing_newline=True,
+    extensions=["jinja2.ext.do"],
 )
 
 
