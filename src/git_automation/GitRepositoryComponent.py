@@ -482,6 +482,13 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             template.render(language=language),
         )
 
+        template = env.get_template(os.path.join("workflow", "ai-generated.yml.j2"))
+        self._repository_file(
+            "workflow",
+            ".github/workflows/ai-generated.yml",
+            template.render(language=language),
+        )
+
         template = env.get_template(os.path.join("workflow", "stale.yml.j2"))
         self._repository_file(
             "workflow",
