@@ -658,7 +658,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 ),
                 required_status_checks=github.RepositoryRulesetRulesRequiredStatusChecksArgs(
                     required_checks=required_checks,
-                    strict_required_status_checks_policy=False,
+                    strict_required_status_checks_policy=True,
                 ),
                 required_code_scanning=github.RepositoryRulesetRulesRequiredCodeScanningArgs(
                     required_code_scanning_tools=[

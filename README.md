@@ -53,15 +53,12 @@ In `Code security`:
 - `Dependabot > Dependabot security updates` must be disabled
 
 In `settings`:
-- `Releases > Enable release immutability Loading` must be checked
+- `Releases > Enable release immutability Loading` must be checked ([Github issue](https://github.com/integrations/terraform-provider-github/issues/2800))
 
 In `settings > actions`:
 - `Approval for running fork pull request workflows from contributors` must be set to `Require approval for all external contributors`
 - In `Workflow permissions`, `Allow GitHub Actions to create and approve pull requests` must be ticked ([Github PR](https://github.com/integrations/terraform-provider-github/pull/2309))
-- `Require actions to be pinned to a full-length commit SHA` must be checked
-
-In `settings > Rules > Rulesets > automation-sync`:
-- `Require status checks to pass > Require branches to be up to date before merging` must be checked
+- `Require actions to be pinned to a full-length commit SHA` must be checked ([Github PR](https://github.com/integrations/terraform-provider-github/pull/2870))
 
 It's currently not possible to set some user settings
 
