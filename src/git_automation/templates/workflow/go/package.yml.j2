@@ -92,7 +92,7 @@ sign-publish-artifact:
   needs: [create-draft-release, build-artifact]
   steps:
     - name: Install Cosign
-      uses: sigstore/cosign-installer@7e8b541eb2e61bf99390e1afd4be13a184e9ebc5 # v3.10.1
+      uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
 
     - name: Downloads artifacts
       uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
@@ -122,8 +122,7 @@ sign-publish-artifact:
 
           echo "Sign archive for ${archive}"
           cosign sign-blob ${archive} \
-            --output-certificate ${archive_without_ext}.pem \
-            --output-signature ${archive_without_ext}.sig
+            --bundle ${archive_without_ext}.sigstore.json
         done
 
     - name: Attest SBOM
@@ -173,7 +172,7 @@ verify-artifact:
   needs: [publish-release]
   steps:
     - name: Install Cosign
-      uses: sigstore/cosign-installer@7e8b541eb2e61bf99390e1afd4be13a184e9ebc5 # v3.10.1
+      uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
 
     - name: Install Trivy
       uses: aquasecurity/setup-trivy@e6c2c5e321ed9123bda567646e2f96565e34abe1 # v0.2.4
@@ -196,8 +195,7 @@ verify-artifact:
           cosign verify-blob \
             --certificate-identity "https://github.com/${{ github.repository }}/.github/workflows/release.yml@refs/tags/${GITHUB_REF_NAME}" \
             --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
-            --cert "https://github.com/${{ github.repository }}/releases/download/${GITHUB_REF_NAME}/${binary_basename}.pem" \
-            --signature "https://github.com/${{ github.repository }}/releases/download/${GITHUB_REF_NAME}/${binary_basename}.sig" \
+            --bundle "https://github.com/${{ github.repository }}/releases/download/${GITHUB_REF_NAME}/${binary_basename}.sigstore.json" \
             ./${binary}
         done
 
