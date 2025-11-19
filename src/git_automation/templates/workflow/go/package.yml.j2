@@ -122,8 +122,7 @@ sign-publish-artifact:
 
           echo "Sign archive for ${archive}"
           cosign sign-blob ${archive} \
-            --output-certificate ${archive_without_ext}.pem \
-            --output-signature ${archive_without_ext}.sig
+            --bundle ${archive_without_ext}.sigstore.json
         done
 
     - name: Attest SBOM
@@ -196,8 +195,7 @@ verify-artifact:
           cosign verify-blob \
             --certificate-identity "https://github.com/${{ github.repository }}/.github/workflows/release.yml@refs/tags/${GITHUB_REF_NAME}" \
             --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
-            --cert "https://github.com/${{ github.repository }}/releases/download/${GITHUB_REF_NAME}/${binary_basename}.pem" \
-            --signature "https://github.com/${{ github.repository }}/releases/download/${GITHUB_REF_NAME}/${binary_basename}.sig" \
+            --bundle "https://github.com/${{ github.repository }}/releases/download/${GITHUB_REF_NAME}/${binary_basename}.sigstore.json" \
             ./${binary}
         done
 
