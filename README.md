@@ -57,7 +57,6 @@ In `settings`:
 
 In `settings > actions`:
 - `Approval for running fork pull request workflows from contributors` must be set to `Require approval for all external contributors`
-- In `Workflow permissions`, `Allow GitHub Actions to create and approve pull requests` must be ticked ([Github PR](https://github.com/integrations/terraform-provider-github/pull/2309))
 - `Require actions to be pinned to a full-length commit SHA` must be checked ([Github PR](https://github.com/integrations/terraform-provider-github/pull/2870))
 
 It's currently not possible to set some user settings

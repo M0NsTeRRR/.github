@@ -673,6 +673,14 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             opts=pulumi.ResourceOptions(depends_on=[self.repository], parent=self),
         )
 
+    def sync_workflow_repository_permission(self):
+        github.WorkflowRepositoryPermissions(
+            f"{self.name}-permission",
+            default_workflow_permissions="read",
+            can_approve_pull_request_reviews=True,
+            repository=self.name,
+        )
+
     def sync_app_installation(
         self, renovatebot: bool, app_installation_ids: dict[str, str]
     ):
