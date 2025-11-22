@@ -19,6 +19,7 @@
     "github>{{ repository_name | lower }}//.github/renovate/{{ additionnal_config }}",
     {%- endfor %}
   ],
+  "minimumReleaseAge": "3 days",
   "dependencyDashboardTitle": "Renovate Dashboard 🤖",
   "suppressNotifications": ["prEditedNotification", "prIgnoreNotification"],
   "rebaseWhen": "conflicted",
