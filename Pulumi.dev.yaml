@@ -29,7 +29,7 @@ config:
         configs: []
         additionnal_configs: []
       language: python
-      versions: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+      versions: ["3.10", "3.11", "3.12", "3.13", "3.14"]
       gitignore: true
       devcontainer: true
       workflow:
@@ -52,7 +52,7 @@ config:
         configs: []
         additionnal_configs: []
       language: go
-      versions: ["1.23", "1.24"]
+      versions: ["1.24", "1.25"]
       gitignore: true
       devcontainer: true
       docker: true
