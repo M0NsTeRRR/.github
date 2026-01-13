@@ -7,11 +7,9 @@ on:
   pull_request_target:
     types: [labeled, unlabeled, reopened]
 permissions: {}
-env:
-  AI_LABEL: "🤖 ai-generated"
 jobs:
   ai-generated-support:
-    if: github.event.label.name == env.AI_LABEL || github.event.action == 'reopened'
+    if: github.event.label.name == '🤖 ai-generated' || github.event.action == 'reopened'
     runs-on: ubuntu-24.04
     concurrency:
       group: ai-generated-${{ github.event.pull_request.number }}
@@ -25,7 +23,7 @@ jobs:
       PR_AUTHOR: ${{ github.event.pull_request.user.login }}
     steps:
       - name: Label added, comment and close pull request
-        if: github.event.action == 'labeled' && github.event.label.name == env.AI_LABEL
+        if: github.event.action == 'labeled' && github.event.label.name == '🤖 ai-generated'
         shell: bash
         env:
           BODY: >
@@ -43,7 +41,7 @@ jobs:
           gh pr lock "$NUMBER" -R "$GH_REPO" -r "spam" || true
 
       - name: Reopened or label removed, unlock pull request
-        if: github.event.action == 'unlabeled' && github.event.label.name == env.AI_LABEL
+        if: github.event.action == 'unlabeled' && github.event.label.name == '🤖 ai-generated'
         shell: bash
         run: |
           gh pr reopen "$NUMBER" -R "$GH_REPO" || true

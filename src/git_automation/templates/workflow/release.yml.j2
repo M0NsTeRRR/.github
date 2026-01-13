@@ -20,7 +20,7 @@
 {%- if language == "python" %}
 {% do needs.append("publish-package") %}
 {%- else %}
-{% do needs.append("verify-artifact") %}
+{% do needs.append("sign-publish-artifact") %}
 {%- endif %}
 {%- endif %}
 {%- if documentation %}{% do needs.append("documentation") %}{% endif -%}
