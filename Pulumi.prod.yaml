@@ -73,7 +73,6 @@ config:
         - cert-manager-webhook
         - infomaniak
       readme: true
-      package: "infomaniak"
       label:
         - default
       renovatebot:

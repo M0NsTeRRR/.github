@@ -4,15 +4,16 @@
 - [Documentation](#-documentation)
 {%- else %}
 - [Usage](#-usage)
+{%- if package_name %}
 {%- if language == "python" %}
     - [Pypi](#-pypi)
 {%- elif language == "go" %}
     - [Go CLI](#-go-cli)
+    - [Binary](#-binary)
 {%- elif language == "rust" %}
     - [Cargo](#-cargo)
-{%- endif %}
-{%- if binary %}
     - [Binary](#-binary)
+{%- endif %}
 {%- endif %}
 {%- if docker %}
     - [Docker](#-docker)

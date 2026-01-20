@@ -11,12 +11,12 @@ _{{ repository_description }}_
 </div>
 
 <div align="center">
-{% if language == "python" and package %}
+{% if language == "python" and package_name %}
 [![Pypi](https://img.shields.io/pypi/v/{{ package_name }}?label=&logo=pypi&style=for-the-badge&logoColor=yellow&color=3776AB)](https://pypi.python.org/pypi/{{ package_name }})
 [![Python](https://img.shields.io/pypi/pyversions/{{ package_name }}?label=&logo=python&style=for-the-badge&logoColor=yellow&color=3776AB)](https://pypi.python.org/pypi/{{ package_name }})
-{%- elif language == "go" %}
+{%- elif language == "go" and package_name %}
 [![Go](https://img.shields.io/github/v/tag/{{ repository_name | lower }}?label=&logo=go&style=for-the-badge&logoColor=white&color=00ACD7)](https://pkg.go.dev/github.com/{{ repository_name | lower }}/{{ package_name }})
-{%- elif language == "rust" %}
+{%- elif language == "rust" and package_name %}
 [![Crates.io](https://img.shields.io/crates/v/{{ repository_name | lower }}?label=&logo=rust&style=for-the-badge&logoColor=white&color=black)](https://crates.io/crates/{{ package_name }})
 [![Rust](https://img.shields.io/crates/msrv/{{ repository_name | lower }}?label=&logo=rust&style=for-the-badge&logoColor=white&color=black)](https://crates.io/crates/{{ package_name }})
 {%- endif %}

@@ -390,11 +390,8 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         logo: bool,
         language: str,
         package_name: str,
-        package: bool,
-        changelog: bool,
-        binary: bool,
-        lint: bool,
-        test: bool,
+        workflow_lint: bool,
+        workflow_test: bool,
         docker: bool,
         helm: bool,
         helm_chart_name: str | None,
@@ -424,11 +421,8 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 logo=logo,
                 language=language,
                 package_name=package_name,
-                package=package,
-                changelog=changelog,
-                binary=binary,
-                lint=lint,
-                test=test,
+                workflow_lint=workflow_lint,
+                workflow_test=workflow_test,
                 docker=docker,
                 helm=helm,
                 helm_chart_name=helm_chart_name,
@@ -438,15 +432,15 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
 
     def sync_workflow(
         self,
+        package_name: str,
         language: str,
         versions: list[str],
-        binary: bool,
         binary_platforms: list[dict[str, str]] | None,
-        lint: bool,
-        test: bool,
-        package: bool,
-        documentation: bool,
-        changelog: bool,
+        workflow_lint: bool,
+        workflow_test: bool,
+        workflow_package: bool,
+        workflow_documentation: bool,
+        workflow_changelog: bool,
         docker: bool,
         docker_platforms: list[dict[str, str]] | None,
     ):
@@ -510,7 +504,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 ),
             )
 
-        if lint or test or binary or docker:
+        if workflow_lint or workflow_test or docker or language in ["rust", "go"]:
             template = env.get_template(os.path.join("workflow", "ci.yml.j2"))
 
             self._repository_file(
@@ -519,16 +513,15 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 template.render(
                     language=language,
                     versions=versions,
-                    lint=lint,
-                    test=test,
-                    binary=binary,
+                    workflow_lint=workflow_lint,
+                    workflow_test=workflow_test,
                     binary_platforms=binary_platforms,
                     docker=docker,
                     docker_platforms=docker_platforms,
                 ),
             )
 
-        if changelog:
+        if workflow_changelog:
             with (
                 resources.files(PACKAGE_NAME)
                 .joinpath("git-cliff", "cliff.toml")
@@ -538,7 +531,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
 
             self._repository_file("changelog", ".github/cliff.toml", cliff_config)
 
-        if package or changelog:
+        if workflow_package:
             template = env.get_template(os.path.join("workflow", "release.yml.j2"))
 
             self._repository_file(
@@ -546,11 +539,11 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 ".github/workflows/release.yml",
                 template.render(
                     language=language,
-                    package=package,
-                    binary=binary,
+                    package_name=package_name,
                     binary_platforms=binary_platforms,
-                    documentation=documentation,
-                    changelog=changelog,
+                    workflow_package=workflow_package,
+                    workflow_documentation=workflow_documentation,
+                    workflow_changelog=workflow_changelog,
                     docker=docker,
                     docker_platforms=docker_platforms,
                 ),
@@ -560,7 +553,6 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         self,
         language: str,
         versions: list[str],
-        binary: bool,
         binary_platforms: list[dict[str, str]] | None,
         lint: bool,
         test: bool,
@@ -601,7 +593,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                         context=f"Test ({version})", integration_id=15368
                     ),
                 )
-        if binary and binary_platforms:
+        if binary_platforms:
             for platform in binary_platforms:
                 if language == "rust":
                     matrix_context = f"{platform['target']}, {platform['runner']}"

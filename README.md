@@ -53,7 +53,7 @@ In `Code security`:
 - `Dependabot > Dependabot security updates` must be disabled
 
 In `settings`:
-- `Releases > Enable release immutability Loading` must be checked ([Github issue](https://github.com/integrations/terraform-provider-github/issues/2800))
+- `Releases > Enable release immutability Loading` must be checked ([Github issue](https://github.com/integrations/terraform-provider-github/issues/2746))
 
 In `settings > actions`:
 - `Approval for running fork pull request workflows from contributors` must be set to `Require approval for all external contributors`

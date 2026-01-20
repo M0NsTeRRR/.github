@@ -1,6 +1,6 @@
 Install [rustup](https://rustup.rs/).
 
-{%- if lint %}
+{%- if workflow_lint %}
 ### Run linter and formatter
 
 ```
@@ -9,7 +9,7 @@ cargo clippy
 ```
 {% endif %}
 
-{%- if test %}
+{%- if workflow_test %}
 ### Run test
 
 ```

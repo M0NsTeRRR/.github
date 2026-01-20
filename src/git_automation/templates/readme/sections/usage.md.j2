@@ -1,15 +1,14 @@
 {% include "readme/sections/usage/title.md.j2" %}
+{%- if package_name %}
 {% if language == "python" %}
 {% include "readme/sections/usage/python.md.j2" %}
 {%- elif language == "go" %}
 {% include "readme/sections/usage/go.md.j2" %}
+{% include "readme/sections/usage/binary.md.j2" %}
 {%- elif language == "rust" %}
 {% include "readme/sections/usage/rust.md.j2" %}
-{%- endif %}
-
-{%- if binary %}
-
 {% include "readme/sections/usage/binary.md.j2" %}
+{%- endif %}
 {%- endif %}
 {%- if docker %}
 

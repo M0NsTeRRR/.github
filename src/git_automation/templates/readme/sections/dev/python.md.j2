@@ -2,7 +2,7 @@ Install [uv](https://docs.astral.sh/uv/getting-started/installation/).
 
 Install python and setup dependencies with `uv sync --all-extras`.
 
-{%- if lint %}
+{%- if workflow_lint %}
 ### Run linter and formatter
 
 ```
@@ -11,7 +11,7 @@ uv run ruff check .
 ```
 {% endif %}
 
-{%- if test %}
+{%- if workflow_test %}
 ### Run test
 
 ```

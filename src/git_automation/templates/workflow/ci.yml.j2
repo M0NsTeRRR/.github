@@ -2,13 +2,13 @@
 # THIS FILE IS GENERATED! DO NOT EDIT! Maintained by Pulumi
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 {%- set included_content %}
-{%- if lint %}
+{%- if workflow_lint %}
 {%- include "workflow/{}/lint.yml.j2".format(language) %}
 {%- endif %}
-{%- if test %}
+{%- if workflow_test %}
 {% include "workflow/{}/test.yml.j2".format(language) %}
 {%- endif %}
-{%- if binary %}
+{%- if language in ["go", "rust"] %}
 {% include "workflow/{}/build.yml.j2".format(language) %}
 {%- endif %}
 {%- if docker %}

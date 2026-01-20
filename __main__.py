@@ -71,12 +71,10 @@ for repository_config in config.get_object("repositories", []):
     devcontainer = repository_config.get("devcontainer", False)
     helm_chart_name = repository_config.get("helm_chart_name", None)
     helm = helm_chart_name is not None
-    package = bool(package_name)
     docker = repository_config.get("docker", False)
     language = repository_config.get("language", None)
     versions = repository_config.get("versions", [])
     gitignore = repository_config.get("gitignore", False)
-    binary = language in ["go", "rust"]
 
     binary_platforms = _BUILD_PLATFORMS.get(language, None)
     docker_platforms = _BUILD_PLATFORMS["docker"] if docker else None
@@ -97,7 +95,6 @@ for repository_config in config.get_object("repositories", []):
     repository.sync_repository_ruleset(
         language,
         versions,
-        binary,
         binary_platforms,
         workflow_lint,
         workflow_test,
@@ -182,9 +179,6 @@ for repository_config in config.get_object("repositories", []):
             "logo" in repository_config and repository_config["logo"],
             language,
             package_name,
-            workflow_package,
-            workflow_changelog,
-            binary,
             workflow_lint,
             workflow_test,
             docker,
@@ -195,9 +189,9 @@ for repository_config in config.get_object("repositories", []):
 
     if workflow:
         repository.sync_workflow(
+            package_name,
             language,
             versions,
-            binary,
             binary_platforms,
             workflow_lint,
             workflow_test,

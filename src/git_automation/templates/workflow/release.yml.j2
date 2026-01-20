@@ -5,10 +5,10 @@
 # THIS FILE IS GENERATED! DO NOT EDIT! Maintained by Pulumi
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 {%- set included_content -%}
-{%- if package %}
+{%- if package_name %}
 {%- include "workflow/{}/package.yml.j2".format(language) %}
 {%- endif %}
-{%- if documentation %}
+{%- if workflow_documentation %}
 {%- include "workflow/{}/documentation.yml.j2".format(language) %}
 {%- endif %}
 {%- if docker %}
@@ -16,14 +16,14 @@
 {%- endif %}
 {%- endset -%}
 {%- set needs = ["create-draft-release"] %}
-{%- if package %}
+{%- if package_name %}
 {%- if language == "python" %}
 {% do needs.append("publish-package") %}
 {%- else %}
 {% do needs.append("sign-publish-artifact") %}
 {%- endif %}
 {%- endif %}
-{%- if documentation %}{% do needs.append("documentation") %}{% endif -%}
+{%- if workflow_documentation %}{% do needs.append("documentation") %}{% endif -%}
 {%- if docker %}{% do needs.append("verify-docker") %}{% endif -%}
 name: Release
 on:
@@ -35,7 +35,7 @@ concurrency:
   group: release-{{ "${{" }} github.ref {{ "}}" }}
   cancel-in-progress: true
 jobs:
-{%- if changelog %}
+{%- if workflow_changelog %}
 {%- set included_template %}
 {%- include "workflow/changelog/main.yml.j2" %}
 {%- endset %}
@@ -46,7 +46,7 @@ jobs:
     runs-on: ubuntu-24.04
     permissions:
       contents: write
-    {%- if changelog %}
+    {%- if workflow_changelog %}
     needs: [changelog]
     {% endif -%}
     steps:
@@ -58,9 +58,9 @@ jobs:
       - name: Create release as draft
         run: |
           if [[ "$GITHUB_REF_NAME" =~ (alpha|beta|rc) ]]; then
-            gh release create {{ "${" }}GITHUB_REF_NAME{{ "}" }}  -t "Release {{ "${" }}GITHUB_REF_NAME{{ "}" }}" {%- if changelog %} -n "{{ "${" }}RELEASE_BODY{{ "}" }}"{% endif %} --draft --prerelease
+            gh release create {{ "${" }}GITHUB_REF_NAME{{ "}" }}  -t "Release {{ "${" }}GITHUB_REF_NAME{{ "}" }}" {%- if workflow_changelog %} -n "{{ "${" }}RELEASE_BODY{{ "}" }}"{% endif %} --draft --prerelease
           else
-            gh release create {{ "${" }}GITHUB_REF_NAME{{ "}" }}  -t "Release {{ "${" }}GITHUB_REF_NAME{{ "}" }}" {%- if changelog %} -n "{{ "${" }}RELEASE_BODY{{ "}" }}"{% endif %} --draft
+            gh release create {{ "${" }}GITHUB_REF_NAME{{ "}" }}  -t "Release {{ "${" }}GITHUB_REF_NAME{{ "}" }}" {%- if workflow_changelog %} -n "{{ "${" }}RELEASE_BODY{{ "}" }}"{% endif %} --draft
           fi
         env:
           GITHUB_TOKEN: {{ "${{" }} secrets.GITHUB_TOKEN {{ "}}" }}

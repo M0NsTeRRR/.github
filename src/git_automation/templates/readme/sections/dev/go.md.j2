@@ -1,6 +1,6 @@
 Install [Go](https://go.dev/doc/install).
 
-{%- if lint %}
+{%- if workflow_lint %}
 ### Run linter and formatter
 
 [golangci-lint](https://golangci-lint.run/docs/welcome/install/#local-installation) must be installed.
@@ -11,7 +11,7 @@ go fmt .
 ```
 {%- endif %}
 
-{%- if test %}
+{%- if workflow_test %}
 ### Run test
 
 ```
