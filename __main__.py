@@ -1,6 +1,11 @@
 import pulumi
 
-from git_automation.GitRepositoryComponent import GitRepositoryComponent
+from git_automation.git_repository_component import GitRepositoryComponent
+
+_BUILD_TARGET = {
+    "go": "main.go",
+    "rust": "bin"
+}
 
 _BUILD_PLATFORMS = {
     "docker": [
@@ -75,7 +80,9 @@ for repository_config in config.get_object("repositories", []):
     language = repository_config.get("language", None)
     versions = repository_config.get("versions", [])
     gitignore = repository_config.get("gitignore", False)
+    readme = repository_config.get("readme", False)
 
+    build_target = repository_config.get("build_target", _BUILD_TARGET.get(language, None))
     binary_platforms = _BUILD_PLATFORMS.get(language, None)
     docker_platforms = _BUILD_PLATFORMS["docker"] if docker else None
 
@@ -127,7 +134,7 @@ for repository_config in config.get_object("repositories", []):
 
     repository.sync_vscode_config(language)
 
-    repository.sync_editorconfig(language)
+    repository.sync_editorconfig(language, docker)
 
     repository.sync_gitattributes()
 
@@ -166,7 +173,8 @@ for repository_config in config.get_object("repositories", []):
     if "logo" in repository_config and bool(repository_config["logo"]):
         repository.sync_logo(repository_config["logo"])
 
-    if "readme" in repository_config and repository_config["readme"]:
+    if readme:
+        readme_args = {} if isinstance(readme, bool) else readme
         dev = []
 
         if devcontainer and "devcontainer":
@@ -181,10 +189,11 @@ for repository_config in config.get_object("repositories", []):
             package_name,
             workflow_lint,
             workflow_test,
-            docker,
+            readme_args.get("docker", docker),
             helm,
             helm_chart_name,
             dev,
+            readme_args.get("configuration", True),
         )
 
     if workflow:
@@ -192,6 +201,7 @@ for repository_config in config.get_object("repositories", []):
             package_name,
             language,
             versions,
+            build_target,
             binary_platforms,
             workflow_lint,
             workflow_test,

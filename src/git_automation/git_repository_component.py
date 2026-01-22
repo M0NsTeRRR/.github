@@ -274,11 +274,11 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 template.render(language=language),
             )
 
-    def sync_editorconfig(self, language: str):
+    def sync_editorconfig(self, language: str, docker: bool):
         template = env.get_template(os.path.join("misc", "editorconfig.j2"))
 
         self._repository_file(
-            "editorconfig", ".editorconfig", template.render(language=language)
+            "editorconfig", ".editorconfig", template.render(language=language, docker=docker)
         )
 
     def sync_gitattributes(self):
@@ -396,6 +396,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         helm: bool,
         helm_chart_name: str | None,
         dev: list[str],
+        configuration: bool
     ):
         # check if a readme already exist
         r = requests.get(
@@ -427,6 +428,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 helm=helm,
                 helm_chart_name=helm_chart_name,
                 dev=dev,
+                configuration=configuration
             ),
         )
 
@@ -435,6 +437,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         package_name: str,
         language: str,
         versions: list[str],
+        build_target: str,
         binary_platforms: list[dict[str, str]] | None,
         workflow_lint: bool,
         workflow_test: bool,
@@ -515,6 +518,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                     versions=versions,
                     workflow_lint=workflow_lint,
                     workflow_test=workflow_test,
+                    build_target=build_target,
                     binary_platforms=binary_platforms,
                     docker=docker,
                     docker_platforms=docker_platforms,
@@ -540,6 +544,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 template.render(
                     language=language,
                     package_name=package_name,
+                    build_target=build_target,
                     binary_platforms=binary_platforms,
                     workflow_package=workflow_package,
                     workflow_documentation=workflow_documentation,

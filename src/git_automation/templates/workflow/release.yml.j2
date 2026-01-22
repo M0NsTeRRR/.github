@@ -43,7 +43,7 @@ jobs:
 {% endif %}
   create-draft-release:
     name: Create release as draft
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     permissions:
       contents: write
     {%- if workflow_changelog %}
@@ -68,7 +68,7 @@ jobs:
 {{ included_content | indent(2) }}
   publish-release:
     name: Publish release
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     permissions:
       contents: write
     needs: [{{ needs | join(", ") }}]

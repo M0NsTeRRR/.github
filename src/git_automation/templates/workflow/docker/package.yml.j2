@@ -83,7 +83,7 @@ build-docker:
 
 merge-docker:
   name: Merge docker
-  runs-on: ubuntu-24.04
+  runs-on: ubuntu-slim
   permissions:
     contents: read
     packages: write # needed for pushing docker image
@@ -137,7 +137,7 @@ merge-docker:
 
 sign-docker:
   name: Sign Docker
-  runs-on: ubuntu-24.04
+  runs-on: ubuntu-slim
   permissions:
     packages: write # needed for pushing docker signature
     id-token: write # needed for signing the images with GitHub OIDC Token
@@ -189,7 +189,7 @@ sign-docker:
 
 verify-docker:
   name: Verify docker
-  runs-on: ubuntu-24.04
+  runs-on: ubuntu-slim
   permissions:
     packages: read
   env:

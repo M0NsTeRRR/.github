@@ -72,7 +72,9 @@ config:
         - cert-manager
         - cert-manager-webhook
         - infomaniak
-      readme: true
+      readme:
+        docker: false
+        configuration: false
       label:
         - default
       renovatebot:
@@ -80,11 +82,12 @@ config:
         additionnal_configs: []
       language: go
       versions: ["1.24", "1.25"]
+      build_target: cmd/webhook/main.go
       gitignore: true
       devcontainer: true
       docker: true
       helm_chart_name: "cert-manager-webhook-infomaniak"
       workflow:
         lint: true
-        test: true
+        test: false
         changelog: true

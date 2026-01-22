@@ -49,7 +49,7 @@ build-artifact:
         echo "TAR_GZ_NAME=${REPO_NAME}-${VERSION}-${{ matrix.os }}-${{ matrix.arch }}.tar.gz" >> $GITHUB_OUTPUT
 
     - name: Build binary
-      run: go build -trimpath -a -o "${BINARY_NAME}" -ldflags '-w -X main.version=${GITHUB_REF_NAME} -X main.buildTime=${TIMESTAMP} -extldflags "-static"'
+      run: go build -trimpath -a -o "${BINARY_NAME}" -ldflags '-w -X main.version=${GITHUB_REF_NAME} -X main.buildTime=${TIMESTAMP} -extldflags "-static"' {% endraw %}{{ build_target }}{% raw %}
       shell: bash
       env:
         GOOS: ${{ matrix.os }}
@@ -85,7 +85,7 @@ build-artifact:
 
 sign-publish-artifact:
   name: Sign and publish artifact
-  runs-on: ubuntu-24.04
+  runs-on: ubuntu-slim
   permissions:
     contents: write
     id-token: write # needed for signing the artifact with GitHub OIDC Token
@@ -166,7 +166,7 @@ sign-publish-artifact:
 
 verify-artifact:
   name: Verify artifact
-  runs-on: ubuntu-24.04
+  runs-on: ubuntu-slim
   permissions:
     contents: read
   needs: [publish-release]

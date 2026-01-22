@@ -6,9 +6,9 @@
 {% include "readme/sections/documentation.md.j2" %}
 {%- else %}
 {% include "readme/sections/usage.md.j2" %}
-
+{% if configuration %}
 {% include "readme/sections/configuration.md.j2" %}
-
+{% endif %}
 {% include "readme/sections/dev.md.j2" %}
 {%- endif %}
 

@@ -20,7 +20,7 @@ export AWS_ACCESS_KEY_ID=xxxx
 export AWS_SECRET_ACCESS_KEY=xxxx
 export AWS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
 pulumi login 's3://pulumi?region=eu-west-1&endpoint=https://nas.unicornafk.fr:30292&s3ForcePathStyle=true'
-pulumi stack select <dev|prod>
+pulumi stack select prod
 pulumi refresh
 pulumi up
 ```

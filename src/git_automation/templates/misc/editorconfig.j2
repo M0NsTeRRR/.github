@@ -10,22 +10,20 @@ end_of_line = lf
 indent_size = 2
 indent_style = space
 insert_final_newline = true
-
-{% if language == "python" -%}
+{% if language == "python" %}
 # Python
 [*.py]
 indent_size = 4
-{%- elif language == "go" %}
+{% elif language == "go" %}
 # Go
 [{go.mod,*.go}]
-indent_size = 1
+indent_size = 4
 indent_style = tab
-{%- elif language == "rust" %}
+{% elif language == "rust" %}
 # Rust
 [*.rs]
 indent_size = 4
 {%- endif %}
-
 # JSON
 [*.json]
 indent_size = 2
@@ -34,3 +32,13 @@ insert_final_newline = false
 # YAML
 [*.{yaml,yml}]
 indent_size = 2
+
+# Markdown
+[*.md]
+indent_size = 4
+trim_trailing_whitespace = false
+{% if docker %}
+# Docker
+[Dockerfile]
+indent_size = 4
+{% endif -%}
