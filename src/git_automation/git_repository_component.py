@@ -353,18 +353,37 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             ),
         )
 
-        renovatebot_config_dir = (
-            resources.files(PACKAGE_NAME) / "templates" / "renovatebot" / "config"
+        renovatebot_default_dir = resources.files(PACKAGE_NAME).joinpath(
+            "templates", "renovatebot", "default"
         )
-
-        renovatebot_config_dir = resources.files(PACKAGE_NAME).joinpath(
-            "templates", "renovatebot", "config"
-        )
-        for renovatebot_file in renovatebot_config_dir.iterdir():
+        for renovatebot_file in renovatebot_default_dir.iterdir():
             template = env.get_template(
-                os.path.join("renovatebot", "config", renovatebot_file.name)
+                os.path.join("renovatebot", "default", renovatebot_file.name)
             )
             filename = os.path.splitext(renovatebot_file.name)[0]
+
+            self._repository_file(
+                filename,
+                f".github/renovate/{filename}",
+                template.render(
+                    language=language,
+                    configs=configs,
+                    additionnal_configs=additionnal_configs,
+                ),
+            )
+
+        renovatebot_extras_dir = resources.files(PACKAGE_NAME).joinpath(
+            "templates", "renovatebot", "extras"
+        )
+        for renovatebot_file in renovatebot_extras_dir.iterdir():
+            template = env.get_template(
+                os.path.join("renovatebot", "extras", renovatebot_file.name)
+            )
+            filename = os.path.splitext(renovatebot_file.name)[0]
+
+            # ignore disabled extras
+            if not filename.startswith(tuple(configs)):
+                continue
 
             self._repository_file(
                 filename,
@@ -558,6 +577,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         self,
         language: str,
         versions: list[str],
+        binary: bool,
         binary_platforms: list[dict[str, str]] | None,
         lint: bool,
         test: bool,
@@ -598,7 +618,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                         context=f"Test ({version})", integration_id=15368
                     ),
                 )
-        if binary_platforms:
+        if binary and binary_platforms:
             for platform in binary_platforms:
                 if language == "rust":
                     matrix_context = f"{platform['target']}, {platform['runner']}"

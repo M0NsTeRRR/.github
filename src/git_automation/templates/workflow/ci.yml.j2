@@ -8,7 +8,7 @@
 {%- if workflow_test %}
 {% include "workflow/{}/test.yml.j2".format(language) %}
 {%- endif %}
-{%- if language in ["go", "rust"] %}
+{%- if binary %}
 {% include "workflow/{}/build.yml.j2".format(language) %}
 {%- endif %}
 {%- if docker %}

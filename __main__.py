@@ -82,6 +82,7 @@ for repository_config in config.get_object("repositories", []):
     gitignore = repository_config.get("gitignore", False)
     readme = repository_config.get("readme", False)
 
+    binary = language in ["rust", "go"] and package_name
     build_target = repository_config.get("build_target", _BUILD_TARGET.get(language, None))
     binary_platforms = _BUILD_PLATFORMS.get(language, None)
     docker_platforms = _BUILD_PLATFORMS["docker"] if docker else None
@@ -102,6 +103,7 @@ for repository_config in config.get_object("repositories", []):
     repository.sync_repository_ruleset(
         language,
         versions,
+        binary,
         binary_platforms,
         workflow_lint,
         workflow_test,
@@ -156,7 +158,7 @@ for repository_config in config.get_object("repositories", []):
         renovatebot_configs = repository_config["renovatebot"].get("configs", [])
 
         if devcontainer and "devcontainer" not in renovatebot_configs:
-            renovatebot_configs.append("devcontainers")
+            renovatebot_configs.append("devcontainer")
         if helm and "helm" not in renovatebot_configs:
             renovatebot_configs.append("helm")
         if docker and "docker" not in renovatebot_configs:
@@ -170,21 +172,21 @@ for repository_config in config.get_object("repositories", []):
             repository_config["renovatebot"].get("additionnal_configs", []),
         )
 
-    if "logo" in repository_config and bool(repository_config["logo"]):
+    if "logo" in repository_config:
         repository.sync_logo(repository_config["logo"])
 
     if readme:
         readme_args = {} if isinstance(readme, bool) else readme
         dev = []
 
-        if devcontainer and "devcontainer":
+        if devcontainer:
             dev.append("devcontainer")
 
         repository.sync_readme(
             repository_config["title"],
             repository_config["description"],
             repository_config.get("documentation_url", None),
-            "logo" in repository_config and repository_config["logo"],
+            "logo" in repository_config,
             language,
             package_name,
             workflow_lint,

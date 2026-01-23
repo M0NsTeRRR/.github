@@ -12,8 +12,8 @@
     ":semanticCommits",
     ":timezone(Europe/Paris)",
     "github>{{ repository_name | lower }}//.github/renovate/labels.json5",
-    {%- if "devcontainers" in configs %}
-    "github>{{ repository_name | lower }}//.github/renovate/devcontainers.json5",
+    {%- if "devcontainer" in configs %}
+    "github>{{ repository_name | lower }}//.github/renovate/devcontainer.json5",
     {%- endif %}
     {%- for additionnal_config in additionnal_configs %}
     "github>{{ repository_name | lower }}//.github/renovate/{{ additionnal_config }}",

@@ -84,7 +84,6 @@ config:
       versions: ["1.24", "1.25"]
       build_target: cmd/webhook/main.go
       gitignore: true
-      devcontainer: true
       docker: true
       helm_chart_name: "cert-manager-webhook-infomaniak"
       workflow:
