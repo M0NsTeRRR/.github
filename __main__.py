@@ -203,6 +203,7 @@ for repository_config in config.get_object("repositories", []):
             package_name,
             language,
             versions,
+            binary,
             build_target,
             binary_platforms,
             workflow_lint,

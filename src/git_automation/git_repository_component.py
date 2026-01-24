@@ -456,6 +456,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         package_name: str,
         language: str,
         versions: list[str],
+        binary: bool,
         build_target: str,
         binary_platforms: list[dict[str, str]] | None,
         workflow_lint: bool,
@@ -526,7 +527,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 ),
             )
 
-        if workflow_lint or workflow_test or docker or language in ["rust", "go"]:
+        if workflow_lint or workflow_test or docker or binary:
             template = env.get_template(os.path.join("workflow", "ci.yml.j2"))
 
             self._repository_file(
@@ -537,6 +538,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                     versions=versions,
                     workflow_lint=workflow_lint,
                     workflow_test=workflow_test,
+                    binary=binary,
                     build_target=build_target,
                     binary_platforms=binary_platforms,
                     docker=docker,
