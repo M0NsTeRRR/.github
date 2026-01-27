@@ -24,7 +24,7 @@
 {%- endif %}
 {%- endif %}
 {%- if workflow_documentation %}{% do needs.append("documentation") %}{% endif -%}
-{%- if docker %}{% do needs.append("verify-docker") %}{% endif -%}
+{%- if docker %}{% do needs.append("verify-docker") %}{% endif %}
 name: Release
 on:
   push:
