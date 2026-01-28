@@ -274,6 +274,19 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 template.render(language=language),
             )
 
+    def sync_linter_config(self, language):
+        if language == "go":
+            with (
+                resources.files(PACKAGE_NAME).joinpath("linter", ".golangci.yaml").open() as file
+            ):
+                file_content = file.read()
+
+            self._repository_file(
+                "golangci",
+                ".golangci.yaml",
+                file_content,
+            )
+
     def sync_editorconfig(self, language: str, docker: bool):
         template = env.get_template(os.path.join("misc", "editorconfig.j2"))
 

@@ -136,6 +136,8 @@ for repository_config in config.get_object("repositories", []):
 
     repository.sync_vscode_config(language)
 
+    repository.sync_linter_config(language)
+
     repository.sync_editorconfig(language, docker)
 
     repository.sync_gitattributes()

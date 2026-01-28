@@ -30,7 +30,8 @@
         "github.vscode-github-actions",
         "donjayamanne.githistory",
         "wholroyd.jinja",
-        "ms-python.python"
+        "ms-python.python",
+        "astral-sh.ty"
       ]
     }
   }
