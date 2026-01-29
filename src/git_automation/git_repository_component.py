@@ -277,7 +277,9 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
     def sync_linter_config(self, language):
         if language == "go":
             with (
-                resources.files(PACKAGE_NAME).joinpath("linter", ".golangci.yaml").open() as file
+                resources.files(PACKAGE_NAME)
+                .joinpath("linter", ".golangci.yaml")
+                .open() as file
             ):
                 file_content = file.read()
 
@@ -291,7 +293,9 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         template = env.get_template(os.path.join("misc", "editorconfig.j2"))
 
         self._repository_file(
-            "editorconfig", ".editorconfig", template.render(language=language, docker=docker)
+            "editorconfig",
+            ".editorconfig",
+            template.render(language=language, docker=docker),
         )
 
     def sync_gitattributes(self):
@@ -428,7 +432,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         helm: bool,
         helm_chart_name: str | None,
         dev: list[str],
-        configuration: bool
+        configuration: bool,
     ):
         # check if a readme already exist
         r = requests.get(
@@ -460,7 +464,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 helm=helm,
                 helm_chart_name=helm_chart_name,
                 dev=dev,
-                configuration=configuration
+                configuration=configuration,
             ),
         )
 

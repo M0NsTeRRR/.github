@@ -129,7 +129,7 @@ dependencies = [
     { name = "requests" },
 ]
 
-[package.optional-dependencies]
+[package.dev-dependencies]
 dev = [
     { name = "ruff" },
 ]
@@ -141,9 +141,10 @@ requires-dist = [
     { name = "pulumi-github", specifier = "~=6.10.0" },
     { name = "pyyaml", specifier = "~=6.0.2" },
     { name = "requests", specifier = "~=2.32.3" },
-    { name = "ruff", marker = "extra == 'dev'", specifier = "~=0.14.0" },
 ]
-provides-extras = ["dev"]
+
+[package.metadata.requires-dev]
+dev = [{ name = "ruff", specifier = "~=0.14.0" }]
 
 [[package]]
 name = "grpcio"

@@ -24,7 +24,7 @@ classifiers = [
   "Topic :: Utilities",
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = ["ruff~=0.14.0"]
 
 [build-system]

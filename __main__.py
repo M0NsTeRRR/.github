@@ -2,10 +2,7 @@ import pulumi
 
 from git_automation.git_repository_component import GitRepositoryComponent
 
-_BUILD_TARGET = {
-    "go": "main.go",
-    "rust": "bin"
-}
+_BUILD_TARGET = {"go": "main.go", "rust": "bin"}
 
 _BUILD_PLATFORMS = {
     "docker": [
@@ -83,7 +80,9 @@ for repository_config in config.get_object("repositories", []):
     readme = repository_config.get("readme", False)
 
     binary = language in ["rust", "go"] and package_name
-    build_target = repository_config.get("build_target", _BUILD_TARGET.get(language, None))
+    build_target = repository_config.get(
+        "build_target", _BUILD_TARGET.get(language, None)
+    )
     binary_platforms = _BUILD_PLATFORMS.get(language, None)
     docker_platforms = _BUILD_PLATFORMS["docker"] if docker else None
 
