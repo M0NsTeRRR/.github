@@ -90,3 +90,31 @@ config:
         lint: true
         test: false
         changelog: true
+    - name: external-dns-webhook-infomaniak
+      title: external-dns-webhook-infomaniak
+      description: External DNS webhook provider for infomaniak
+      license: CECILL-2.1
+      logo: unicornafk.svg
+      topics:
+        - letsencrypt
+        - external-dns
+        - external-dns-webhook
+        - infomaniak
+      readme:
+        docker: false
+        configuration: false
+      label:
+        - default
+      renovatebot:
+        configs: []
+        additionnal_configs: []
+      language: go
+      versions: ["1.24", "1.25"]
+      build_target: cmd/webhook/main.go
+      gitignore: true
+      docker: true
+      helm_chart_name: "external-dns-webhook-infomaniak"
+      workflow:
+        lint: true
+        test: false
+        changelog: true
