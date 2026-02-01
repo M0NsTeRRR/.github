@@ -18,9 +18,9 @@
 {%- set needs = ["create-draft-release"] %}
 {%- if package_name %}
 {%- if language == "python" %}
-{% do needs.append("publish-package") %}
+{%- do needs.append("publish-package") %}
 {%- else %}
-{% do needs.append("sign-publish-artifact") %}
+{%- do needs.append("sign-publish-artifact") %}
 {%- endif %}
 {%- endif %}
 {%- if workflow_documentation %}{% do needs.append("documentation") %}{% endif -%}
