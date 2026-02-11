@@ -709,11 +709,25 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             opts=pulumi.ResourceOptions(depends_on=[self.repository], parent=self),
         )
 
+    def sync_action_repository_permission(self):
+        github.ActionRepositoryPermissions(
+            f"{self.name}-permission",
+            sha_pinning_required=True,
+            repository=self.name,
+        )
+
     def sync_workflow_repository_permission(self):
         github.WorkflowRepositoryPermissions(
             f"{self.name}-permission",
             default_workflow_permissions="read",
             can_approve_pull_request_reviews=True,
+            repository=self.name,
+        )
+
+    def sync_dependabot(self):
+        github.DependabotSecurityUpdates(
+            f"{self.name}-dependabot",
+            enabled=False,
             repository=self.name,
         )
 
