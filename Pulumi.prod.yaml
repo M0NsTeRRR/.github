@@ -12,6 +12,7 @@ config:
   app_installation_ids:
     renovatebot: "45460629"
     dco: "38972756"
+    coderabbitai: "110202455"
   repositories:
     - name: octodns-infomaniak
       title: octodns-infomaniak
