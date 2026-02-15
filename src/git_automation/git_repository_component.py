@@ -710,8 +710,9 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         )
 
     def sync_action_repository_permission(self):
-        github.ActionRepositoryPermissions(
+        github.ActionsRepositoryPermissions(
             f"{self.name}-permission",
+            allowed_actions="all",
             sha_pinning_required=True,
             repository=self.name,
         )
@@ -725,7 +726,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         )
 
     def sync_dependabot(self):
-        github.DependabotSecurityUpdates(
+        github.RepositoryDependabotSecurityUpdates(
             f"{self.name}-dependabot",
             enabled=False,
             repository=self.name,
@@ -734,7 +735,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
     def sync_app_installation(
         self, renovatebot: bool, app_installation_ids: dict[str, str]
     ):
-        for k, v in app_installation_ids:
+        for k, v in app_installation_ids.items():
             if k == "renovatebot" and not renovatebot:
                 continue
 

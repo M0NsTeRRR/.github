@@ -2,14 +2,13 @@
 
 - uv or devcontainer
 
-Create a fine-grained GitHub token with permissions for all repositories or some specific repositories with the following permissions:
+Create a PAT GitHub token with permissions for all repositories or some specific repositories with the following permissions:
 
-- Administration (Read/Write)
-- Contents (Read/Write)
-- Issues (Read/Write) for labels
-- Workflows (Read/Write) for GitHub actionss
+- repo
+- workflow
 
 To prevents accidental deletion of Github repository, this ressource is marked as protected and require a manual deletion.
+PAT Github token is required for https://docs.github.com/en/rest/apps/installations?apiVersion=2022-11-28#add-a-repository-to-an-app-installation.
 
 ## Run
 
