@@ -6,6 +6,7 @@ Create a PAT GitHub token with permissions for all repositories or some specific
 
 - repo
 - workflow
+- read:user
 
 To prevents accidental deletion of Github repository, this ressource is marked as protected and require a manual deletion.
 PAT Github token is required for https://docs.github.com/en/rest/apps/installations?apiVersion=2022-11-28#add-a-repository-to-an-app-installation.
