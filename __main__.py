@@ -118,7 +118,7 @@ for repository_config in config.get_object("repositories", []):
 
     app_installation_ids = config.get_object("app_installation_ids")
     if app_installation_ids:
-      repository.sync_app_installation(renovatebot, app_installation_ids)
+        repository.sync_app_installation(renovatebot, app_installation_ids)
 
     if "license" in repository_config and repository_config["license"]:
         repository.sync_licence(repository_config["license"])
