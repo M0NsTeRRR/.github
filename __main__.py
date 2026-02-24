@@ -43,25 +43,25 @@ for repository_config in config.get_object("repositories", []):
     workflow_lint = False
     workflow_test = False
     workflow_package = False
-    workflow_documentation = False
     workflow_changelog = False
+    workflow_documentation = False
     if "workflow" in repository_config:
         workflow = True
         workflow_lint = (
-            "lint" not in repository_config["workflow"]
-            or repository_config["workflow"]["lint"]
+            "lint" in repository_config["workflow"]
+            and repository_config["workflow"]["lint"]
         )
         workflow_test = (
-            "test" not in repository_config["workflow"]
-            or repository_config["workflow"]["test"]
+            "test" in repository_config["workflow"]
+            and repository_config["workflow"]["test"]
         )
         workflow_package = (
-            "package" not in repository_config["workflow"]
-            or repository_config["workflow"]["package"]
+            "package" in repository_config["workflow"]
+            and repository_config["workflow"]["package"]
         )
         workflow_changelog = (
-            "changelog" not in repository_config["workflow"]
-            or repository_config["workflow"]["changelog"]
+            "changelog" in repository_config["workflow"]
+            and repository_config["workflow"]["changelog"]
         )
         workflow_documentation = (
             "documentation" in repository_config["workflow"]

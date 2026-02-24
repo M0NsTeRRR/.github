@@ -37,6 +37,7 @@ config:
       workflow:
         lint: true
         test: true
+        package: true
         changelog: true
     - name: as212510.net
       title: as212510.net
@@ -61,7 +62,7 @@ config:
       helm_chart_name: "as212510-net"
       workflow:
         lint: true
-        test: false
+        package: true
         changelog: true
     - name: cert-manager-webhook-infomaniak
       title: cert-manager-webhook-infomaniak
@@ -89,7 +90,6 @@ config:
       helm_chart_name: "cert-manager-webhook-infomaniak"
       workflow:
         lint: true
-        test: false
         changelog: true
     - name: external-dns-webhook-infomaniak
       title: external-dns-webhook-infomaniak
