@@ -55,7 +55,7 @@ config:
         configs: []
         additionnal_configs: []
       language: go
-      versions: ["1.24", "1.25"]
+      versions: ["1.25", "1.26"]
       gitignore: true
       devcontainer: true
       docker: true
@@ -83,7 +83,7 @@ config:
         configs: []
         additionnal_configs: []
       language: go
-      versions: ["1.24", "1.25"]
+      versions: ["1.25", "1.26"]
       build_target: cmd/webhook/main.go
       gitignore: true
       docker: true
@@ -110,7 +110,7 @@ config:
         configs: []
         additionnal_configs: []
       language: go
-      versions: ["1.24", "1.25"]
+      versions: ["1.25", "1.26"]
       build_target: cmd/webhook/main.go
       gitignore: true
       docker: true
