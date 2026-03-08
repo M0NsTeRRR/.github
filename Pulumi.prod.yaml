@@ -114,8 +114,8 @@ config:
       build_target: cmd/webhook/main.go
       gitignore: true
       docker: true
-      helm_chart_name: "external-dns-webhook-infomaniak"
       workflow:
         lint: true
         test: true
+        package: true
         changelog: true
