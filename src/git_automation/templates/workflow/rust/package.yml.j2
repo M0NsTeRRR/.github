@@ -60,7 +60,7 @@ build-package:
         BINARY_NAME: ${{ steps.generate-filename.outputs.BINARY_NAME }}
 
     - name: Generate SBOM
-      uses: aquasecurity/trivy-action@97e0b3872f55f89b95b2f65b3dbab56962816478 # 0.34.2
+      uses: aquasecurity/trivy-action@ddb9da4475c1cef7d5389062bdfdfbdbd1394648 # 0.34.2
       with:
         scan-type: fs
         scan-ref: .
