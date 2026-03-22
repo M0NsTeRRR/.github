@@ -138,7 +138,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "jinja2", specifier = "~=3.1.6" },
-    { name = "pulumi", specifier = "~=3.225.0" },
+    { name = "pulumi", specifier = "~=3.227.0" },
     { name = "pulumi-github", specifier = "~=6.12.1" },
     { name = "pyyaml", specifier = "~=6.0.3" },
     { name = "requests", specifier = "~=2.32.5" },
@@ -426,15 +426,6 @@ wheels = [
 ]
 
 [[package]]
-name = "pip"
-version = "25.0.1"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/70/53/b309b4a497b09655cb7e07088966881a57d082f48ac3cb54ea729fd2c6cf/pip-25.0.1.tar.gz", hash = "sha256:88f96547ea48b940a3a385494e181e29fb8637898f88d88737c5049780f196ea", size = 1950850, upload-time = "2025-02-09T17:14:04.423Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/c9/bc/b7db44f5f39f9d0494071bddae6880eb645970366d0a200022a1a93d57f5/pip-25.0.1-py3-none-any.whl", hash = "sha256:c46efd13b6aa8279f33f2864459c8ce587ea6a1a59ee20de055868d8f7688f7f", size = 1841526, upload-time = "2025-02-09T17:14:01.463Z" },
-]
-
-[[package]]
 name = "protobuf"
 version = "5.29.5"
 source = { registry = "https://pypi.org/simple" }
@@ -450,7 +441,7 @@ wheels = [
 
 [[package]]
 name = "pulumi"
-version = "3.225.1"
+version = "3.227.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "debugpy" },
@@ -461,13 +452,12 @@ dependencies = [
     { name = "opentelemetry-instrumentation-grpc" },
     { name = "opentelemetry-sdk" },
     { name = "packaging" },
-    { name = "pip" },
     { name = "protobuf" },
     { name = "pyyaml" },
     { name = "semver" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a1/1a/92d7f682b12c916197cfc185ce8049d781978aff43c2bbb14c13f9d740dc/pulumi-3.225.1-py3-none-any.whl", hash = "sha256:06ba862805456c78d90b2c77c48e2fada1dac418df6ead9320f72bce542769a7", size = 393458, upload-time = "2026-03-05T20:25:32.5Z" },
+    { url = "https://files.pythonhosted.org/packages/e3/48/18568aabf2434e576053e6d6dfcbd40d48567136734c561b3bf7aee09f90/pulumi-3.227.0-py3-none-any.whl", hash = "sha256:0705cd6d69c98f2d4ec561464df186c5c03070a3e1514f083d5718b03d8e4c6f", size = 392976, upload-time = "2026-03-19T13:17:22.925Z" },
 ]
 
 [[package]]
