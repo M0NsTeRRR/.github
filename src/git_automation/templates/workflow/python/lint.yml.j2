@@ -25,7 +25,7 @@ lint:
       run: uv run ruff format --check .
 
     - name: Run ruff check
-      run: uv run ruff check .
+      run: uv run ruff check --output-format=github .
 
     - name: Run ruff uv lock check
       run: uv lock --check
