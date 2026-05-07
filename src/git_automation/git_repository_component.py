@@ -32,7 +32,6 @@ class GitRepositoryComponent(pulumi.ComponentResource):
         branch_name: str | None = None,
         homepage_url: str | None = None,
         topics: list[str] | None = None,
-        pages: dict[str, str] | None = None,
         props: Mapping[str, Any | Awaitable[Any] | Output[Any]] | None = None,
         opts: pulumi.ResourceOptions | None = None,
         dependency: bool = False,
@@ -62,17 +61,6 @@ class GitRepositoryComponent(pulumi.ComponentResource):
             "pkg:index:GitRepositoryComponent", name, props, opts, dependency
         )
 
-        if pages:
-            gh_pages = github.RepositoryPagesArgs(
-                source=github.RepositoryPagesSourceArgs(
-                    branch=pages["branch"],
-                    path=pages["path"],
-                ),
-                cname=pages["cname"],
-            )
-        else:
-            gh_pages = None
-
         self.repository = github.Repository(
             f"{self.name}",
             auto_init=True,
@@ -90,7 +78,6 @@ class GitRepositoryComponent(pulumi.ComponentResource):
             homepage_url=homepage_url,
             is_template=False,
             name=name,
-            pages=gh_pages,
             security_and_analysis=github.RepositorySecurityAndAnalysisArgs(
                 secret_scanning=github.RepositorySecurityAndAnalysisSecretScanningArgs(
                     status="enabled"
@@ -103,7 +90,6 @@ class GitRepositoryComponent(pulumi.ComponentResource):
             squash_merge_commit_title="PR_TITLE",
             topics=topics,
             visibility="public",
-            vulnerability_alerts=True,
             web_commit_signoff_required=True,
             opts=pulumi.ResourceOptions(protect=True, parent=self),
         )
@@ -181,6 +167,18 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             opts=pulumi.ResourceOptions(
                 depends_on=[self.repository, self.branch], parent=self
             ),
+        )
+
+    def sync_repository_pages(self, pages: dict[str, str]):
+        github.RepositoryPages(
+            f"{self.name}-pages",
+            source=github.RepositoryPagesSourceArgs(
+                branch=pages["branch"],
+                path=pages["path"],
+            ),
+            cname=pages["cname"],
+            https_enforced=True,
+            repository=self.name,
         )
 
     def sync_licence(self, licence_name: str):
@@ -729,6 +727,13 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         github.RepositoryDependabotSecurityUpdates(
             f"{self.name}-dependabot",
             enabled=False,
+            repository=self.name,
+        )
+
+    def sync_vulnerability_alerts(self):
+        github.RepositoryDependabotSecurityUpdates(
+            f"{self.name}-vulnerability-alerts",
+            enabled=True,
             repository=self.name,
         )
 

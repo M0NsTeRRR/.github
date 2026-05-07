@@ -39,6 +39,7 @@ if author is None:
     raise ValueError("Author can't be None")
 
 for repository_config in config.get_object("repositories", []):
+    pages = repository_config.get("pages", None)
     workflow = False
     workflow_lint = False
     workflow_test = False
@@ -96,8 +97,10 @@ for repository_config in config.get_object("repositories", []):
         author_email=author["email"],
         homepage_url=repository_config.get("homepage_url", None),
         topics=repository_config.get("topics", None),
-        pages=repository_config.get("pages", None),
     )
+
+    if pages:
+        repository.sync_repository_pages(pages)
 
     repository.sync_repository_ruleset(
         language,
@@ -115,6 +118,8 @@ for repository_config in config.get_object("repositories", []):
     repository.sync_action_repository_permission()
 
     repository.sync_dependabot()
+
+    repository.sync_vulnerability_alerts()
 
     app_installation_ids = config.get_object("app_installation_ids")
     if app_installation_ids:
