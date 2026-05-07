@@ -55,7 +55,8 @@ config:
         configs: []
         additionnal_configs: []
       language: go
-      versions: ["1.25", "1.26"]
+      versions: ["1.26"]
+      build_target: cmd/as212510/main.go
       gitignore: true
       devcontainer: true
       docker: true
