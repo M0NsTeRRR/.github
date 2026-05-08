@@ -117,8 +117,6 @@ for repository_config in config.get_object("repositories", []):
 
     repository.sync_action_repository_permission()
 
-    repository.sync_dependabot()
-
     repository.sync_vulnerability_alerts()
 
     app_installation_ids = config.get_object("app_installation_ids")

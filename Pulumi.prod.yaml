@@ -39,6 +39,31 @@ config:
         test: true
         package: true
         changelog: true
+    - name: octodns-mikrotik
+      title: octodns-mikrotik
+      description: Mikrotik provider for octoDNS
+      license: CECILL-2.1
+      logo: unicornafk.svg
+      topics:
+        - dns
+        - octodns
+        - mikrotik
+      readme: true
+      package: "octodns-mikrotik"
+      label:
+        - default
+      renovatebot:
+        configs: []
+        additionnal_configs: []
+      language: python
+      versions: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+      gitignore: true
+      devcontainer: true
+      workflow:
+        lint: true
+        test: true
+        package: true
+        changelog: true
     - name: as212510.net
       title: as212510.net
       description: as212510.net website

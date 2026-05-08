@@ -723,13 +723,6 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             repository=self.name,
         )
 
-    def sync_dependabot(self):
-        github.RepositoryDependabotSecurityUpdates(
-            f"{self.name}-dependabot",
-            enabled=False,
-            repository=self.name,
-        )
-
     def sync_vulnerability_alerts(self):
         github.RepositoryDependabotSecurityUpdates(
             f"{self.name}-vulnerability-alerts",
