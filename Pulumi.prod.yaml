@@ -41,7 +41,7 @@ config:
         changelog: true
     - name: octodns-mikrotik
       title: octodns-mikrotik
-      description: Mikrotik provider for octoDNS
+      description: MikroTik provider for octoDNS
       license: CECILL-2.1
       logo: unicornafk.svg
       topics:
