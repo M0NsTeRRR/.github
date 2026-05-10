@@ -195,7 +195,7 @@ verify-artifact:
           cosign verify-blob \
             --certificate-identity "https://github.com/${{ github.repository }}/.github/workflows/release.yml@refs/tags/${GITHUB_REF_NAME}" \
             --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
-            --bundle "https://github.com/${{ github.repository }}/releases/download/${GITHUB_REF_NAME}/${binary_basename}.sigstore.json" \
+            --bundle ./${binary_basename}.sigstore.json \
             ./${binary}
         done
 
