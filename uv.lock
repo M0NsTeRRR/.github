@@ -139,7 +139,7 @@ dev = [
 requires-dist = [
     { name = "jinja2", specifier = "~=3.1.6" },
     { name = "pulumi", specifier = "~=3.236.0" },
-    { name = "pulumi-github", specifier = "~=6.13.1" },
+    { name = "pulumi-github", specifier = "~=6.14.0" },
     { name = "pyyaml", specifier = "~=6.0.3" },
     { name = "requests", specifier = "~=2.33.1" },
 ]
@@ -462,16 +462,16 @@ wheels = [
 
 [[package]]
 name = "pulumi-github"
-version = "6.13.1"
+version = "6.14.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "parver" },
     { name = "pulumi" },
     { name = "semver" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/30/ed/743b498f3abe89d86af746305bc274816c3833ef448657b8e6df1f3de0f5/pulumi_github-6.13.1.tar.gz", hash = "sha256:b4d42f8a650eb8d7a13ec863cdd5d5177b2fcb55df07c2402e75c3e181ead952", size = 267742, upload-time = "2026-04-29T04:36:56.144Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/19/61/f4ed4abfd88b467a8ed12e32e9beee7485b4379027b3d13a553bc6d8c6ae/pulumi_github-6.14.0.tar.gz", hash = "sha256:b3f3d2d468d0860640a69837278271970a106df517d6db8657fa8cd841c07b84", size = 267696, upload-time = "2026-05-22T12:27:37.54Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/3e/d5/8fca222226459c6926be33f9b83504e61e955207b8ec089c4769b0ec9686/pulumi_github-6.13.1-py3-none-any.whl", hash = "sha256:742ffb8668e3b4f392aef0cb065735a23be8a1324ebefe10e160ded34ccd6d04", size = 474453, upload-time = "2026-04-29T04:36:54.015Z" },
+    { url = "https://files.pythonhosted.org/packages/29/9d/feb470eb7878b9689d54ddb478d267e249a259999b5e95e13e067421be06/pulumi_github-6.14.0-py3-none-any.whl", hash = "sha256:a680ba9bad49307026a82b9d18c16d073bdb489f5480991d8a7b66858231abee", size = 474620, upload-time = "2026-05-22T12:27:34.533Z" },
 ]
 
 [[package]]
