@@ -71,6 +71,7 @@ for repository_config in config.get_object("repositories", []):
 
     renovatebot = "renovatebot" in repository_config
     package_name = repository_config.get("package", None)
+    devenv = repository_config.get("devenv", False)
     devcontainer = repository_config.get("devcontainer", False)
     helm_chart_name = repository_config.get("helm_chart_name", None)
     helm = helm_chart_name is not None
@@ -187,6 +188,8 @@ for repository_config in config.get_object("repositories", []):
         readme_args = {} if isinstance(readme, bool) else readme
         dev = []
 
+        if devenv:
+            dev.append("devenv")
         if devcontainer:
             dev.append("devcontainer")
 

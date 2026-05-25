@@ -2,6 +2,9 @@
 ## 🛠️ Dev
 
 {% include "readme/sections/dev/{}.md.j2".format(language) %}
+{%- if "devenv" in dev %}
+{% include "readme/sections/dev/devenv.md.j2" %}
+{%- endif %}
 {%- if "devcontainer" in dev %}
 {% include "readme/sections/dev/devcontainer.md.j2" %}
 {%- endif %}

@@ -726,7 +726,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
     def sync_vulnerability_alerts(self):
         github.RepositoryDependabotSecurityUpdates(
             f"{self.name}-vulnerability-alerts",
-            enabled=True,
+            enabled=False,
             repository=self.name,
         )
 
