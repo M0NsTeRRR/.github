@@ -150,7 +150,7 @@ for repository_config in config.get_object("repositories", []):
     repository.sync_gitattributes()
 
     if gitignore:
-        repository.sync_gitignore(language, helm)
+        repository.sync_gitignore(language, helm, devenv)
 
     contact_email = config.get("contact_email")
     if contact_email:

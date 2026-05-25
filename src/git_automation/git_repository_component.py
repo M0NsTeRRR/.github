@@ -306,11 +306,11 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
 
         self._repository_file("gitattributes", ".gitattributes", file_content)
 
-    def sync_gitignore(self, language: str, helm: bool):
+    def sync_gitignore(self, language: str, helm: bool, devenv: bool):
         template = env.get_template(os.path.join("misc", "gitignore.j2"))
 
         self._repository_file(
-            "gitignore", ".gitignore", template.render(language=language, helm=helm)
+            "gitignore", ".gitignore", template.render(language=language, helm=helm, devenv=devenv)
         )
 
     def sync_security(self, security_email: str):

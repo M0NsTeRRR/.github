@@ -33,7 +33,7 @@ config:
       language: python
       versions: ["3.10", "3.11", "3.12", "3.13", "3.14"]
       gitignore: true
-      devcontainer: true
+      devenv: true
       workflow:
         lint: true
         test: true
@@ -58,7 +58,7 @@ config:
       language: python
       versions: ["3.10", "3.11", "3.12", "3.13", "3.14"]
       gitignore: true
-      devcontainer: true
+      devenv: true
       workflow:
         lint: true
         test: true
@@ -83,7 +83,7 @@ config:
       versions: ["1.26"]
       build_target: cmd/as212510/main.go
       gitignore: true
-      devcontainer: true
+      devenv: true
       docker: true
       helm_chart_name: "as212510-net"
       workflow:
@@ -112,6 +112,7 @@ config:
       versions: ["1.26"]
       build_target: cmd/webhook/main.go
       gitignore: true
+      devenv: true
       docker: true
       helm_chart_name: "cert-manager-webhook-infomaniak"
       workflow:
@@ -139,6 +140,7 @@ config:
       versions: ["1.26"]
       build_target: cmd/webhook/main.go
       gitignore: true
+      devenv: true
       docker: true
       workflow:
         lint: true

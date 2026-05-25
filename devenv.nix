@@ -15,7 +15,7 @@
 
   packages = [
     pkgs.secretspec
-    pkgs.pulumi
+    pkgs.pulumi-bin
   ];
 
   languages.python = {

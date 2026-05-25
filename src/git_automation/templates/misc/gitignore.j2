@@ -64,3 +64,15 @@ target/
 # MSVC Windows builds of rustc generate these, which store debugging information
 *.pdb
 {%- endif %}
+{% if devenv %}
+# devenv
+.devenv*
+devenv.local.nix
+devenv.local.yaml
+
+# direnv
+.direnv
+
+# pre-commit
+.pre-commit-config.yaml
+{%- endif %}
