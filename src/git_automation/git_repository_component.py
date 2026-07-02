@@ -310,7 +310,9 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         template = env.get_template(os.path.join("misc", "gitignore.j2"))
 
         self._repository_file(
-            "gitignore", ".gitignore", template.render(language=language, helm=helm, devenv=devenv)
+            "gitignore",
+            ".gitignore",
+            template.render(language=language, helm=helm, devenv=devenv),
         )
 
     def sync_security(self, security_email: str):
