@@ -15,22 +15,23 @@ build-binary:
         {%- endfor %}
 {%- raw %}
   steps:
-    - name: Checkout code
-      uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      with:
-        persist-credentials: false
+    - parallel:
+      - name: Checkout code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
 
-    - name: Install dependencies
-      shell: bash
-      run: |
-        if [[ "${{ matrix.target }}" = *"-musl" ]]; then
-          sudo apt update
-          sudo apt install -y --no-install-recommends \
-            musl-tools
-        fi
+      - name: Install dependencies
+        shell: bash
+        run: |
+          if [[ "${{ matrix.target }}" = *"-musl" ]]; then
+            sudo apt update
+            sudo apt install -y --no-install-recommends \
+              musl-tools
+          fi
 
-    - name: Configure rust toolchain stable
-      run: rustup update stable && rustup default stable
+      - name: Configure rust toolchain stable
+        run: rustup update stable && rustup default stable
 
     - name: Build the binary
       run: cargo build --release --locked --target=${{ matrix.job.target }}

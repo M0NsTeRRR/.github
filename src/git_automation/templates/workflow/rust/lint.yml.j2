@@ -5,25 +5,27 @@ lint:
   permissions:
     contents: read
   steps:
-    - name: Checkout code
-      uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      with:
-        persist-credentials: false
+    - parallel:
+      - name: Checkout code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
 
-    - name: Configure rust toolchain stable
-      run: rustup update stable && rustup default stable
+      - name: Configure rust toolchain stable
+        run: rustup update stable && rustup default stable
 
     - name: Add components
       run: |
         rustup component add clippy
         rustup component add rustfmt
 
-    - name: Run cargo fmt
-      run: cargo fmt --all --check
+    - parallel:
+      - name: Run cargo fmt
+        run: cargo fmt --all --check
 
-    - name: Run cargo clippy
-      run: cargo clippy --all-targets --all-features --workspace -- -D warnings
+      - name: Run cargo clippy
+        run: cargo clippy --all-targets --all-features --workspace -- -D warnings
 
-    - name: Run cargo update locked
-      run: cargo update --workspace --locked
+      - name: Run cargo update locked
+        run: cargo update --workspace --locked
 {%- endraw %}

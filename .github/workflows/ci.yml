@@ -18,22 +18,24 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
+      - parallel:
+          - name: Install uv
+            uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
 
-      - name: Set up Python
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
-        with:
-          python-version-file: ".python-version"
+          - name: Set up Python
+            uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+            with:
+              python-version-file: ".python-version"
 
       - name: Install the project
         run: uv sync --all-extras
 
-      - name: Run ruff format
-        run: uv run ruff format --check .
+      - parallel:
+          - name: Run ruff format
+            run: uv run ruff format --check .
 
-      - name: Run ruff check
-        run: uv run ruff check --output-format=github .
+          - name: Run ruff check
+            run: uv run ruff check --output-format=github .
 
-      - name: Run ruff uv lock check
-        run: uv lock --check
+          - name: Run ruff uv lock check
+            run: uv lock --check
