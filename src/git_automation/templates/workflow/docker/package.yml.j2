@@ -46,8 +46,8 @@ build-docker:
         env:
           REPOSITORY: ${{ github.repository }}
 
-      - name: Get Git commit timestamps
-        run: echo "TIMESTAMP=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
+    - name: Get Git commit timestamps
+      run: echo "TIMESTAMP=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
 
     - name: Docker meta
       id: meta
@@ -209,7 +209,7 @@ verify-docker:
           for tag in ${TAGS}; do
             echo "Verify image for ${tag}@${DIGEST}"
             cosign verify ${tag}@${DIGEST} \
-              --certificate-identity "https://github.com/${{ github.repository }}/.github/workflows/release.yml@refs/tags/${GITHUB_REF_NAME}" \
+              --certificate-identity "https://github.com/${{ github.workflow_ref }}" \
               --certificate-oidc-issuer "https://token.actions.githubusercontent.com"
           done
 
@@ -219,7 +219,7 @@ verify-docker:
             echo "Verify image for ${tag}@${DIGEST}"
             cosign verify-attestation ${tag}@${DIGEST} \
               --type=cyclonedx \
-              --certificate-identity "https://github.com/${{ github.repository }}/.github/workflows/release.yml@refs/tags/${GITHUB_REF_NAME}" \
+              --certificate-identity "https://github.com/${{ github.workflow_ref }}" \
               --certificate-oidc-issuer "https://token.actions.githubusercontent.com"
           done
 {%- endraw %}

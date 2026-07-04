@@ -28,9 +28,6 @@ build-binary:
           go-version: stable
           cache: false
 
-      - name: Get Git commit timestamps
-        run: echo "TIMESTAMP=$(git log -1 --pretty=%ct)" >> $GITHUB_OUTPUT
-
       - name: Generate filenames
         id: generate-filename
         shell: bash
@@ -44,6 +41,9 @@ build-binary:
           # Set output
           echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
           echo "BINARY_NAME=${REPO_NAME}" >> $GITHUB_OUTPUT
+
+    - name: Get Git commit timestamps
+      run: echo "TIMESTAMP=$(git log -1 --pretty=%ct)" >> $GITHUB_OUTPUT
 
     - name: Build binary
       run: go build -trimpath -a -o "${BINARY_NAME}" -ldflags "-w -X main.version=${GITHUB_REF_NAME} -X main.buildTime=${TIMESTAMP} -extldflags '-static'" {% endraw %}{{ build_target }}{% raw %}

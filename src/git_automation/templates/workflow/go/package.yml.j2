@@ -30,9 +30,6 @@ build-artifact:
           go-version: stable
           cache: false
 
-      - name: Get Git commit timestamps
-        run: echo "TIMESTAMP=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
-
       - name: Generate filenames
         id: generate-filename
         shell: bash
@@ -48,6 +45,9 @@ build-artifact:
           echo "BINARY_NAME=${REPO_NAME}" >> $GITHUB_OUTPUT
           echo "SBOM_NAME=${REPO_NAME}-${VERSION}-${{ matrix.os }}-${{ matrix.arch }}.sbom" >> $GITHUB_OUTPUT
           echo "TAR_GZ_NAME=${REPO_NAME}-${VERSION}-${{ matrix.os }}-${{ matrix.arch }}.tar.gz" >> $GITHUB_OUTPUT
+
+    - name: Get Git commit timestamps
+      run: echo "TIMESTAMP=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
 
     - name: Build binary
       run: go build -trimpath -a -o "${BINARY_NAME}" -ldflags "-w -X main.version=${GITHUB_REF_NAME} -X main.buildTime=${TIMESTAMP} -extldflags '-static'" {% endraw %}{{ build_target }}{% raw %}
@@ -197,7 +197,7 @@ verify-artifact:
 
             echo "Verify binary for ${binary}"
             cosign verify-blob \
-              --certificate-identity "https://github.com/${{ github.repository }}/.github/workflows/release.yml@refs/tags/${GITHUB_REF_NAME}" \
+              --certificate-identity "https://github.com/${{ github.workflow_ref }}" \
               --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
               --bundle ./${binary_basename}.sigstore.json \
               ./${binary}
@@ -212,7 +212,7 @@ verify-artifact:
             cosign verify-blob-attestation \
               --type=cyclonedx \
               --new-bundle-format \
-              --certificate-identity "https://github.com/${{ github.repository }}/.github/workflows/release.yml@refs/tags/${GITHUB_REF_NAME}" \
+              --certificate-identity "https://github.com/${{ github.workflow_ref }}" \
               --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
               --bundle ./${binary_basename}.sbom.bundle \
               ./${binary}
