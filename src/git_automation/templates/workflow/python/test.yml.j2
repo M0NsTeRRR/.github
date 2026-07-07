@@ -12,6 +12,8 @@ test:
         - "{{ version }}"
 {%- endfor %}
 {%- raw %}
+  env:
+    UV_PYTHON: ${{ matrix.python-version }}
   steps:
     - parallel:
       - name: Checkout code

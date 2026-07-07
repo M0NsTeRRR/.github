@@ -18,16 +18,16 @@ build-artifact:
         {%- endfor %}
 {%- raw %}
   steps:
-    - parallel:
-      - name: Checkout code
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-        with:
-          persist-credentials: false
+    - name: Checkout code
+      uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      with:
+        persist-credentials: false
 
+    - parallel:
       - name: Set up Go
         uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
         with:
-          go-version: stable
+          go-version-file: "go.mod"
           cache: false
 
       - name: Generate filenames
@@ -46,8 +46,8 @@ build-artifact:
           echo "SBOM_NAME=${REPO_NAME}-${VERSION}-${{ matrix.os }}-${{ matrix.arch }}.sbom" >> $GITHUB_OUTPUT
           echo "TAR_GZ_NAME=${REPO_NAME}-${VERSION}-${{ matrix.os }}-${{ matrix.arch }}.tar.gz" >> $GITHUB_OUTPUT
 
-    - name: Get Git commit timestamps
-      run: echo "TIMESTAMP=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
+      - name: Get Git commit timestamps
+        run: echo "TIMESTAMP=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
 
     - name: Build binary
       run: go build -trimpath -a -o "${BINARY_NAME}" -ldflags "-w -X main.version=${GITHUB_REF_NAME} -X main.buildTime=${TIMESTAMP} -extldflags '-static'" {% endraw %}{{ build_target }}{% raw %}
