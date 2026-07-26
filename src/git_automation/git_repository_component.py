@@ -1,15 +1,15 @@
 import os
-from importlib import resources
-from typing import Mapping, Awaitable, Any
 import re
+from collections.abc import Awaitable, Mapping
+from importlib import resources
+from typing import Any
 
-import requests
-from jinja2 import Environment, PackageLoader
-import yaml
 import pulumi
-from pulumi.output import Output
 import pulumi_github as github
-
+import requests
+import yaml
+from jinja2 import Environment, PackageLoader
+from pulumi.output import Output
 
 PACKAGE_NAME = __name__.split(".")[0]
 

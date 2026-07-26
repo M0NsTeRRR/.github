@@ -124,7 +124,7 @@ for repository_config in config.get_object("repositories", []):
     if app_installation_ids:
         repository.sync_app_installation(renovatebot, app_installation_ids)
 
-    if "license" in repository_config and repository_config["license"]:
+    if repository_config.get("license"):
         repository.sync_licence(repository_config["license"])
 
     funding = config.get_object("funding")
@@ -160,7 +160,7 @@ for repository_config in config.get_object("repositories", []):
     if security_email:
         repository.sync_security(security_email)
 
-    if "label" in repository_config and repository_config["label"]:
+    if repository_config.get("label"):
         repository.sync_label(language, docker, renovatebot)
 
     if renovatebot:
