@@ -1,6 +1,6 @@
 ## Requirements
 
-- uv or devcontainer
+- uv or devenv
 
 Create a PAT GitHub token with permissions for all repositories or some specific repositories with the following permissions:
 
