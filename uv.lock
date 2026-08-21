@@ -138,7 +138,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "jinja2", specifier = "~=3.1.6" },
-    { name = "pulumi", specifier = "~=3.255.0" },
+    { name = "pulumi", specifier = "~=3.258.0" },
     { name = "pulumi-github", specifier = "~=6.14.0" },
     { name = "pyyaml", specifier = "~=6.0.3" },
     { name = "requests", specifier = "~=2.34.2" },
@@ -441,7 +441,7 @@ wheels = [
 
 [[package]]
 name = "pulumi"
-version = "3.255.0"
+version = "3.258.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "debugpy" },
@@ -457,7 +457,7 @@ dependencies = [
     { name = "semver" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7f/1e/9d433d9ec29d268a79cb37e5b052a2d3e34b118f1c3a5b4d7b2ab087b74c/pulumi-3.255.0-py3-none-any.whl", hash = "sha256:46fbdc640a996fa10849ff66d599be4e91d62484e7c5fa32963e9c6d79a171b1", size = 415455, upload-time = "2026-07-28T13:38:19.243Z" },
+    { url = "https://files.pythonhosted.org/packages/e9/1f/5a42d1574332a36d9abb9882dfe952c27656f0365605cc195a2d89dfd9b1/pulumi-3.258.0-py3-none-any.whl", hash = "sha256:6ae3d090275856fc37fb54b102e6e0892ca657f2025ed0997eb59dec911005bd", size = 417213, upload-time = "2026-08-17T19:05:24.895Z" },
 ]
 
 [[package]]
