@@ -225,3 +225,6 @@ for repository_config in config.get_object("repositories", []):
             docker,
             docker_platforms,
         )
+
+    if language == "python":
+        repository.sync_python_version(versions[0])

@@ -80,7 +80,7 @@ config:
         configs: []
         additionnal_configs: []
       language: go
-      versions: ["1.26"]
+      versions: ["1.27"]
       build_target: cmd/as212510/main.go
       gitignore: true
       devenv: true
@@ -109,7 +109,7 @@ config:
         configs: []
         additionnal_configs: []
       language: go
-      versions: ["1.26"]
+      versions: ["1.27"]
       build_target: cmd/webhook/main.go
       gitignore: true
       devenv: true
@@ -137,7 +137,7 @@ config:
         configs: []
         additionnal_configs: []
       language: go
-      versions: ["1.26"]
+      versions: ["1.27"]
       build_target: cmd/webhook/main.go
       gitignore: true
       devenv: true

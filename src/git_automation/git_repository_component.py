@@ -399,7 +399,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             filename = os.path.splitext(renovatebot_file.name)[0]
 
             # ignore disabled extras
-            if not filename.startswith(tuple(configs)):
+            if not filename.startswith(tuple(configs)) and filename != language:
                 continue
 
             self._repository_file(
@@ -742,3 +742,12 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             github.AppInstallationRepository(
                 f"{self.name}-{k}", installation_id=f"{v}", repository=self.name
             )
+
+    def sync_python_version(self, version: str):
+        template = env.get_template(os.path.join("misc", ".python-version.j2"))
+
+        self._repository_file(
+            "python-version",
+            ".python-version",
+            template.render(version=version),
+        )
