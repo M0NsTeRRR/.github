@@ -365,6 +365,7 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             template.render(
                 repository_name=f"{self.owner}/{self.name}",
                 schedule=schedule,
+                language=language,
                 configs=configs,
                 additionnal_configs=additionnal_configs,
             ),
