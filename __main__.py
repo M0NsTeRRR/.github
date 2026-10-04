@@ -137,6 +137,8 @@ for repository_config in config.get_object("repositories", []):
 
     repository.sync_support()
 
+    repository.sync_vulnerability_report()
+
     repository.sync_issue_template(language)
 
     repository.sync_codeowner()

@@ -221,6 +221,20 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
             file_content,
         )
 
+    def sync_vulnerability_report(self):
+        with (
+            resources.files(PACKAGE_NAME)
+            .joinpath("misc", "VULNERABILITY_REPORT.yml")
+            .open() as file
+        ):
+            file_content = file.read()
+
+        self._repository_file(
+            "vulnerability_report",
+            ".github/VULNERABILITY_REPORT.yml",
+            file_content,
+        )
+
     def sync_pull_request_template(self):
         template = env.get_template(os.path.join("misc", "PULL_REQUEST_TEMPLATE.md.j2"))
 

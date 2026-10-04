@@ -56,3 +56,6 @@ In `settings`:
 
 In `settings > actions`:
 - `Approval for running fork pull request workflows from contributors` must be set to `Require approval for all external contributors`
+
+In `settings > Advanced Security > Private vulnerability reporting`:
+- ` Require a CWE assignment` must be checked
