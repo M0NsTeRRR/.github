@@ -7,17 +7,17 @@ build-package:
   steps:
     - parallel:
       - name: Checkout code
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
 
       - name: Install uv
-        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        uses: astral-sh/setup-uv@v10.2.0
         with:
           enable-cache: false
 
     - name: Set up Python
-      uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+      uses: actions/setup-python@v7.0.0
       with:
         python-version-file: ".python-version"
 
@@ -30,7 +30,7 @@ build-package:
         uv build
 
     - name: Upload artifacts
-      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+      uses: actions/upload-artifact@v7.0.2
       with:
         name: artifacts
         path: dist/
@@ -45,11 +45,11 @@ publish-package:
   needs: [build-package]
   steps:
     - name: Downloads artifacts
-      uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+      uses: actions/download-artifact@v8.0.2
       with:
         name: artifacts
         path: dist/
 
     - name: Publish package distributions to PyPI
-      uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
+      uses: pypa/gh-action-pypi-publish@v1.14.2
 {% endraw %}

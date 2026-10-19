@@ -556,6 +556,8 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
                 template.render(
                     default_branch_name=self.default_branch_name,
                     branch_name=self.branch_name,
+                    author_fullname=self.author_fullname,
+                    author_email=self.author_email,
                 ),
             )
 
