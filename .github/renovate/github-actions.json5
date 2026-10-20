@@ -10,5 +10,14 @@
       ],
       "datasourceTemplate": "github-releases",
     },
+    {
+      "description": ["Process gh extensions"],
+      "customType": "regex",
+      "fileMatch": ["\\.ya?ml(\\.j2)?$"],
+      "matchStrings": [
+        'gh extension install (?<depName>\\S+) --pin (?<currentValue>\\S+)'
+      ],
+      "datasourceTemplate": "github-releases",
+    },
   ]
 }
