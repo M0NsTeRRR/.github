@@ -9,7 +9,7 @@ concurrency:
 jobs:
   lint:
     name: Lint
-    runs-on: ubuntu-26.04
+    runs-on: ubuntu-26.04-arm
     permissions:
       contents: read
     steps:

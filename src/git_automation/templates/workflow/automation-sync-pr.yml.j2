@@ -13,7 +13,7 @@ concurrency:
 jobs:
   sync-actions-lock:
     name: Sync actions.lock
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-26.04-arm
     permissions:
       contents: write
     steps:
@@ -37,7 +37,7 @@ jobs:
   create-pull-request:
     name: Create Pull Request
     needs: [sync-actions-lock]
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-26.04-arm
     permissions:
       contents: read
       pull-requests: write
