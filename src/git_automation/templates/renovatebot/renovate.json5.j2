@@ -36,4 +36,7 @@
   "labels": [
     "dependencies",
   ]
+  {%- if language == "go" %},
+  "postUpdateOptions": ["gomodTidy"]
+  {%- endif %}
 }
