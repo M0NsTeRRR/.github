@@ -1,31 +1,39 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended",
-    "docker:enableMajor",
-    "replacements:k8s-registry-move",
-    ":automergePr",
-    ":automergePatch",
-    ":disableRateLimiting",
-    ":dependencyDashboard",
-    ":semanticCommits",
-    ":timezone(Europe/Paris)",
-    "github>M0NsTeRRR/.github//.github/renovate/github-actions.json5",
-    "github>M0NsTeRRR/.github//.github/renovate/labels.json5",
-    "github>M0NsTeRRR/.github//.github/renovate/semanticCommits.json5",
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: [
+    'config:recommended',
+    'docker:enableMajor',
+    'replacements:k8s-registry-move',
+    ':automergePr',
+    ':automergePatch',
+    ':disableRateLimiting',
+    ':dependencyDashboard',
+    ':semanticCommits',
+    ':timezone(Europe/Paris)',
+    'github>M0NsTeRRR/.github//.github/renovate/github-actions.json5',
+    'github>M0NsTeRRR/.github//.github/renovate/labels.json5',
+    'github>M0NsTeRRR/.github//.github/renovate/semanticCommits.json5',
   ],
-  "dependencyDashboardTitle": "Renovate Dashboard 🤖",
-  "suppressNotifications": ["prEditedNotification", "prIgnoreNotification"],
-  "rebaseWhen": "conflicted",
-  "minimumReleaseAge": "3 days",
-  "packageRules": [
+  dependencyDashboard: {
+    title: 'Renovate Dashboard 🤖',
+  },
+  suppressNotifications: [
+    'prEditedNotification',
+    'prIgnoreNotification',
+  ],
+  rebaseWhen: 'conflicted',
+  minimumReleaseAge: '3 days',
+  packageRules: [
     {
-      "matchUpdateTypes": ["minor", "patch"],
-      "matchCurrentVersion": "!/^0/",
-      "automerge": true
-    }
+      matchUpdateTypes: [
+        'minor',
+        'patch',
+      ],
+      matchCurrentVersion: '!/^0/',
+      automerge: true,
+    },
   ],
-  "labels": [
-    "dependencies",
-  ]
+  labels: [
+    'dependencies',
+  ],
 }
