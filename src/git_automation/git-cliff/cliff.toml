@@ -80,7 +80,7 @@ commit_preprocessors = []
 commit_parsers = [
   { message = "^chore\\(git-sync\\)", skip = true },
   { message = "^chore\\(release\\): prepare for", skip = true },
-  { body = ".*security", group = "<!-- 0 -->🛡️ Security" },
+  { body = "^security", group = "<!-- 0 -->🛡️ Security" },
   { message = "^feat", group = "<!-- 1 -->🚀 Features" },
   { message = "^fix", group = "<!-- 2 -->🐛 Bug Fixes" },
   { message = "^refactor", group = "<!-- 3 -->🚜 Refactor" },
