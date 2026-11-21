@@ -12,7 +12,7 @@ on:
       - reopened
 permissions: {}
 concurrency:
-  group: validate-pr-title-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
   validate-pr-title:

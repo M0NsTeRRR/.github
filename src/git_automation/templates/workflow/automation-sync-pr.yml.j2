@@ -8,7 +8,7 @@ on:
       - {{ branch_name }}
 permissions: {}
 concurrency:
-  group: automation-sync-pr-{{ "${{" }} github.ref {{ "}}" }}
+  group: {% raw %}${{ github.workflow }}-${{ github.ref }}{% endraw %}
   cancel-in-progress: true
 jobs:
   sync-actions-lock:

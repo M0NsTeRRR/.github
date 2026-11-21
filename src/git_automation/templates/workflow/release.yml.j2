@@ -32,7 +32,7 @@ on:
       - "{{ tag_prefix }}*"
 permissions: {}
 concurrency:
-  group: release-{{ "${{" }} github.ref {{ "}}" }}
+  group: {% raw %}${{ github.workflow }}-${{ github.ref }}{% endraw %}
   cancel-in-progress: true
 jobs:
 {%- if workflow_changelog %}
