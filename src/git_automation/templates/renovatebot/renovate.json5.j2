@@ -15,6 +15,7 @@
     ':timezone(Europe/Paris)',
     'github>{{ repository_name | lower }}//.github/renovate/ignore_files.json5',
     'github>{{ repository_name | lower }}//.github/renovate/labels.json5',
+    'github>{{ repository_name | lower }}//.github/renovate/semantic_commits.json5',
     {%- if "devcontainer" in configs %}
     'github>{{ repository_name | lower }}//.github/renovate/devcontainer.json5',
     {%- endif %}
@@ -34,6 +35,10 @@
   ],
   rebaseWhen: 'conflicted',
   minimumReleaseAge: '3 days',
+  vulnerabilityAlerts: {
+    commitMessageSuffix: '',
+    addLabels: ['security'],
+  },
   {%- if schedule %}
   schedule: [
     '{{ schedule }}',

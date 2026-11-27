@@ -342,8 +342,6 @@ Signed-off-by: {self.author_fullname} <{self.author_email}>""",
         )
 
     def sync_label(self, language: str, docker: bool, renovatebot: bool):
-        labels = []
-
         template = env.get_template(os.path.join("misc", "labels.yml.j2"))
 
         labels = yaml.safe_load(

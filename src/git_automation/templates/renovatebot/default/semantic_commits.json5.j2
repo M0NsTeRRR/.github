@@ -1,0 +1,30 @@
+{
+  '$schema': 'https://docs.renovatebot.com/renovate-schema.json',
+  'packageRules': [
+    {
+      'matchPackageNames': ['*'],
+      'matchUpdateTypes': ['major', 'minor', 'patch', 'digest', 'pin', 'pinDigest'],
+      'commitMessageTopic': '{{depName}}',
+      'commitMessageExtra': '( {{#if currentVersion}}{{currentVersion}}{{else}}{{currentDigestShort}}{{/if}} → {{#if newVersion}}{{newVersion}}{{else}}{{newDigestShort}}{{/if}} )',
+    },
+{% if language == "python" -%}
+    {
+      'matchDatasources': ['pypi'],
+      'matchUpdateTypes': ['major'],
+      'commitMessagePrefix': 'feat(python)!: '
+    },
+    {
+      'matchDatasources': ['pypi'],
+      'matchUpdateTypes': ['minor'],
+      'semanticCommitType': 'feat',
+      'semanticCommitScope': 'python'
+    },
+    {
+      'matchDatasources': ['pypi'],
+      'matchUpdateTypes': ['patch'],
+      'semanticCommitType': 'fix',
+      'semanticCommitScope': 'python'
+    },
+{%- endif %}
+  ]
+}
