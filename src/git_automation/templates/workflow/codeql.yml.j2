@@ -47,7 +47,7 @@ jobs:
           persist-credentials: false
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v4.39.3
+        uses: github/codeql-action/init@v4.39.5
         with:
           languages: {{ "${{" }} matrix.language {{ "}}" }}
           build-mode: {{ "${{" }} matrix.build-mode {{ "}}" }}
